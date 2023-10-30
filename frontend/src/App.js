@@ -1,15 +1,26 @@
-import { Button } from "@mui/material";
+import {
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
+
+import HomePage from "./pages/HomePage/HomePage";
+import SignUpPage from "./pages/SignUpPage/SignUpPage";
+import SignInPage from "./pages/SignInPage/SignInPage";
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<HomePage />} />
+      <Route path="login" element={<SignInPage />} />
+      <Route path="register" element={<SignUpPage />} />
+    </Route>
+  )
+);
 
 function App() {
-  return (
-    <div className="App">
-      <h1>EMvidence</h1>
-      <Button variant="text">Text</Button>
-      <Button variant="contained">Contained</Button>
-      <Button variant="outlined">Outlined</Button>
-      <i class="fa-solid fa-magnifying-glass"></i>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
