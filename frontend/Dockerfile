@@ -1,5 +1,5 @@
 # Use Node.js official image
-FROM node:latest
+FROM node:21.2.0
 
 RUN mkdir /frontend
 
@@ -20,3 +20,4 @@ EXPOSE 3000
 
 # Start the React app (replace this with your specific start command)
 CMD npm start
+# CMD pwd && ls -lh
