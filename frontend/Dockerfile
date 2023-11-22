@@ -20,3 +20,4 @@ EXPOSE 3000
 
 # Start the React app (replace this with your specific start command)
 CMD npm start
+# CMD pwd && ls -lh
