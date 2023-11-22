@@ -8,6 +8,6 @@ class HelloWorldController extends Controller
 {
     public function hello()
     {
-        return response()->json(['message' => 'Hello World!']);
+        return response()->json(['message' => 'Hello World!!']);
     }
 }

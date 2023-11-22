@@ -5,7 +5,7 @@ backend/public/build
 backend/public/hot
 backend/public/storage
 backend/storage/*.key
-# backend/vendor
+backend/vendor
 # .env
 .env.backup
 .env.production

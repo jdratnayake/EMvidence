@@ -1,8 +1,13 @@
 # Use PHP official image
-FROM php:latest
+FROM php:8.2
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
+    zip \
+    unzip \
+    git \
     python3 \
     python3-pip
     # Add any other required dependencies

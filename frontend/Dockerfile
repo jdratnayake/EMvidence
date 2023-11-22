@@ -1,5 +1,5 @@
 # Use Node.js official image
-FROM node:latest
+FROM node:21.2.0
 
 RUN mkdir /frontend
 
