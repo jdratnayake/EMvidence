@@ -9,6 +9,8 @@ import HomePage from "./pages/HomePage/HomePage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import AnalysisPage from "./pages/AnalysisPage";
+import EmFilesPage from "./pages/EmFilesPage/EmFilesPage";
+import UploadFilePage from "./pages/UploadFilePage/UploadFilePage"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,6 +19,8 @@ const router = createBrowserRouter(
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
       <Route path="analysis" element={<AnalysisPage />} />
+      <Route path="file_manage" element={<EmFilesPage />} />
+      <Route path="file_upload" element={<UploadFilePage />} />
     </Route>
   )
 );

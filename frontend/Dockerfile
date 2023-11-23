@@ -19,5 +19,5 @@ COPY . .
 EXPOSE 3000
 
 # Start the React app (replace this with your specific start command)
-CMD npm start
+CMD npm start-watch
 # CMD pwd && ls -lh
