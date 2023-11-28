@@ -2,6 +2,7 @@ version: "3"
 
 services:
   frontend-app:
+    container_name: frontend-app
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -14,6 +15,7 @@ services:
       - ./frontend:/frontend
       - /frontend/node_modules
   backend-app:
+    container_name: backend-app
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -26,6 +28,7 @@ services:
     depends_on:
       - mysql
   mysql:
+    container_name: mysql
     image: mysql/mysql-server:8.0
     ports:
       - "3306:3306"
@@ -46,6 +49,7 @@ services:
       timeout: 5s
 
   phpmyadmin:
+    container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - "8080:80"
