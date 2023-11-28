@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip
     # Add any other required dependencies
 
+RUN docker-php-ext-install pdo pdo_mysql
+
 RUN apt upgrade -y  \
     python3-numpy
 
