@@ -9,13 +9,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     python3 \
-    python3-pip
+    python3-pip \
+    python3-venv
     # Add any other required dependencies
 
 RUN docker-php-ext-install pdo pdo_mysql
 
-RUN apt upgrade -y  \
-    python3-numpy
+# RUN python3 -m venv /venv
+# RUN /venv/bin/pip install --no-cache-dir tensorflow
 
 # Set working directory
 WORKDIR /var/www/html
@@ -31,6 +32,16 @@ RUN composer install
 
 # Expose port if needed
 EXPOSE 80
+
+RUN apt upgrade -y  \
+    python3-numpy \
+    python3-scipy \
+    python3-sklearn \
+    python3-pandas \
+    python3-h5py
+
+# RUN pip3 install --no-cache-dir \
+#     tensorflow
 
 # Start Laravel server
 # CMD ["ls", ">", "result.txt"]
