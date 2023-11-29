@@ -17,16 +17,7 @@ chunk_size = 1000  # Define your chunk size
 sys.stdout = open(os.devnull, 'w')
 sys.stderr = open(os.devnull, 'w')
 
-loaded_data = []
-with open(em_preprocessing_file_path, 'r') as f:
-    while True:
-        # Read chunk_size number of lines
-        chunk = np.loadtxt(f, max_rows=chunk_size)
-        if not chunk.size:
-            break  # Exit the loop if no more data
-        loaded_data.append(chunk)
-
-X = np.concatenate(loaded_data)
+X = np.load(em_preprocessing_file_path)
 model = keras.models.load_model(analysis_plugin_ml_model_path)
 y = model.predict(X)
 
