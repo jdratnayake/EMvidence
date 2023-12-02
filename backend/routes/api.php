@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+use App\Http\Controllers\FileManageController;
 use App\Http\Controllers\PluginController;
 
 /*
@@ -15,7 +17,8 @@ use App\Http\Controllers\PluginController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::post('/upload_data_file', [FileManageController::class, 'store']);
+Route::post('/send_to_database', [FileManageController::class, 'sendRecord']);
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
