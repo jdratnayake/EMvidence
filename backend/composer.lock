@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03d1ef0b4c68f9b53f2bc27cd259e542",
+    "content-hash": "8d7010992f89bf9e1ecb5d1ac25b1b96",
     "packages": [
         {
             "name": "brick/math",
@@ -2376,6 +2376,72 @@
                 }
             ],
             "time": "2023-02-25T19:38:58+00:00"
+        },
+        {
+            "name": "pion/laravel-chunk-upload",
+            "version": "v1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pionl/laravel-chunk-upload.git",
+                "reference": "dcf5cf42059910242c31fc34d0ea147d07478473"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pionl/laravel-chunk-upload/zipball/dcf5cf42059910242c31fc34d0ea147d07478473",
+                "reference": "dcf5cf42059910242c31fc34d0ea147d07478473",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "5.2 - 5.8 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0",
+                "illuminate/filesystem": "5.2 - 5.8 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0",
+                "illuminate/http": "5.2 - 5.8 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0",
+                "illuminate/support": "5.2 - 5.8 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16.0",
+                "mockery/mockery": "^1.1.0 | ^1.3.0",
+                "overtrue/phplint": "^1.1 | ^2.0",
+                "phpunit/phpunit": "5.7 | 6.0 | 7.0 | 7.5 | 8.4 | ^8.5 | ^9.3 | ^10.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pion\\Laravel\\ChunkUpload\\Providers\\ChunkUploadServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pion\\Laravel\\ChunkUpload\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Kluska",
+                    "email": "martin@kluska.cz"
+                }
+            ],
+            "description": "Service for chunked upload with several js providers",
+            "support": {
+                "issues": "https://github.com/pionl/laravel-chunk-upload/issues",
+                "source": "https://github.com/pionl/laravel-chunk-upload/tree/v1.5.2"
+            },
+            "funding": [
+                {
+                    "url": "https://revolut.me/martinpv7n",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/pionl",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-03-15T21:02:42+00:00"
         },
         {
             "name": "psr/container",
@@ -8063,5 +8129,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

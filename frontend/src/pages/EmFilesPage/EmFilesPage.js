@@ -22,6 +22,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import {useNavigate} from 'react-router-dom';
 
+
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -133,7 +134,7 @@ function EmFilesPage() {
         </Toolbar>
       </AppBar>
       <main>
-        <div class="maindiv" style={{ marginTop: '55px' }}>
+        <div className="maindiv" style={{ marginTop: '55px' }}>
           <Container  >
             <Typography variant="h2" color="textPrimary" align="center" gutterBottom>
               File Manage

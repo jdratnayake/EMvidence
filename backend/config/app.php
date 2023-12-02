@@ -170,6 +170,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
     ])->toArray(),
 
     /*
