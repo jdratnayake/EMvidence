@@ -23,6 +23,11 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix("plugins")->group(function (){
-    Route::post("/", [PluginController::class, "test"]);
+Route::prefix("v1/plugin")->group(function (){
+    Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"]);
+    Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"]);
 });
+
+// Route::prefix("analysis-plugin")->group(function (){
+//     Route::post("/", [PluginController::class, "test"]);
+// });

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 import NavBar from "../components/NavBar";
 import {
   Box,
@@ -13,15 +15,121 @@ import {
 } from "@mui/material";
 import folder from "./../Resources/folder.png";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import { API_URL } from "../constants";
+import "react-toastify/dist/ReactToastify.css";
 
 const AnalysisPage = () => {
+  const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
+  const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+
+  const executePreprocessingPlugin = () => {
+    setIsPreprocessingFetching(true);
+    const headers = {
+      "Content-Type": "application/json",
+      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
+      preprocessing_plugin_name: "basic.py",
+    };
+
+    axios
+      .get(API_URL + "/plugin/preprocessing", { headers })
+      .then((response) => {
+        console.log(response.data);
+
+        toast.success("Pre-Processing Done Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setIsPreprocessingFetching(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Pre-Processing Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
+  const executeAnalysisPlugin = () => {
+    setIsAnalysisFetching(true);
+    const headers = {
+      "Content-Type": "application/json",
+      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
+      analysis_plugin_name:
+        "apple_iphone_4s__detect_behaviour_of_10_classes.py",
+      analysis_plugin_ml_model_name:
+        "apple_iphone_4s__detect_behaviour_of_10_classes__neural_network_model.h5",
+    };
+
+    axios
+      .get(API_URL + "/plugin/analysis", { headers })
+      .then((response) => {
+        console.log(response.data["output"]);
+
+        toast.success("Analysis Done Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setIsAnalysisFetching(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Analysis Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <CssBaseline />
       <NavBar />
       <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
         <Box class="file_selection">
-          <Box sx={{ bgcolor: "#000000", height: "10vh", margin: "0",display: "flex", }}>
+          <Box
+            sx={{
+              bgcolor: "#000000",
+              height: "10vh",
+              margin: "0",
+              display: "flex",
+            }}
+          >
             <Typography
               variant="h4"
               sx={{
@@ -108,22 +216,22 @@ const AnalysisPage = () => {
                 }}
               >
                 <Typography variant="body1" gutterBottom>
-                  <strong>Size:</strong> 1.3 GB 
+                  <strong>Size:</strong> 1.3 GB
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Sampling Rate:</strong> 20MHz 
+                  <strong>Sampling Rate:</strong> 20MHz
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Center Frequency:</strong> 16MHz 
+                  <strong>Center Frequency:</strong> 16MHz
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Sampling Duration:</strong> 20s 
+                  <strong>Sampling Duration:</strong> 20s
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Hash Function:</strong> SHA256 
+                  <strong>Hash Function:</strong> SHA256
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>IoT Device:</strong> Amazon Alexa 
+                  <strong>IoT Device:</strong> Amazon Alexa
                 </Typography>
               </Box>
             </Box>
@@ -287,8 +395,10 @@ const AnalysisPage = () => {
                 sx={{ mb: "10px", ml: "80%", mr: "3%" }}
                 variant="contained"
                 color="success"
+                disabled={isPreprocessingFetching}
+                onClick={executePreprocessingPlugin}
               >
-                Select
+                Select Dave
               </Button>
             </FormControl>
           </Box>
@@ -357,6 +467,8 @@ const AnalysisPage = () => {
               sx={{ mb: "10px", ml: "80%", mr: "3%" }}
               variant="contained"
               color="success"
+              disabled={isAnalysisFetching}
+              onClick={executeAnalysisPlugin}
             >
               Analyze
             </Button>
