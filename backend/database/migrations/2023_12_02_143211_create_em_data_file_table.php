@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('em_data_file', function (Blueprint $table) {
             $table->id('file_id');
-            $table->bigInteger('upload_user_id')->unsigned(); ;            
-            $table->string('file_path');
-            $table->string('file_name');
-            $table->dateTime('created_time');
-            $table->float('file_size');
+            $table->bigInteger('upload_user_id')->unsigned();  
+            $table->string('file_unique_name')->nullable();         
+            $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable();
+            $table->dateTime('created_time')->nullable();
+            $table->bigInteger('file_size')->unsigned()->nullable();
             $table->foreign('upload_user_id')->references('user_id')->on('user');
         });
     }
