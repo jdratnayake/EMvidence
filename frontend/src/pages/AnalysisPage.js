@@ -21,6 +21,9 @@ import "react-toastify/dist/ReactToastify.css";
 const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const blackHeader = "#000000";
+  const containerColor = "#1614140D";
+  const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
     setIsPreprocessingFetching(true);
@@ -124,7 +127,7 @@ const AnalysisPage = () => {
         <Box class="file_selection">
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -158,7 +161,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -171,6 +174,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
+                backgroundColor: "#DED4D4"
               }}
             >
               {/* Left Section */}
@@ -201,7 +205,7 @@ const AnalysisPage = () => {
                   top: 0,
                   bottom: 0,
                   width: "2px",
-                  backgroundColor: "#000000",
+                  backgroundColor: blackHeader,
                   content: "''",
                   marginTop: "10px",
                   marginBottom: "10px",
@@ -213,6 +217,7 @@ const AnalysisPage = () => {
                 sx={{
                   flex: 1,
                   padding: "16px",
+                 
                 }}
               >
                 <Typography variant="body1" gutterBottom>
@@ -236,16 +241,24 @@ const AnalysisPage = () => {
               </Box>
             </Box>
             <Button
-              sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+              sx={{
+                mb: "10px",
+                marginLeft: "80%",
+                marginRight: "10%",
+                backgroundColor: "#525252",
+                color: "#ffffff",
+                "&:hover": {
+                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                },
+              }}
               variant="contained"
-              color="success"
             >
               Select
             </Button>
           </Box>
         </Box>
         <Box class="pre_processing" sx={{ mt: "40px" }}>
-          <Box sx={{ bgcolor: "#000000", height: "10vh", margin: "0" }}>
+          <Box sx={{ bgcolor: blackHeader, height: "10vh", margin: "0" }}>
             <Typography
               variant="h4"
               sx={{
@@ -266,7 +279,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -392,9 +405,17 @@ const AnalysisPage = () => {
                 </NativeSelect>
               </Box>
               <Button
-                sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+                sx={{
+                  mb: "10px",
+                  marginLeft: "80%",
+                  marginRight: "10%",
+                  backgroundColor: "#525252",
+                  color: "#ffffff",
+                  "&:hover": {
+                    backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                  },
+                }}
                 variant="contained"
-                color="success"
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
               >
@@ -407,7 +428,7 @@ const AnalysisPage = () => {
         <Box class="analysis" sx={{ mt: "40px" }}>
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -441,7 +462,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -464,9 +485,17 @@ const AnalysisPage = () => {
               <Chip label="K-Means Clustering" onDelete />
             </Box>
             <Button
-              sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+              sx={{
+                mb: "10px",
+                marginLeft: "80%",
+                marginRight: "10%",
+                backgroundColor: "#525252",
+                color: "#ffffff",
+                "&:hover": {
+                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                },
+              }}
               variant="contained"
-              color="success"
               disabled={isAnalysisFetching}
               onClick={executeAnalysisPlugin}
             >
@@ -478,7 +507,7 @@ const AnalysisPage = () => {
         <Box class="analysis_summary" sx={{ mt: "40px" }}>
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -505,7 +534,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -532,7 +561,22 @@ const AnalysisPage = () => {
               </Typography>
 
               <Typography variant="body1">
-                <strong>Accuracy of the Module:</strong> 92.34%
+                <strong style={{ display: "inline-block", width: "200px" }}>Class 1 accuracy:</strong>{" "}
+                <span>
+                  92.34%
+                </span>
+              </Typography>
+              <Typography variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>Class 2 accuracy:</strong>{" "}
+                <span>
+                  92.34%
+                </span>
+              </Typography>
+              <Typography variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>Class 3:</strong>{" "}
+                <span> 
+                  92.34%
+                </span>
               </Typography>
             </Box>
           </Box>
