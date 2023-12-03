@@ -174,7 +174,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
-                backgroundColor: "#DED4D4"
+                backgroundColor: "#DED4D4",
               }}
             >
               {/* Left Section */}
@@ -217,7 +217,6 @@ const AnalysisPage = () => {
                 sx={{
                   flex: 1,
                   padding: "16px",
-                 
                 }}
               >
                 <Typography variant="body1" gutterBottom>
@@ -452,13 +451,13 @@ const AnalysisPage = () => {
             >
               Analysis Plugins
             </Typography>
-            <IconButton
+            {/* <IconButton
               sx={{ mt: "-10px" }}
               aria-label="add-plugin"
               color="success"
             >
               <ControlPointIcon />
-            </IconButton>
+            </IconButton> */}
           </Box>
           <Box
             sx={{
@@ -468,7 +467,7 @@ const AnalysisPage = () => {
               flexDirection: "column",
             }}
           >
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 mt: "30px",
@@ -476,13 +475,42 @@ const AnalysisPage = () => {
                 justifyContent: "flex-start",
                 mb: "30px",
               }}
-            >
-              <Chip
+            > */}
+              {/* <Chip
                 label="Random Forest Algorithm"
                 onDelete
                 sx={{ mr: "20px" }}
               />
-              <Chip label="K-Means Clustering" onDelete />
+              <Chip label="K-Means Clustering" onDelete /> */}
+            {/* </Box> */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                mt: "20px",
+                mb: "20px",
+              }}
+            >
+              <Typography
+                variant="body1"
+                display="block"
+                sx={{ ml: "20px", mr: "20px" }}
+                gutterBottom
+              >
+                Analysis plugin:
+              </Typography>
+              <NativeSelect
+                defaultValue={1}
+                inputProps={{
+                  name: "domain-conversion",
+                  id: "uncontrollerd-native",
+                }}
+                sx={{ mt: "-10px" }}
+              >
+                <option value={1}>Firmware version detection</option>
+                <option value={2}>Behavior modification detection</option>
+                <option value={3}>Option 3</option>
+              </NativeSelect>
             </Box>
             <Button
               sx={{
@@ -561,22 +589,22 @@ const AnalysisPage = () => {
               </Typography>
 
               <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>Class 1 accuracy:</strong>{" "}
-                <span>
-                  92.34%
-                </span>
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 1 accuracy:
+                </strong>{" "}
+                <span>92.34%</span>
               </Typography>
               <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>Class 2 accuracy:</strong>{" "}
-                <span>
-                  92.34%
-                </span>
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 2 accuracy:
+                </strong>{" "}
+                <span>92.34%</span>
               </Typography>
               <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>Class 3:</strong>{" "}
-                <span> 
-                  92.34%
-                </span>
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 3:
+                </strong>{" "}
+                <span>92.34%</span>
               </Typography>
             </Box>
           </Box>
