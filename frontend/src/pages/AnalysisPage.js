@@ -299,7 +299,7 @@ const AnalysisPage = () => {
                   sx={{ ml: "20px", mr: "20px" }}
                   gutterBottom
                 >
-                  Domain Conversion:
+                  Down Sampling:
                 </Typography>
                 <NativeSelect
                   defaultValue={1}
@@ -309,11 +309,9 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                 >
-                  <option value={1}>
-                    STFT (FFT_SIZE = 2048 & Overlap Size = 256)
-                  </option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={1}>To 10MHz</option>
+                  <option value={2}>To 8MHz</option>
+                  <option value={3}>To 4MHz</option>
                 </NativeSelect>
               </Box>
               <Box
@@ -330,7 +328,7 @@ const AnalysisPage = () => {
                   sx={{ ml: "20px", mr: "20px" }}
                   gutterBottom
                 >
-                  Down Sampling:
+                  Domain Conversion:
                 </Typography>
                 <NativeSelect
                   defaultValue={1}
@@ -340,7 +338,9 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                 >
-                  <option value={1}>To 10MHz</option>
+                  <option value={1}>
+                    STFT (FFT_SIZE = 2048 & Overlap Size = 256)
+                  </option>
                   <option value={2}>Option 2</option>
                   <option value={3}>Option 3</option>
                 </NativeSelect>
@@ -476,7 +476,7 @@ const AnalysisPage = () => {
                 mb: "30px",
               }}
             > */}
-              {/* <Chip
+            {/* <Chip
                 label="Random Forest Algorithm"
                 onDelete
                 sx={{ mr: "20px" }}
