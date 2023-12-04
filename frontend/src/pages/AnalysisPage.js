@@ -22,6 +22,8 @@ const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
+  const [analysisPlugin, setAnalysisPlugin] = useState(1);
+
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
   const buttonColor = "#525252";
@@ -66,15 +68,29 @@ const AnalysisPage = () => {
       });
   };
 
+  const handleAnalysisPLuginChange = (event) => {
+    // console.log(analysisPlugin);
+    setAnalysisPlugin(event.target.value);
+  };
+
   const executeAnalysisPlugin = () => {
+    let analysisPluginMachineLearningModelName = "";
+
+    if (analysisPlugin == 1) {
+      analysisPluginMachineLearningModelName =
+        "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
+    } else {
+      analysisPluginMachineLearningModelName =
+        "apple_iphone_4s__detect_anomalies__neural_network_model.h5";
+    }
+
     setIsAnalysisFetching(true);
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
       analysis_plugin_name:
         "apple_iphone_4s__detect_behaviour_of_10_classes.py",
-      analysis_plugin_ml_model_name:
-        "apple_iphone_4s__detect_behaviour_of_10_classes__neural_network_model.h5",
+      analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
     };
 
     axios
@@ -516,10 +532,14 @@ const AnalysisPage = () => {
                   id: "uncontrollerd-native",
                 }}
                 sx={{ mt: "-10px" }}
+                value={analysisPlugin}
+                onChange={handleAnalysisPLuginChange}
               >
-                <option value={1}>Firmware version detection</option>
-                <option value={2}>Behavior modification detection</option>
-                <option value={3}>Option 3</option>
+                <option value={1}>Behavior identification</option>
+                <option value={2}>
+                  Malicious firmware modification detection
+                </option>
+                <option value={3}>Firmware version detection</option>
               </NativeSelect>
             </Box>
             <Button
