@@ -12,6 +12,12 @@ analysis_plugin_ml_model_path = sys.argv[2]
 original_stdout = sys.stdout
 original_stderr = sys.stderr
 chunk_size = 1000  # Define your chunk size
+labels = ["Using Calendar App", "Using Email App", "In Home Screen", "Using SMS App", "Using Gallary App", "Idle"]
+
+# 0 = Normal behavior
+    # 1 = Anomaly
+if analysis_plugin_ml_model_path == "/var/www/html/storage/ml_models/apple_iphone_4s__detect_anomalies__neural_network_model.h5":
+    labels = ["Original Firmware", "Anomaly"]
 
 # Redirect stdout and stderr to null
 sys.stdout = open(os.devnull, 'w')
@@ -29,7 +35,8 @@ sys.stderr = original_stderr
 y_pred = np.argmax(y, axis=1)
 classes_counts = Counter(y_pred) # Count occurrences of elements in y_pred
 classes_counts_dict = {int(key): int(value) for key, value in classes_counts.items()}
-classes_counts_dict_sorted = {k: classes_counts_dict[k] for k in sorted(classes_counts_dict)} # Order the dictionary by keys
+sum_of_counts = sum(classes_counts_dict.values())
+classes_counts_dict_sorted = {labels[k]: round(((classes_counts_dict[k] * 100.0) / sum_of_counts), 2) for k, v in sorted(classes_counts_dict.items(), key=lambda item: item[1], reverse=True)}
 
 output = json.dumps(classes_counts_dict_sorted)
 print(output)

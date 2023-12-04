@@ -21,7 +21,6 @@ Route::get('/', function () {
 // For testing purposes
 Route::get('/hello', [HelloWorldController::class, 'hello']);
 Route::get('/get_csrf_token', [FileManageController::class, 'getCSRFToken']);
-Route::get("em_data_records",[FileManageController::class,'index']);
 // Route::post('/upload_data_file', [FileManageController::class, 'store']);
 Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
