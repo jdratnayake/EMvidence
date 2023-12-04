@@ -4,6 +4,9 @@ import React, { useState, useEffect } from "react";
 import "./UploadFilePage.css";
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
+import { OutlinedInput } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import {
     FormControl,
     InputLabel,
@@ -17,6 +20,7 @@ import Box from '@mui/material/Box';
 import Resumable from 'resumablejs';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import NavBar from "../../components/NavBar";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 10,
@@ -96,8 +100,11 @@ function UploadFilePage() {
         event.preventDefault();
         setIsSubmitted(true);
         // Do something with the form data, e.g., send it to an API
-        console.log('Form submitted with selected value:', selectedValue1, selectedValue2, selectedValue3, selectedValue4);
+        console.log('Form submitted with selected value:', selectedValue1, selectedValue2, selectedValue3);
         console.log('Selected file:', selectedFile);
+        if (resumable) {
+            resumable.upload();
+        }
 
     };
 
@@ -138,7 +145,7 @@ function UploadFilePage() {
 
     uploader.on('fileSuccess', (file, message) => {
         const response = JSON.parse(message);
-        console.log('this is file unique name:-',response.file_unique_name);
+        console.log('this is file unique name:-', response.file_unique_name);
         setFileUniqueName(response.file_unique_name);
         setIsSuccess(1);
     });
@@ -174,34 +181,34 @@ function UploadFilePage() {
     };
 
 
+
     function handleUpload() {
-        if (resumable) {
-            resumable.upload();
-        }
+
+
     };
 
     useEffect(() => {
         if (isSuccess === 1 && percentage == 100) {
             axios.post(baseURL2, {
-                    name: fileName,
-                    size: fileSize,
-                    unique_name: fileUniqueName
-                })
+                name: fileName,
+                size: fileSize,
+                unique_name: fileUniqueName
+            })
                 .then((response) => {
-                   console.log(response.status);
-                   if (response.status == 200){
+                    console.log(response.status);
+                    if (response.status == 200) {
                         alert('File successfully uploaded.')
                         navigate('/file_manage')
-                    
-                   } else {
-                    alert('Error')
-                    navigate('/file_manage')
-                   }
-                   
+
+                    } else {
+                        alert('Error')
+                        navigate('/file_manage')
+                    }
+
                 });
             console.log(fileName, fileSize, fileUniqueName);
         }
-       
+
     }, [isSuccess, percentage, fileName, fileSize, fileUniqueName]);
 
     // const handleUpload = async () => {
@@ -222,18 +229,27 @@ function UploadFilePage() {
     //     }
     //   };
 
-
-
+    const customStyles = {
+        backgroundColor: '#525252',
+        color: 'white',
+    };
+    const styles = theme => ({
+        select: {
+            '&:before': {
+                bordercolor: "#525252",
+            },
+            '&:after': {
+                bordercolor: "#525252",
+            }
+        },
+        icon: {
+            fill: "#525252",
+        },
+    });
     return (
         <>
             <CssBaseline />
-            <AppBar possition="relative">
-                <Toolbar>
-                    <Typography variant="h6">
-                        EMvidance
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+            <NavBar />
 
             <div className="maindiv" style={{ marginTop: '100px', }}>
                 {!isSubmitted && (
@@ -246,79 +262,94 @@ function UploadFilePage() {
                             <form onSubmit={handleSubmit}>
 
                                 {/* Dropdown */}
-                                {/* <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                <InputLabel id="dropdown-label-1">Select an option</InputLabel>
-                                <Select
-                                    labelId="dropdown-label-1"
-                                    id="dropdown-1"
-                                    value={selectedValue1}
-                                    onChange={handleDropdownChange1}
-                                    label="Select an option"
+                                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                                    <InputLabel id="dropdown-label-1">Device Name</InputLabel>
+                                    <Select
+                                        labelId="dropdown-label-1"
+                                        id="dropdown-1"
+                                        value={selectedValue1}
+                                        onChange={handleDropdownChange1}
+                                        label="Device Name"
+                                        style={{ borderColor: "#525252" }}
+                                        sx={{
+                                            "&:hover": {
+                                                "&& fieldset": {
+                                                    border: "3px solid gray"
+                                                }
+                                            }
+                                        }}
+                                
+                                    >
+                                        <MenuItem value="Arduino">Arduino</MenuItem>
+                                        <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
 
-                                >
-                                    <MenuItem value="option1">Option 1</MenuItem>
-                                    <MenuItem value="option2">Option 2</MenuItem>
-                                    <MenuItem value="option3">Option 3</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                <InputLabel id="dropdown-label-2">Select an option</InputLabel>
-                                <Select
-                                    labelId="dropdown-label-2"
-                                    id="dropdown-2"
-                                    value={selectedValue2}
-                                    onChange={handleDropdownChange2}
-                                    label="Select an option"
+                                    </Select>
+                                </FormControl>
 
-                                >
-                                    <MenuItem value="option1">Option 1</MenuItem>
-                                    <MenuItem value="option2">Option 2</MenuItem>
-                                    <MenuItem value="option3">Option 3</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                <InputLabel id="dropdown-label-3">Select an option</InputLabel>
-                                <Select
-                                    labelId="dropdown-label-3"
-                                    id="dropdown-3"
-                                    value={selectedValue3}
-                                    onChange={handleDropdownChange3}
-                                    label="Select an option"
+                                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                                    <TextField
+                                        id="text-1"
+                                        type="number"
+                                        label="Center Frequency"
+                                        variant="outlined"
+                                        value={selectedValue2}
+                                        onChange={handleDropdownChange2}
+                                        style={{ borderColor: "#525252" }}
+                                        sx={{
+                                            "&:hover": {
+                                                "&& fieldset": {
+                                                    border: "3px solid gray"
+                                                }
+                                            }
+                                        }}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position="end">Hz</InputAdornment>,
+                                            inputMode: 'numeric',
+                                            pattern: '/^-?\d+(?:\.\d+)?$/g',
+                                            inputProps: { min: 0, step: 0.01, style: { textAlign: 'center' } }
+                                        }}
+                                        required />
+                                </FormControl>
 
-                                >
-                                    <MenuItem value="option1">Option 1</MenuItem>
-                                    <MenuItem value="option2">Option 2</MenuItem>
-                                    <MenuItem value="option3">Option 3</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                <InputLabel id="dropdown-label-4">Select an option</InputLabel>
-                                <Select
-                                    labelId="dropdown-label-4"
-                                    id="dropdown-4"
-                                    value={selectedValue4}
-                                    onChange={handleDropdownChange4}
-                                    label="Select an option"
+                                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                                    <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
+                                    <Select
+                                        labelId="dropdown-label-2"
+                                        id="dropdown-2"
+                                        value={selectedValue3}
+                                        onChange={handleDropdownChange3}
+                                        label="Sampling Rate"
+                                        style={{ borderColor: "#525252" }}
+                                        sx={{
+                                            "&:hover": {
+                                                "&& fieldset": {
+                                                    border: "3px solid gray"
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem value="8 MHz">8 MHz</MenuItem>
+                                        <MenuItem value="10 MHz">10 MHz</MenuItem>
+                                        <MenuItem value="12.5 MHz">12.5 MHz</MenuItem>
+                                        <MenuItem value="16 MHz">16 MHz</MenuItem>
+                                        <MenuItem value="20 MHz">20 MHz</MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                                >
-                                    <MenuItem value="option1">Option 1</MenuItem>
-                                    <MenuItem value="option2">Option 2</MenuItem>
-                                    <MenuItem value="option3">Option 3</MenuItem>
-                                </Select>
-                            </FormControl> */}
                                 <FormControl fullWidth style={{ marginBottom: '20px' }} required>
                                     <InputLabel htmlFor="file-input"></InputLabel>
                                     <Input
                                         id="file-input"
                                         type="file"
                                         onChange={handleFileSelect}
+
                                     // endAdornment={<InputAdornment position="end">{selectedFile && selectedFile.name}</InputAdornment>}
                                     />
                                 </FormControl>
 
 
                                 {/* Submit button */}
-                                <Button type="submit" onClick={handleUpload} variant="contained" color="primary" style={{ marginTop: '20px', width: '200px' }}>
+                                <Button type="submit" variant="contained" color="primary" style={{ marginTop: '20px', width: '200px', backgroundColor: '#525252', color: 'white' }} >
                                     Submit
                                 </Button>
                             </form>

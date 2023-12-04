@@ -1,6 +1,6 @@
 import { AppBar, CssBaseline, Toolbar, Typography } from "@mui/material";
 import { Container } from "@mui/system";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./EmFilesPage.css";
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
@@ -20,9 +20,12 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import NavBar from "../../components/NavBar";
 
-
+const baseURL1 = 'http://127.0.0.1:8000/api/em_data_records';
+const baseURL2 = 'http://127.0.0.1:8000/api/delete_file';
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -42,6 +45,7 @@ function TablePaginationActions(props) {
   const handleLastPageButtonClick = (event) => {
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
+
 
   return (
     <Box sx={{ flexShrink: 0, ml: 2.5 }}>
@@ -88,23 +92,21 @@ function createData(name, calories, fat) {
   return { name, calories, fat };
 }
 
-const rows = [
-  createData('Cupcake', 305, 3.7),
-  createData('Donut', 452, 25.0),
-  createData('Eclair', 262, 16.0),
-  createData('Frozen yoghurt', 159, 6.0),
-  createData('Gingerbread', 356, 16.0),
-  createData('Honeycomb', 408, 3.2),
-  createData('Ice cream sandwich', 237, 9.0),
-  createData('Jelly Bean', 375, 0.0),
-  createData('KitKat', 518, 26.0),
-  createData('Lollipop', 392, 0.2),
-  createData('Marshmallow', 318, 0),
-  createData('Nougat', 360, 19.0),
-  createData('Oreo', 437, 18.0),
-].sort((a, b) => (a.calories < b.calories ? -1 : 1));
 
 function EmFilesPage() {
+  const [data, setData] = useState([]);
+
+
+  useEffect(() => {
+    fetch(baseURL1)
+      .then((res) => res.json())
+      .then((res) => setData(res))
+      // .then(res => console.log(res.data.emDataRecords))
+      .catch(res => console.log(res));
+  }, []);
+
+
+
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -113,7 +115,7 @@ function EmFilesPage() {
   };
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -123,54 +125,87 @@ function EmFilesPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  function deleteRecord(id) {
+    console.log(id);
+    axios.post(baseURL2, {
+      file_id: id,
+    })
+      .then((response) => {
+        console.log(response.status);
+        if (response.status == 200) {
+          alert('File is successfully deleted.');
+          window.location.reload();
+        } else {
+          alert('Error occurs when file deleting.');
+          window.location.reload();
+        }
+
+      });
+  };
+  const customStyles = {
+    backgroundColor: '#525252',
+    color: 'white',
+  };
   return (
     <>
       <CssBaseline />
-      <AppBar possition="relative">
-        <Toolbar>
-          <Typography variant="h6">
-            EMvidance
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <NavBar />
       <main>
-        <div className="maindiv" style={{ marginTop: '55px' }}>
+
+        <div className="maindiv" style={{ marginTop: '80px' }}>
           <Container  >
-            <Typography variant="h2" color="textPrimary" align="center" gutterBottom>
+            <Typography variant="h2" color="textPrimary" align="center"  gutterBottom>
               File Manage
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Button variant="contained" onClick={navigateToUploadForm}>
+              <Button variant="contained" onClick={navigateToUploadForm} style={customStyles}>
                 upload
               </Button>
             </Stack>
-            <TableContainer component={Paper} style={{marginTop:'10px'}}>
+            <TableContainer component={Paper} style={{ marginTop: '10px' }}>
               <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                 <TableBody>
                   <TableRow>
                     <TableCell component="th" scope="row">
-                      File ID
+                      File Name
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      Name
+                      Size
                     </TableCell>
                     <TableCell component="th" scope="row">
+                      Created Date
+                    </TableCell>
+                    <TableCell>
                       Action
                     </TableCell>
                   </TableRow>
                   {(rowsPerPage > 0
-                    ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    : rows
-                  ).map((row) => (
-                    <TableRow key={row.name}>
+                    ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    : data
+                  ).map((data) => (
+                    <TableRow key={data.file_id}>
                       <TableCell component="th" scope="row">
-                        {row.name}
+                        {data.file_name}
                       </TableCell>
                       <TableCell >
-                        {row.calories}
+                        {data.file_size}
                       </TableCell>
                       <TableCell >
-                        {row.fat}
+                        {data.created_time}
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outlined" color="error" onClick={() => {
+                          const confirmBox = window.confirm(
+                            "Do you really want to delete this file?"
+                          )
+                          if (confirmBox === true) {
+                            deleteRecord(data.file_id)
+                          }
+
+                        }}>
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -185,7 +220,7 @@ function EmFilesPage() {
                     <TablePagination
                       rowsPerPageOptions={[10]}
                       colSpan={3}
-                      count={rows.length}
+                      count={data.length}
                       rowsPerPage={rowsPerPage}
                       page={page}
                       SelectProps={{
