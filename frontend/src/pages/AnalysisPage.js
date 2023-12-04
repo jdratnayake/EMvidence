@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState([]);
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
   const buttonColor = "#525252";
@@ -53,7 +54,7 @@ const AnalysisPage = () => {
       .catch((error) => {
         console.error("Error fetching users:", error);
 
-        toast.error("Pre-Processing Failed", {
+        toast.error("Preprocessing Failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -79,7 +80,14 @@ const AnalysisPage = () => {
     axios
       .get(API_URL + "/plugin/analysis", { headers })
       .then((response) => {
-        console.log(response.data["output"]);
+        const analysisResultObjects = Object.entries(
+          response.data["output"]
+        ).map(([key, value]) => ({
+          action: key,
+          probability: value,
+        }));
+
+        console.log(analysisResultObjects);
 
         toast.success("Analysis Done Successfully", {
           position: "top-right",
@@ -91,6 +99,8 @@ const AnalysisPage = () => {
           progress: undefined,
         });
 
+        // setAnalysisResults(response.data["output"]);
+        setAnalysisResults(analysisResultObjects);
         setIsAnalysisFetching(false);
       })
       .catch((error) => {
@@ -418,7 +428,7 @@ const AnalysisPage = () => {
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
               >
-                Select Dave
+                Preprocess
               </Button>
             </FormControl>
           </Box>
@@ -588,7 +598,16 @@ const AnalysisPage = () => {
                 <strong>Identified Behavior:</strong> Asking a definition
               </Typography>
 
-              <Typography variant="body1">
+              {analysisResults.map((result, index) => (
+                <Typography key={index} variant="body1">
+                  <strong style={{ display: "inline-block", width: "200px" }}>
+                    {result.action}:
+                  </strong>{" "}
+                  <span>{result.probability}%</span>
+                </Typography>
+              ))}
+
+              {/* <Typography variant="body1">
                 <strong style={{ display: "inline-block", width: "200px" }}>
                   Class 1 accuracy:
                 </strong>{" "}
@@ -605,7 +624,7 @@ const AnalysisPage = () => {
                   Class 3:
                 </strong>{" "}
                 <span>92.34%</span>
-              </Typography>
+              </Typography> */}
             </Box>
           </Box>
         </Box>
