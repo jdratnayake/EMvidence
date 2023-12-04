@@ -21,6 +21,12 @@ import "react-toastify/dist/ReactToastify.css";
 const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState([]);
+  const [analysisPlugin, setAnalysisPlugin] = useState(1);
+
+  const blackHeader = "#000000";
+  const containerColor = "#1614140D";
+  const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
     setIsPreprocessingFetching(true);
@@ -50,7 +56,7 @@ const AnalysisPage = () => {
       .catch((error) => {
         console.error("Error fetching users:", error);
 
-        toast.error("Pre-Processing Failed", {
+        toast.error("Preprocessing Failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -62,21 +68,42 @@ const AnalysisPage = () => {
       });
   };
 
+  const handleAnalysisPLuginChange = (event) => {
+    // console.log(analysisPlugin);
+    setAnalysisPlugin(event.target.value);
+  };
+
   const executeAnalysisPlugin = () => {
+    let analysisPluginMachineLearningModelName = "";
+
+    if (analysisPlugin == 1) {
+      analysisPluginMachineLearningModelName =
+        "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
+    } else {
+      analysisPluginMachineLearningModelName =
+        "apple_iphone_4s__detect_anomalies__neural_network_model.h5";
+    }
+
     setIsAnalysisFetching(true);
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
       analysis_plugin_name:
         "apple_iphone_4s__detect_behaviour_of_10_classes.py",
-      analysis_plugin_ml_model_name:
-        "apple_iphone_4s__detect_behaviour_of_10_classes__neural_network_model.h5",
+      analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
     };
 
     axios
       .get(API_URL + "/plugin/analysis", { headers })
       .then((response) => {
-        console.log(response.data["output"]);
+        const analysisResultObjects = Object.entries(
+          response.data["output"]
+        ).map(([key, value]) => ({
+          action: key,
+          probability: value,
+        }));
+
+        console.log(analysisResultObjects);
 
         toast.success("Analysis Done Successfully", {
           position: "top-right",
@@ -88,6 +115,8 @@ const AnalysisPage = () => {
           progress: undefined,
         });
 
+        // setAnalysisResults(response.data["output"]);
+        setAnalysisResults(analysisResultObjects);
         setIsAnalysisFetching(false);
       })
       .catch((error) => {
@@ -124,7 +153,7 @@ const AnalysisPage = () => {
         <Box class="file_selection">
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -158,7 +187,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -171,6 +200,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
+                backgroundColor: "#DED4D4",
               }}
             >
               {/* Left Section */}
@@ -201,7 +231,7 @@ const AnalysisPage = () => {
                   top: 0,
                   bottom: 0,
                   width: "2px",
-                  backgroundColor: "#000000",
+                  backgroundColor: blackHeader,
                   content: "''",
                   marginTop: "10px",
                   marginBottom: "10px",
@@ -236,16 +266,24 @@ const AnalysisPage = () => {
               </Box>
             </Box>
             <Button
-              sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+              sx={{
+                mb: "10px",
+                marginLeft: "80%",
+                marginRight: "10%",
+                backgroundColor: "#525252",
+                color: "#ffffff",
+                "&:hover": {
+                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                },
+              }}
               variant="contained"
-              color="success"
             >
               Select
             </Button>
           </Box>
         </Box>
         <Box class="pre_processing" sx={{ mt: "40px" }}>
-          <Box sx={{ bgcolor: "#000000", height: "10vh", margin: "0" }}>
+          <Box sx={{ bgcolor: blackHeader, height: "10vh", margin: "0" }}>
             <Typography
               variant="h4"
               sx={{
@@ -266,13 +304,42 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
             }}
           >
             <FormControl>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  mt: "20px",
+                  mb: "20px",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Down Sampling:
+                </Typography>
+                <NativeSelect
+                  defaultValue={1}
+                  inputProps={{
+                    name: "domain-conversion",
+                    id: "uncontrollerd-native",
+                  }}
+                  sx={{ mt: "-10px" }}
+                >
+                  <option value={1}>To 10MHz</option>
+                  <option value={2}>To 8MHz</option>
+                  <option value={3}>To 4MHz</option>
+                </NativeSelect>
+              </Box>
               <Box
                 sx={{
                   display: "flex",
@@ -300,35 +367,6 @@ const AnalysisPage = () => {
                   <option value={1}>
                     STFT (FFT_SIZE = 2048 & Overlap Size = 256)
                   </option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
-                </NativeSelect>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Down Sampling:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                >
-                  <option value={1}>To 10MHz</option>
                   <option value={2}>Option 2</option>
                   <option value={3}>Option 3</option>
                 </NativeSelect>
@@ -392,13 +430,21 @@ const AnalysisPage = () => {
                 </NativeSelect>
               </Box>
               <Button
-                sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+                sx={{
+                  mb: "10px",
+                  marginLeft: "80%",
+                  marginRight: "10%",
+                  backgroundColor: "#525252",
+                  color: "#ffffff",
+                  "&:hover": {
+                    backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                  },
+                }}
                 variant="contained"
-                color="success"
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
               >
-                Select Dave
+                Preprocess
               </Button>
             </FormControl>
           </Box>
@@ -407,7 +453,7 @@ const AnalysisPage = () => {
         <Box class="analysis" sx={{ mt: "40px" }}>
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -431,23 +477,23 @@ const AnalysisPage = () => {
             >
               Analysis Plugins
             </Typography>
-            <IconButton
+            {/* <IconButton
               sx={{ mt: "-10px" }}
               aria-label="add-plugin"
               color="success"
             >
               <ControlPointIcon />
-            </IconButton>
+            </IconButton> */}
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
             }}
           >
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 mt: "30px",
@@ -455,18 +501,59 @@ const AnalysisPage = () => {
                 justifyContent: "flex-start",
                 mb: "30px",
               }}
-            >
-              <Chip
+            > */}
+            {/* <Chip
                 label="Random Forest Algorithm"
                 onDelete
                 sx={{ mr: "20px" }}
               />
-              <Chip label="K-Means Clustering" onDelete />
+              <Chip label="K-Means Clustering" onDelete /> */}
+            {/* </Box> */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-start",
+                mt: "20px",
+                mb: "20px",
+              }}
+            >
+              <Typography
+                variant="body1"
+                display="block"
+                sx={{ ml: "20px", mr: "20px" }}
+                gutterBottom
+              >
+                Analysis plugin:
+              </Typography>
+              <NativeSelect
+                defaultValue={1}
+                inputProps={{
+                  name: "domain-conversion",
+                  id: "uncontrollerd-native",
+                }}
+                sx={{ mt: "-10px" }}
+                value={analysisPlugin}
+                onChange={handleAnalysisPLuginChange}
+              >
+                <option value={1}>Behavior identification</option>
+                <option value={2}>
+                  Malicious firmware modification detection
+                </option>
+                <option value={3}>Firmware version detection</option>
+              </NativeSelect>
             </Box>
             <Button
-              sx={{ mb: "10px", ml: "80%", mr: "3%" }}
+              sx={{
+                mb: "10px",
+                marginLeft: "80%",
+                marginRight: "10%",
+                backgroundColor: "#525252",
+                color: "#ffffff",
+                "&:hover": {
+                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                },
+              }}
               variant="contained"
-              color="success"
               disabled={isAnalysisFetching}
               onClick={executeAnalysisPlugin}
             >
@@ -478,7 +565,7 @@ const AnalysisPage = () => {
         <Box class="analysis_summary" sx={{ mt: "40px" }}>
           <Box
             sx={{
-              bgcolor: "#000000",
+              bgcolor: blackHeader,
               height: "10vh",
               margin: "0",
               display: "flex",
@@ -505,7 +592,7 @@ const AnalysisPage = () => {
           </Box>
           <Box
             sx={{
-              bgcolor: "#DED4D4",
+              bgcolor: containerColor,
               margin: "0",
               display: "flex",
               flexDirection: "column",
@@ -531,9 +618,33 @@ const AnalysisPage = () => {
                 <strong>Identified Behavior:</strong> Asking a definition
               </Typography>
 
-              <Typography variant="body1">
-                <strong>Accuracy of the Module:</strong> 92.34%
+              {analysisResults.map((result, index) => (
+                <Typography key={index} variant="body1">
+                  <strong style={{ display: "inline-block", width: "200px" }}>
+                    {result.action}:
+                  </strong>{" "}
+                  <span>{result.probability}%</span>
+                </Typography>
+              ))}
+
+              {/* <Typography variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 1 accuracy:
+                </strong>{" "}
+                <span>92.34%</span>
               </Typography>
+              <Typography variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 2 accuracy:
+                </strong>{" "}
+                <span>92.34%</span>
+              </Typography>
+              <Typography variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  Class 3:
+                </strong>{" "}
+                <span>92.34%</span>
+              </Typography> */}
             </Box>
           </Box>
         </Box>
