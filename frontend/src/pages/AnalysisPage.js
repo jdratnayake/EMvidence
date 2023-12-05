@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import NavBar from "../components/NavBar";
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
   Button,
@@ -23,6 +24,8 @@ const AnalysisPage = () => {
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
+  const [loading, setLoading] = React.useState(false);
+  const [loadingAnalyse,setLoadingAnalyse] = React.useState(false);
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
@@ -30,6 +33,8 @@ const AnalysisPage = () => {
 
   const executePreprocessingPlugin = () => {
     setIsPreprocessingFetching(true);
+    setLoading(true);
+
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
@@ -52,6 +57,7 @@ const AnalysisPage = () => {
         });
 
         setIsPreprocessingFetching(false);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -65,6 +71,9 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoading(false);
+        setIsPreprocessingFetching(false);
+        
       });
   };
 
@@ -74,6 +83,7 @@ const AnalysisPage = () => {
   };
 
   const executeAnalysisPlugin = () => {
+    setLoadingAnalyse(true);
     let analysisPluginMachineLearningModelName = "";
 
     if (analysisPlugin == 1) {
@@ -118,6 +128,7 @@ const AnalysisPage = () => {
         // setAnalysisResults(response.data["output"]);
         setAnalysisResults(analysisResultObjects);
         setIsAnalysisFetching(false);
+        setLoadingAnalyse(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -131,6 +142,8 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoadingAnalyse(false);
+        setIsAnalysisFetching(false);
       });
   };
 
@@ -430,7 +443,7 @@ const AnalysisPage = () => {
                   <option value={3}>Samples selected from 1/4 to 3/4 of the file</option>
                 </NativeSelect>
               </Box>
-              <Button
+              <LoadingButton
                 sx={{
                   mb: "10px",
                   marginLeft: "80%",
@@ -444,9 +457,10 @@ const AnalysisPage = () => {
                 variant="contained"
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
+                loading={loading}
               >
                 Preprocess
-              </Button>
+              </LoadingButton>
             </FormControl>
           </Box>
         </Box>
@@ -543,7 +557,7 @@ const AnalysisPage = () => {
                 <option value={3}>Firmware version detection</option>
               </NativeSelect>
             </Box>
-            <Button
+            <LoadingButton
               sx={{
                 mb: "10px",
                 marginLeft: "80%",
@@ -557,9 +571,10 @@ const AnalysisPage = () => {
               variant="contained"
               disabled={isAnalysisFetching}
               onClick={executeAnalysisPlugin}
+              loading={loadingAnalyse}
             >
               Analyze
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
 
