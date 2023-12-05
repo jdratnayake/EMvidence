@@ -48,3 +48,4 @@ yarn-error.log*
 # folder
 em_preprocessed
 em_raw
+*.lock
