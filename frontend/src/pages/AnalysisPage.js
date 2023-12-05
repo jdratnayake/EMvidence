@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import NavBar from "../components/NavBar";
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
@@ -25,7 +25,7 @@ const AnalysisPage = () => {
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
   const [loading, setLoading] = React.useState(false);
-  const [loadingAnalyse,setLoadingAnalyse] = React.useState(false);
+  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
@@ -73,7 +73,6 @@ const AnalysisPage = () => {
         });
         setLoading(false);
         setIsPreprocessingFetching(false);
-        
       });
   };
 
@@ -213,7 +212,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
-                backgroundColor: "#DED4D4",
+                backgroundColor: "#b4bdbf",
               }}
             >
               {/* Left Section */}
@@ -229,7 +228,7 @@ const AnalysisPage = () => {
                     width: "133px",
                     height: "20vh",
                     flexShrink: 0,
-                    background: `url(${folder}), #DED4D4 100% / cover no-repeat`,
+                    background: `url(${folder}), #b4bdbf 100% / cover no-repeat`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -387,39 +386,7 @@ const AnalysisPage = () => {
                   <option value={3}>FFT </option>
                 </NativeSelect>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Frequency Channel Selection:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                >
-                  <option value={1}>All Channels</option>
-                  <option value={2}>
-                    Channel selection based on avarage (500 samples)
-                  </option>
-                  <option value={3}>
-                    Channel selection based on variance (500 samples)
-                  </option>
-                </NativeSelect>
-              </Box>
+
               <Box
                 sx={{
                   display: "flex",
@@ -450,6 +417,39 @@ const AnalysisPage = () => {
                   </option>
                   <option value={3}>
                     Samples selected from 1/4 to 3/4 of the file
+                  </option>
+                </NativeSelect>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  mt: "20px",
+                  mb: "20px",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Frequency Channel Selection:
+                </Typography>
+                <NativeSelect
+                  defaultValue={1}
+                  inputProps={{
+                    name: "domain-conversion",
+                    id: "uncontrollerd-native",
+                  }}
+                  sx={{ mt: "-10px" }}
+                >
+                  <option value={1}>All Channels</option>
+                  <option value={2}>
+                    Channel selection based on avarage (500 samples)
+                  </option>
+                  <option value={3}>
+                    Channel selection based on variance (500 samples)
                   </option>
                 </NativeSelect>
               </Box>
