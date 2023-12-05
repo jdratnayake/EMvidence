@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../components/NavBar";
 
+
 const baseURL1 = 'http://127.0.0.1:8000/api/em_data_records';
 const baseURL2 = 'http://127.0.0.1:8000/api/delete_file';
 function TablePaginationActions(props) {
@@ -147,15 +148,24 @@ function EmFilesPage() {
     backgroundColor: '#525252',
     color: 'white',
   };
+  function bytesToSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+    if (bytes === 0) return '0 Byte';
+
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+
+    return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + ' ' + sizes[i];
+  }
   return (
     <>
       <CssBaseline />
       <NavBar />
       <main>
 
-        <div className="maindiv" style={{ marginTop: '80px' }}>
+        <div className="maindiv" style={{ marginTop: '20px' }}>
           <Container  >
-            <Typography variant="h2" color="textPrimary" align="center"  gutterBottom>
+            <Typography variant="h2" color="textPrimary" align="center" gutterBottom>
               File Manage
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -167,17 +177,28 @@ function EmFilesPage() {
               <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                 <TableBody>
                   <TableRow>
-                    <TableCell component="th" scope="row">
-                      File Name
+                    <TableCell component="th" scope="row" >
+                      <Typography variant="h6" color="textPrimary" >
+                        File Name
+                      </Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      Size
+                      <Typography variant="h6" color="textPrimary" >
+                        Size
+                      </Typography>
+
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      Created Date
+                      <Typography variant="h6" color="textPrimary" >
+                        Created Date
+                      </Typography>
+
                     </TableCell>
                     <TableCell>
-                      Action
+                      <Typography variant="h6" color="textPrimary" >
+                        Action
+                      </Typography>
+
                     </TableCell>
                   </TableRow>
                   {(rowsPerPage > 0
@@ -189,7 +210,7 @@ function EmFilesPage() {
                         {data.file_name}
                       </TableCell>
                       <TableCell >
-                        {data.file_size}
+                        {bytesToSize(data.file_size)}
                       </TableCell>
                       <TableCell >
                         {data.created_time}

@@ -128,7 +128,7 @@ class FileManageController extends Controller
             ->update([
                 'file_name' => $name,
                 'file_size' => $size,
-                'created_time' => Carbon::create(now())->format("Y-m-d H:i:s"),
+                'created_time' => Carbon::create(now('Asia/Colombo'))->format("Y-m-d H:i:s"),
             ]);
 
         if ($query) {
