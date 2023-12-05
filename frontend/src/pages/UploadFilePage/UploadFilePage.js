@@ -21,6 +21,9 @@ import Resumable from 'resumablejs';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../components/NavBar";
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Stack from '@mui/material/Stack';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 10,
@@ -67,7 +70,7 @@ function UploadFilePage() {
     const [progress, setProgress] = useState(0);
     const [isSuccess, setIsSuccess] = useState(0);
     const [percentage, setPercentage] = useState(0);
-    const [isSendToDatabase, setIsSendToDatabase] = useState(0);
+    const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
     // State to manage the selected value of the dropdown
     const [selectedValue1, setSelectedValue1] = useState('');
@@ -197,8 +200,11 @@ function UploadFilePage() {
                 .then((response) => {
                     console.log(response.status);
                     if (response.status == 200) {
-                        alert('File successfully uploaded.')
-                        navigate('/file_manage')
+                        setIsSendToDatabase(true);
+                        setTimeout(() => {
+                            navigate('/file_manage')
+
+                        }, 1000);
 
                     } else {
                         alert('Error')
@@ -278,7 +284,7 @@ function UploadFilePage() {
                                                 }
                                             }
                                         }}
-                                
+
                                     >
                                         <MenuItem value="Arduino">Arduino</MenuItem>
                                         <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
@@ -357,12 +363,35 @@ function UploadFilePage() {
 
                     </Container>
                 )}
-                {isSubmitted && (
+                {isSubmitted && !isSendToDatabase && (
+
                     <Container maxWidth="sm" id="showProgress">
-                        <Box sx={{ width: '100%' }}>
+                        <Stack spacing={2} direction="row" justifyContent="center" alignItems="center" >
+                            <Typography variant="h3" color="textPrimary" align="center" >
+                                Uploading
+                            </Typography>
+                            <div className="bouncing-loader" style={{ marginTop: "40px" }}>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </Stack>
+
+                        <Box sx={{ width: '100%', marginTop: "15px" }}>
                             <LinearProgressWithLabel value={progress} />
                         </Box>
+
                     </Container>
+                )}
+                {isSendToDatabase && (
+                    <Container maxWidth="sm" id="showSuccess">
+
+                        <Alert >
+                            <AlertTitle>File successfully uploaded</AlertTitle>
+                        </Alert>
+
+                    </Container>
+
                 )}
             </div>
 
