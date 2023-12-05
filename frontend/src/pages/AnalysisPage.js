@@ -335,9 +335,10 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                 >
-                  <option value={1}>To 10MHz</option>
-                  <option value={2}>To 8MHz</option>
-                  <option value={3}>To 4MHz</option>
+                  <option value={1}>Not downsampled</option>
+                  <option value={2}>To 10MHz</option>
+                  <option value={3}>To 8MHz</option>
+                  <option value={4}>To 4MHz</option>
                 </NativeSelect>
               </Box>
               <Box
@@ -367,8 +368,8 @@ const AnalysisPage = () => {
                   <option value={1}>
                     STFT (FFT_SIZE = 2048 & Overlap Size = 256)
                   </option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={2}>STFT (FFT_SIZE = 20000 & Overlap Size = 256)</option>
+                  <option value={3}>FFT </option>
                 </NativeSelect>
               </Box>
               <Box
@@ -396,8 +397,8 @@ const AnalysisPage = () => {
                   sx={{ mt: "-10px" }}
                 >
                   <option value={1}>All Channels</option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={2}>Channel selection based on avarage (500 samples)</option>
+                  <option value={3}>Channel selection based on variance (500 samples)</option>
                 </NativeSelect>
               </Box>
               <Box
@@ -425,8 +426,8 @@ const AnalysisPage = () => {
                   sx={{ mt: "-10px" }}
                 >
                   <option value={1}>First 20000 Samples</option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={2}>Anomaly reduction (10000 samples selected)</option>
+                  <option value={3}>Samples selected from 1/4 to 3/4 of the file</option>
                 </NativeSelect>
               </Box>
               <Button
@@ -608,7 +609,7 @@ const AnalysisPage = () => {
                 paddingLeft: "10px",
               }}
             >
-              <Typography variant="h5">ML: Random Forest Summary</Typography>
+              <Typography variant="h5">Analysis Summary 1</Typography>
 
               <Typography variant="body1">
                 <strong>Insight Type:</strong> Behavior Identification
