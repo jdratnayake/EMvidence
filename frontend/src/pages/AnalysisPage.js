@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import NavBar from "../components/NavBar";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
@@ -23,6 +24,8 @@ const AnalysisPage = () => {
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
+  const [loading, setLoading] = React.useState(false);
+  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
@@ -30,6 +33,8 @@ const AnalysisPage = () => {
 
   const executePreprocessingPlugin = () => {
     setIsPreprocessingFetching(true);
+    setLoading(true);
+
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
@@ -52,6 +57,7 @@ const AnalysisPage = () => {
         });
 
         setIsPreprocessingFetching(false);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -65,6 +71,8 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoading(false);
+        setIsPreprocessingFetching(false);
       });
   };
 
@@ -74,6 +82,7 @@ const AnalysisPage = () => {
   };
 
   const executeAnalysisPlugin = () => {
+    setLoadingAnalyse(true);
     let analysisPluginMachineLearningModelName = "";
 
     if (analysisPlugin == 1) {
@@ -118,6 +127,7 @@ const AnalysisPage = () => {
         // setAnalysisResults(response.data["output"]);
         setAnalysisResults(analysisResultObjects);
         setIsAnalysisFetching(false);
+        setLoadingAnalyse(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -131,6 +141,8 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoadingAnalyse(false);
+        setIsAnalysisFetching(false);
       });
   };
 
@@ -200,7 +212,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
-                backgroundColor: "#DED4D4",
+                backgroundColor: "#b4bdbf",
               }}
             >
               {/* Left Section */}
@@ -216,7 +228,7 @@ const AnalysisPage = () => {
                     width: "133px",
                     height: "20vh",
                     flexShrink: 0,
-                    background: `url(${folder}), #DED4D4 100% / cover no-repeat`,
+                    background: `url(${folder}), #b4bdbf 100% / cover no-repeat`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -374,39 +386,7 @@ const AnalysisPage = () => {
                   <option value={3}>FFT </option>
                 </NativeSelect>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Frequency Channel Selection:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                >
-                  <option value={1}>All Channels</option>
-                  <option value={2}>
-                    Channel selection based on avarage (500 samples)
-                  </option>
-                  <option value={3}>
-                    Channel selection based on variance (500 samples)
-                  </option>
-                </NativeSelect>
-              </Box>
+
               <Box
                 sx={{
                   display: "flex",
@@ -440,7 +420,40 @@ const AnalysisPage = () => {
                   </option>
                 </NativeSelect>
               </Box>
-              <Button
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  mt: "20px",
+                  mb: "20px",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Frequency Channel Selection:
+                </Typography>
+                <NativeSelect
+                  defaultValue={1}
+                  inputProps={{
+                    name: "domain-conversion",
+                    id: "uncontrollerd-native",
+                  }}
+                  sx={{ mt: "-10px" }}
+                >
+                  <option value={1}>All Channels</option>
+                  <option value={2}>
+                    Channel selection based on avarage (500 samples)
+                  </option>
+                  <option value={3}>
+                    Channel selection based on variance (500 samples)
+                  </option>
+                </NativeSelect>
+              </Box>
+              <LoadingButton
                 sx={{
                   mb: "10px",
                   marginLeft: "80%",
@@ -454,9 +467,10 @@ const AnalysisPage = () => {
                 variant="contained"
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
+                loading={loading}
               >
                 Preprocess
-              </Button>
+              </LoadingButton>
             </FormControl>
           </Box>
         </Box>
@@ -553,7 +567,7 @@ const AnalysisPage = () => {
                 <option value={3}>Firmware version detection</option>
               </NativeSelect>
             </Box>
-            <Button
+            <LoadingButton
               sx={{
                 mb: "10px",
                 marginLeft: "80%",
@@ -567,9 +581,10 @@ const AnalysisPage = () => {
               variant="contained"
               disabled={isAnalysisFetching}
               onClick={executeAnalysisPlugin}
+              loading={loadingAnalyse}
             >
               Analyze
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
 
