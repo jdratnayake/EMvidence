@@ -8,9 +8,9 @@ import {
 import HomePage from "./pages/HomePage/HomePage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
-import AnalysisPage from "./pages/AnalysisPage";
+import AnalysisPage from "./pages/AnalysisPage/AnalysisPage";
 import EmFilesPage from "./pages/EmFilesPage/EmFilesPage";
-import UploadFilePage from "./pages/UploadFilePage/UploadFilePage"
+import UploadFilePage from "./pages/UploadFilePage/UploadFilePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
