@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import NavBar from "../components/NavBar";
+import NavBar from "../../components/NavBar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
@@ -14,10 +14,11 @@ import {
   NativeSelect,
   Typography,
 } from "@mui/material";
-import folder from "./../Resources/folder.png";
+import folder from "./../../Resources/folder.png";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { API_URL } from "../constants";
+import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
+import "./AnalysisPage.css";
 
 const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
@@ -26,13 +27,16 @@ const AnalysisPage = () => {
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
   const [loading, setLoading] = React.useState(false);
   const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
+  const [insightTypeName, setInsightTypeName] = useState(
+    "Behavior identification"
+  );
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
   const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
-    setIsPreprocessingFetching(true);
+    // setIsPreprocessingFetching(true);
     setLoading(true);
 
     const headers = {
@@ -72,13 +76,19 @@ const AnalysisPage = () => {
           progress: undefined,
         });
         setLoading(false);
-        setIsPreprocessingFetching(false);
+        // setIsPreprocessingFetching(false);
       });
   };
 
   const handleAnalysisPLuginChange = (event) => {
     // console.log(analysisPlugin);
     setAnalysisPlugin(event.target.value);
+
+    if (event.target.value == 1) {
+      setInsightTypeName("Behavior identification");
+    } else if (event.target.value == 2) {
+      setInsightTypeName("Malicious firmware modification detection");
+    }
   };
 
   const executeAnalysisPlugin = () => {
@@ -639,12 +649,12 @@ const AnalysisPage = () => {
               </Typography>
 
               <Typography variant="body1">
-                <strong>Insight Type:</strong> Behavior Identification
+                <strong>Insight Type:</strong> {insightTypeName}
               </Typography>
 
-              <Typography variant="body1">
+              {/* <Typography variant="body1">
                 <strong>Identified Behavior:</strong> Asking a definition
-              </Typography>
+              </Typography> */}
 
               {analysisResults.map((result, index) => (
                 <Typography key={index} variant="body1">
