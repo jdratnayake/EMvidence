@@ -18,6 +18,7 @@ yarn-error.log
 backend/.fleet
 backend/.idea
 backend/.vscode
+package-lock.json
 
 # Frontend Stuffs
 # dependencies
