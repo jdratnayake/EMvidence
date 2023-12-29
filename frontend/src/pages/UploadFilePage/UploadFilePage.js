@@ -22,40 +22,65 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import pako from 'pako';
+import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
+import { OutlinedInput } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Input,
+} from "@mui/material";
+import PropTypes from "prop-types";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
+import Resumable from "resumablejs";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import NavBar from "../../components/NavBar";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Stack from "@mui/material/Stack";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 10,
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor:
+      theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-        backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-        borderRadius: 5,
-        backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
-    },
+    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+  },
 }));
 
 function LinearProgressWithLabel(props) {
-    return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ width: '100%', mr: 1 }}>
-                <BorderLinearProgress variant="determinate" {...props} />
-            </Box>
-            <Box sx={{ minWidth: 35 }}>
-                <Typography variant="body2" color="text.secondary">{`${Math.round(
-                    props.value,
-                )}%`}</Typography>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ width: "100%", mr: 1 }}>
+        <BorderLinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+          props.value
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
 }
 
 LinearProgressWithLabel.propTypes = {
-    /**
-     * The value of the progress indicator for the determinate and buffer variants.
-     * Value between 0 and 100.
-     */
-    value: PropTypes.number.isRequired,
+  /**
+   * The value of the progress indicator for the determinate and buffer variants.
+   * Value between 0 and 100.
+   */
+  value: PropTypes.number.isRequired,
 };
 
 function UploadFilePage() {
@@ -604,7 +629,7 @@ function UploadFilePage() {
 
         </>
     );
+
 }
 
 export default UploadFilePage;
-

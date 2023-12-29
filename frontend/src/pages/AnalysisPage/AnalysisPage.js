@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import NavBar from "../components/NavBar";
+import NavBar from "../../components/NavBar";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
@@ -13,23 +14,31 @@ import {
   NativeSelect,
   Typography,
 } from "@mui/material";
-import folder from "./../Resources/folder.png";
+import folder from "./../../Resources/folder.png";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { API_URL } from "../constants";
+import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
+import "./AnalysisPage.css";
 
 const AnalysisPage = () => {
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
+  const [loading, setLoading] = React.useState(false);
+  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
+  const [insightTypeName, setInsightTypeName] = useState(
+    "Behavior identification"
+  );
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
   const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
-    setIsPreprocessingFetching(true);
+    // setIsPreprocessingFetching(true);
+    setLoading(true);
+
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
@@ -52,6 +61,7 @@ const AnalysisPage = () => {
         });
 
         setIsPreprocessingFetching(false);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -65,15 +75,24 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoading(false);
+        // setIsPreprocessingFetching(false);
       });
   };
 
   const handleAnalysisPLuginChange = (event) => {
     // console.log(analysisPlugin);
     setAnalysisPlugin(event.target.value);
+
+    if (event.target.value == 1) {
+      setInsightTypeName("Behavior identification");
+    } else if (event.target.value == 2) {
+      setInsightTypeName("Malicious firmware modification detection");
+    }
   };
 
   const executeAnalysisPlugin = () => {
+    setLoadingAnalyse(true);
     let analysisPluginMachineLearningModelName = "";
 
     if (analysisPlugin == 1) {
@@ -118,6 +137,7 @@ const AnalysisPage = () => {
         // setAnalysisResults(response.data["output"]);
         setAnalysisResults(analysisResultObjects);
         setIsAnalysisFetching(false);
+        setLoadingAnalyse(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -131,6 +151,8 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
+        setLoadingAnalyse(false);
+        setIsAnalysisFetching(false);
       });
   };
 
@@ -200,7 +222,7 @@ const AnalysisPage = () => {
                 border: "2px solid #000000",
                 width: "60%",
                 marginTop: "10px",
-                backgroundColor: "#DED4D4",
+                backgroundColor: "#b4bdbf",
               }}
             >
               {/* Left Section */}
@@ -216,7 +238,7 @@ const AnalysisPage = () => {
                     width: "133px",
                     height: "20vh",
                     flexShrink: 0,
-                    background: `url(${folder}), #DED4D4 100% / cover no-repeat`,
+                    background: `url(${folder}), #b4bdbf 100% / cover no-repeat`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -261,7 +283,7 @@ const AnalysisPage = () => {
                   <strong>Hash Function:</strong> SHA256
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>IoT Device:</strong> Amazon Alexa
+                  <strong>Device Name:</strong> iPhone 4S
                 </Typography>
               </Box>
             </Box>
@@ -335,9 +357,10 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                 >
-                  <option value={1}>To 10MHz</option>
-                  <option value={2}>To 8MHz</option>
-                  <option value={3}>To 4MHz</option>
+                  <option value={1}>Not downsampled</option>
+                  <option value={2}>To 10MHz</option>
+                  <option value={3}>To 8MHz</option>
+                  <option value={4}>To 4MHz</option>
                 </NativeSelect>
               </Box>
               <Box
@@ -367,8 +390,44 @@ const AnalysisPage = () => {
                   <option value={1}>
                     STFT (FFT_SIZE = 2048 & Overlap Size = 256)
                   </option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={2}>
+                    STFT (FFT_SIZE = 20000 & Overlap Size = 256)
+                  </option>
+                  <option value={3}>FFT </option>
+                </NativeSelect>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  mt: "20px",
+                  mb: "20px",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Sample Selection:
+                </Typography>
+                <NativeSelect
+                  defaultValue={1}
+                  inputProps={{
+                    name: "domain-conversion",
+                    id: "uncontrollerd-native",
+                  }}
+                  sx={{ mt: "-10px" }}
+                >
+                  <option value={1}>First 20000 Samples</option>
+                  <option value={2}>
+                    Anomaly reduction (10000 samples selected)
+                  </option>
+                  <option value={3}>
+                    Samples selected from 1/4 to 3/4 of the file
+                  </option>
                 </NativeSelect>
               </Box>
               <Box
@@ -396,40 +455,15 @@ const AnalysisPage = () => {
                   sx={{ mt: "-10px" }}
                 >
                   <option value={1}>All Channels</option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
+                  <option value={2}>
+                    Channel selection based on avarage (500 samples)
+                  </option>
+                  <option value={3}>
+                    Channel selection based on variance (500 samples)
+                  </option>
                 </NativeSelect>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Sample Selection:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                >
-                  <option value={1}>First 20000 Samples</option>
-                  <option value={2}>Option 2</option>
-                  <option value={3}>Option 3</option>
-                </NativeSelect>
-              </Box>
-              <Button
+              <LoadingButton
                 sx={{
                   mb: "10px",
                   marginLeft: "80%",
@@ -443,9 +477,10 @@ const AnalysisPage = () => {
                 variant="contained"
                 disabled={isPreprocessingFetching}
                 onClick={executePreprocessingPlugin}
+                loading={loading}
               >
                 Preprocess
-              </Button>
+              </LoadingButton>
             </FormControl>
           </Box>
         </Box>
@@ -542,7 +577,7 @@ const AnalysisPage = () => {
                 <option value={3}>Firmware version detection</option>
               </NativeSelect>
             </Box>
-            <Button
+            <LoadingButton
               sx={{
                 mb: "10px",
                 marginLeft: "80%",
@@ -556,9 +591,10 @@ const AnalysisPage = () => {
               variant="contained"
               disabled={isAnalysisFetching}
               onClick={executeAnalysisPlugin}
+              loading={loadingAnalyse}
             >
               Analyze
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
 
@@ -608,15 +644,17 @@ const AnalysisPage = () => {
                 paddingLeft: "10px",
               }}
             >
-              <Typography variant="h5">ML: Random Forest Summary</Typography>
-
-              <Typography variant="body1">
-                <strong>Insight Type:</strong> Behavior Identification
+              <Typography variant="h5" sx={{ mb: "30px" }}>
+                Analysis Summary 1
               </Typography>
 
               <Typography variant="body1">
+                <strong>Insight Type:</strong> {insightTypeName}
+              </Typography>
+
+              {/* <Typography variant="body1">
                 <strong>Identified Behavior:</strong> Asking a definition
-              </Typography>
+              </Typography> */}
 
               {analysisResults.map((result, index) => (
                 <Typography key={index} variant="body1">
