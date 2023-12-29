@@ -23,7 +23,10 @@ import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from "../../components/NavBar";
-
+import { Grid, Card, CardContent } from '@mui/material';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import Divider from '@mui/material/Divider';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const baseURL1 = 'http://127.0.0.1:8000/api/em_data_records';
 const baseURL2 = 'http://127.0.0.1:8000/api/delete_file';
@@ -157,6 +160,12 @@ function EmFilesPage() {
 
     return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + ' ' + sizes[i];
   }
+
+  const files = [
+    { id: 1, name: 'File 1', url: 'https://example.com/file1.pdf' },
+    { id: 2, name: 'File 2', url: 'https://example.com/file2.docx' },
+    // Add more files as needed
+  ];
   return (
     <>
       <CssBaseline />
@@ -173,11 +182,28 @@ function EmFilesPage() {
                 upload
               </Button>
             </Stack>
+            {/* <Grid container spacing={2} style={{ marginTop: '20px' }}>
+              {data.map((file) => (
+                <Grid item key={file.file_id} xs={10} sm={5} md={5} lg={5}>
+                  <Card>
+                    <CardContent>
+                      <InsertDriveFileIcon fontSize="large" color="primary"/>
+                      <Typography variant="h7" component="div">
+                        {file.file_name}
+                      </Typography>
+
+                      
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid> */}
             <TableContainer component={Paper} style={{ marginTop: '10px' }}>
               <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                 <TableBody>
                   <TableRow>
                     <TableCell component="th" scope="row" >
+
                       <Typography variant="h6" color="textPrimary" >
                         File Name
                       </Typography>
@@ -200,14 +226,27 @@ function EmFilesPage() {
                       </Typography>
 
                     </TableCell>
+                    <TableCell>
+                
+                    </TableCell>
                   </TableRow>
                   {(rowsPerPage > 0
                     ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     : data
                   ).map((data) => (
-                    <TableRow key={data.file_id}>
+                    <TableRow key={data.file_id} hover={true}>
+
                       <TableCell component="th" scope="row">
-                        {data.file_name}
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                        >
+
+                          <InsertDriveFileIcon fontSize="medium" color="primary" />
+                          <Typography variant="h7" >
+                            {data.file_name}
+                          </Typography>
+                        </Stack>
                       </TableCell>
                       <TableCell >
                         {bytesToSize(data.file_size)}
@@ -227,6 +266,11 @@ function EmFilesPage() {
                         }}>
                           Delete
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton aria-label="MoreVertIcon"  >
+                          <MoreVertIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}

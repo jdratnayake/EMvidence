@@ -19,7 +19,11 @@ return new class extends Migration
             $table->string('file_name');
             $table->dateTime('created_time');
             $table->bigInteger('file_size');
-            $table->foreign('upload_user_id')->references('user_id')->on('user');
+            $table->string('device_name');
+            $table->string('center_freq');
+            $table->string('sampling_rate');
+            $table->string('file_hash');
+            $table->foreign('upload_user_id')->references('user_id')->on('users');
         });
     }
 

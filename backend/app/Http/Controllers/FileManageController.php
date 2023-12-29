@@ -18,11 +18,8 @@ class FileManageController extends Controller
 {
     public function index()
     {
-        $emDataRecords = EmFileModel::where('upload_user_id',1)->get(['file_id', 'upload_user_id', 'file_name','created_time','file_size' ,'file_unique_name']);
+        $emDataRecords = EmFileModel::where('upload_user_id',1)->get(['file_id', 'upload_user_id', 'file_name','created_time','file_size' ,'file_unique_name','device_name', 'center_freq',  'sampling_rate']);
         return  $emDataRecords;
-        
-        //echo 'hello';
-
     }
 
     public function deleteFile(Request $request)
@@ -100,7 +97,11 @@ class FileManageController extends Controller
             'file_unique_name' => $fileName,
             'file_path' => $filePath .'/'. $fileName,
             'file_name' => 'test',
+            'device_name' => 'test',
+            'center_freq' => 'test',
+            'sampling_rate' => 'test',
             'file_size' => 100,
+            'file_hash' => 'test',
             'created_time' => Carbon::create(now())->format("Y-m-d H:i:s"),
 
         ]);
@@ -122,6 +123,11 @@ class FileManageController extends Controller
         $name = $request->input('name');
         $size = $request->input('size');
         $fileUniqueName = $request->input('unique_name');
+        $deviceName = $request->input('device_name');
+        $centerFreq = $request->input('center_freq');
+        $samplingRate = $request->input('sampling_rate');
+        $file_hash = $request->input('file_hash');
+
 
         $query = DB::table('em_data_file')
             ->where('file_unique_name', $fileUniqueName)
@@ -129,6 +135,10 @@ class FileManageController extends Controller
                 'file_name' => $name,
                 'file_size' => $size,
                 'created_time' => Carbon::create(now('Asia/Colombo'))->format("Y-m-d H:i:s"),
+                'device_name' => $deviceName,
+                'center_freq' => $centerFreq,
+                'sampling_rate' => $samplingRate,
+                'file_hash' => $file_hash,
             ]);
 
         if ($query) {
