@@ -11,14 +11,15 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import logo from './../Resources/logo.png';
+import logo from "./../Resources/logo.png";
 
-const pages = ["Dashboard", "Analyze List", "Uploaded Files", "Settings"];
+const pages = ["Dashboard", "Analysis", "Uploaded Files", "Settings"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-function NavBar() {
+function NavBar(pageName) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  // const borderBottom = "1px solid black";
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -36,13 +37,13 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#424242" }}>
+    <AppBar position="static" elevation={1} sx={{ backgroundColor: "#FFFFFF",color:"#000000", borderBottom: "1px solid var(--Border-primary, #E9E9E9)" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <img
-            src={logo} 
+            src={logo}
             alt="Logo"
-            style={{ width: "50px", height: "30px" }} 
+            style={{ width: "50px", height: "30px" }}
           />
           <Typography
             variant="h6"
@@ -55,7 +56,7 @@ function NavBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "inherit",
+              color: "#000000",
               textDecoration: "none",
             }}
           >
@@ -69,7 +70,7 @@ function NavBar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+              color="#000000"
             >
               <MenuIcon />
             </IconButton>
@@ -110,18 +111,19 @@ function NavBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "inherit",
+              color: "#000000",
               textDecoration: "none",
             }}
           >
             Emvidence
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex",justifyContent:"center" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
+                variant="plain"
+                sx={{ borderRadius:"0",my: 2, color: "#000000", display: "block", borderBottom : pageName.page == "analysis" && page == "Analysis" ? "2px solid black" : "none"}}
               >
                 {page}
               </Button>
