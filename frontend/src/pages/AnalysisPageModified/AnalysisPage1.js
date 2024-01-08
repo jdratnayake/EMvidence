@@ -19,6 +19,7 @@ import {
   stepConnectorClasses,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import folder from "./../../Resources/folder.png";
 
 const ComponentOuter = styled(Container)(() => ({
   marginTop: "20px",
@@ -26,17 +27,16 @@ const ComponentOuter = styled(Container)(() => ({
 
 const StepperBox = styled(Box)(() => ({
   backgroundColor: "#C0C0C0",
-  height: "70vh"
+  height: "72vh",
 }));
 
 const ContainerBox = styled(Box)(() => ({
   marginLeft: "5%",
   marginTop: "1%",
-  
 }));
 
 const ContentSectionBox = styled(Box)(() => ({
-  height: "55vh"
+  height: "70%",
 }));
 
 const FormElementBox = styled(Box)(() => ({
@@ -44,12 +44,12 @@ const FormElementBox = styled(Box)(() => ({
   justifyContent: "flex-start",
   marginTop: "20px",
   marginLeft: "20%",
-  bottom: "10px"
+  bottom: "10px",
 }));
 
 const SelectBox = styled(Box)(() => ({
   marginLeft: "10%",
-  width: "500px",
+  width: "350px",
 }));
 
 const BottomButtonBox = styled(Box)(() => ({
@@ -61,24 +61,86 @@ const SelectLabel = styled(Typography)(() => ({
 }));
 
 const Selector = styled(Select)(() => ({
+  height:"40px",
   width: "100%",
-  boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 },
+  boxShadow: "none",
+  ".MuiOutlinedInput-notchedOutline": { border: 0 },
   background: "#00225640",
-  color: "#FFFFFF"
+  color: "#FFFFFF",
 }));
 
 const LabelBox = styled(Box)(() => ({
-  width:"150px"
+  width: "150px",
 }));
 
 const ButtonBottomLeft = styled(Button)(() => ({
-  color:"#00245A",
-  marginLeft:"5px"
+  color: "#00245A",
+  marginLeft: "5px",
 }));
 
 const ButtonBottomRight = styled(Button)(() => ({
-  marginRight:"5px",
-  backgroundColor: "#00245A"
+  marginRight: "5px",
+  backgroundColor: "#00245A",
+}));
+
+const FileSelectionBox = styled(Box)(() => ({
+  height: "70%",
+  width: "48%",
+  marginLeft: "25%",
+  borderRadius: "30px",
+  border: "1px solid rgba(0,36,90,0.25)",
+  borderStyle: "dotted",
+  display: "flex",
+  flexDirection: "row",
+  marginTop:"3%"
+}));
+
+const StepperSection = styled(Stepper)(() => ({
+  marginBottom: "0px",
+}));
+
+const FileSelectionLeft = styled(Box)(() => ({
+  flex: "0 0 auto",
+  padding: "5px",
+  boxSizing: "border-box",
+}));
+
+const FileSelectionRight = styled(Box)(() => ({
+  flex: 1,
+  paddingLeft: "2%",
+  paddingTop:"8%",
+}));
+
+const DividerLine = styled(Box)(() => ({
+  width: "2px",
+  height: "168px",
+  background: "rgba(0, 36, 90, 0.50)",
+  marginTop: "8%",
+  marginLeft: "15%",
+}));
+
+const FolderOutBox = styled(Box)(() => ({
+  flex: "0 0 auto",
+  padding: "10px",
+  boxSizing: "border-box",
+}));
+
+const FolderIconBox = styled(Box)(() => ({
+  width: "120px",
+  height: "70%",
+  flexShrink: 0,
+  background: `url(${folder})`,
+  dislplay: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginTop: "30%",
+  marginLeft: "20%",
+}));
+
+const ButtonGroupBox = styled(Box) (() => ({
+  display:"flex",
+  flexDirection:"row",
+  marginBottom: "10px"
 }));
 
 const steps = [
@@ -118,7 +180,7 @@ export default function AnalysisPage1() {
   const [downSampleRate, setDownSampleRate] = useState(0);
   const [domainConverson, setDomainConversion] = useState(0);
   const [freqSelection, setFreqSelection] = useState(0);
-  const [sampleSelection,setSampleSelection] = useState(0)
+  const [sampleSelection, setSampleSelection] = useState(0);
 
   const handleChangeDownSampling = (event) => {
     console.log(event);
@@ -135,7 +197,7 @@ export default function AnalysisPage1() {
 
   const handleSampleSelection = (event) => {
     setSampleSelection(event.target.value);
-  }
+  };
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -197,7 +259,10 @@ export default function AnalysisPage1() {
         </Typography>
         <ComponentOuter maxWidth="lg">
           <StepperBox>
-            <Stepper activeStep={activeStep} connector={<QontoConnector />}>
+            <StepperSection
+              activeStep={activeStep}
+              connector={<QontoConnector />}
+            >
               {steps.map((label, index) => {
                 const stepProps = {};
                 const labelProps = {};
@@ -215,7 +280,7 @@ export default function AnalysisPage1() {
                   </Step>
                 );
               })}
-            </Stepper>
+            </StepperSection>
 
             {activeStep === steps.length ? (
               <React.Fragment>
@@ -229,14 +294,13 @@ export default function AnalysisPage1() {
               </React.Fragment>
             ) : activeStep === 1 ? (
               <React.Fragment>
-
                 <ContentSectionBox>
                   <FormControl fullWidth>
                     <FormElementBox>
                       <LabelBox>
-                      <SelectLabel variant="body1" display="block">
-                        DownSampling:
-                      </SelectLabel>
+                        <SelectLabel variant="body2" display="block">
+                          DownSampling:
+                        </SelectLabel>
                       </LabelBox>
                       <SelectBox>
                         <Selector
@@ -255,9 +319,9 @@ export default function AnalysisPage1() {
                     </FormElementBox>
                     <FormElementBox>
                       <LabelBox>
-                      <SelectLabel variant="body1" display="block">
-                        Domain Conversion:
-                      </SelectLabel>
+                        <SelectLabel variant="body2" display="block">
+                          Domain Conversion:
+                        </SelectLabel>
                       </LabelBox>
                       <SelectBox>
                         <Selector
@@ -267,17 +331,21 @@ export default function AnalysisPage1() {
                           displayEmpty
                           inputProps={{ "aria-label": "without label" }}
                         >
-                          <MenuItem value={0}>STFT (FFT_SIZE = 2048 & Overlap Size = 256)</MenuItem>
-                          <MenuItem value={10}>STFT (FFT_SIZE = 1024 & Overlap Size = 256)</MenuItem>
+                          <MenuItem value={0}>
+                            STFT (FFT_SIZE = 2048 & Overlap Size = 256)
+                          </MenuItem>
+                          <MenuItem value={10}>
+                            STFT (FFT_SIZE = 1024 & Overlap Size = 256)
+                          </MenuItem>
                           <MenuItem value={8}>FFT</MenuItem>
                         </Selector>
                       </SelectBox>
                     </FormElementBox>
                     <FormElementBox>
                       <LabelBox>
-                      <SelectLabel variant="body1" display="block">
-                        Sanmple Selection:
-                      </SelectLabel>
+                        <SelectLabel variant="body2" display="block">
+                          Sample Selection:
+                        </SelectLabel>
                       </LabelBox>
                       <SelectBox>
                         <Selector
@@ -295,9 +363,9 @@ export default function AnalysisPage1() {
                     </FormElementBox>
                     <FormElementBox>
                       <LabelBox>
-                      <SelectLabel variant="body1" display="block">
-                        Frequency Channel Selection:
-                      </SelectLabel>
+                        <SelectLabel variant="body2" display="block">
+                          Frequency Channel Selection:
+                        </SelectLabel>
                       </LabelBox>
                       <SelectBox>
                         <Selector
@@ -308,14 +376,16 @@ export default function AnalysisPage1() {
                           inputProps={{ "aria-label": "without label" }}
                         >
                           <MenuItem value={0}>All Channels</MenuItem>
-                          <MenuItem value={1}>Highest variance of averaged elements</MenuItem>
+                          <MenuItem value={1}>
+                            Highest variance of averaged elements
+                          </MenuItem>
                           <MenuItem value={2}>Other</MenuItem>
                         </Selector>
                       </SelectBox>
                     </FormElementBox>
                   </FormControl>
                 </ContentSectionBox>
-                <Box sx={{ display: "flex", flexDirection: "row", pt2: 2 }}>
+                <ButtonGroupBox>
                   <ButtonBottomLeft
                     disabled={activeStep === 0}
                     onClick={handleBack}
@@ -325,8 +395,57 @@ export default function AnalysisPage1() {
                     Back
                   </ButtonBottomLeft>
                   <Box sx={{ flex: "1 1 auto" }} />
-                  <ButtonBottomRight variant="contained" onClick={handleNext}>Pre-Process</ButtonBottomRight>
-                </Box>
+                  <ButtonBottomRight variant="contained" onClick={handleNext}>
+                    Pre-Process
+                  </ButtonBottomRight>
+                </ButtonGroupBox>
+              </React.Fragment>
+            ) : activeStep === 0 ? (
+              <React.Fragment>
+                <ContentSectionBox>
+                  <FileSelectionBox>
+                    <FileSelectionLeft>
+                      <FolderIconBox />
+                    </FileSelectionLeft>
+                    <DividerLine />
+                    <FileSelectionRight>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Size:</strong> 1.3 GB
+                      </Typography><br/>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Sampling Rate:</strong> 20MHz
+                      </Typography><br/>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Center Frequency:</strong> 16MHz
+                      </Typography><br/>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Sampling Duration:</strong> 20s
+                      </Typography><br/>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Hash Function:</strong> SHA256
+                      </Typography><br/>
+                      <Typography variant="caption" gutterBottom>
+                        <strong>Device Name:</strong> iPhone 4S
+                      </Typography><br/>
+                    </FileSelectionRight>
+
+                    <FileSelectionRight />
+                  </FileSelectionBox>
+                </ContentSectionBox>
+                <ButtonGroupBox>
+                  <ButtonBottomLeft
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    sx={{ mr: 1 }}
+                    variant="text"
+                  >
+                    Back
+                  </ButtonBottomLeft>
+                  <Box sx={{ flex: "1 1 auto" }} />
+                  <ButtonBottomRight variant="contained" onClick={handleNext}>
+                    Done
+                  </ButtonBottomRight>
+                </ButtonGroupBox>
               </React.Fragment>
             ) : (
               <React.Fragment>
