@@ -170,7 +170,7 @@ const AnalysisPage = () => {
         pauseOnHover
       />
       <CssBaseline />
-      <NavBar />
+      <NavBar page={"analysis"} />
       <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
         <Box class="file_selection">
           <Box
