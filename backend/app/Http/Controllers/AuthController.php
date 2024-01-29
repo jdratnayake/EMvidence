@@ -22,26 +22,47 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'=>'required',
+            'first_name'=>'required',
+            'last_name'=>'required',
+            'role'=>'required',
             'email'=>'required|email',
             'password'=>'required',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password
-        ]);
+        try {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'role'=> $request->role,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 380,
+                'message' => 'email_address_in_use.',
+            ]);
+        }
 
+        
         $token = Auth::login($user);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'user registered successfully',
-            'user' => $user,
-            'token' => $token
+        if (!$token) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'registration fail',
+            ]);
 
-        ]);
+        }else{
+            return response()->json([
+                'status' => 200,
+                'message' => 'user registered successfully',
+                'user' => $user,
+                'token' => $token
+            ]);
+        }
+
+        
 
     }
 
@@ -62,20 +83,23 @@ class AuthController extends Controller
 
         $token = Auth::attempt($credentials);
 
-        if (!Auth::attempt($credentials)) {
+        if (!$token) {
             return response()->json([
-                'status' => 'Unauthorized',
+                'status' => 401,
                 'message' => 'Login fail',
-            ], 401);
+            ]);
+
+        }else{
+            return response()->json([
+                'status' => 200,
+                'message' => 'Login Success',
+                'token' => $token,
+                'user' => auth()->user(),
+                'expires_in' => auth()->factory()->getTTL() * 60,
+            ]);
         }
 
-        return response()->json([
-            'status' => 'Success',
-            'message' => 'Login Success',
-            'token' => $token,
-            'user' => auth()->user(),
-            'expires_in' => auth()->factory()->getTTL() * 60,
-        ]);
+        
     }
 
     /**

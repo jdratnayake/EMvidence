@@ -123,25 +123,26 @@ function UploadFilePage() {
         fileExtension === "h5"
       ) {
         // Valid PNG file selected, you can proceed with further handling
-        console.log("Valid PNG file selected:", fileName);
+        console.log("Valid cfile is selected:", fileName);
         // Add your additional logic here
       } else {
         // Display an error message or take appropriate action for invalid file
-        console.error("Invalid file type. Please select a PNG file.");
+        alert("Invalid file type. Please select a cfile.");
         // Clear the file input if needed
         event.target.value = null;
       }
+
+      setIsSubmitted(true);
+      calculateHash();
+      // Do something with the form data, e.g., send it to an API
+      console.log(
+        "Form submitted with selected value:",
+        selectedValue1,
+        selectedValue2,
+        selectedValue3
+      );
+      console.log("Selected file:", selectedFile);
     }
-    setIsSubmitted(true);
-    calculateHash();
-    // Do something with the form data, e.g., send it to an API
-    console.log(
-      "Form submitted with selected value:",
-      selectedValue1,
-      selectedValue2,
-      selectedValue3
-    );
-    console.log("Selected file:", selectedFile);
   };
 
   useEffect(() => {
@@ -168,18 +169,6 @@ function UploadFilePage() {
       console.log("file not added to resumable object");
     }
   }, [compressedFile, selectedFile, resumable, isFileAdded]);
-
-  // useEffect(() => {
-  //     if (hash && compressedFile) {
-  //         if (resumable) {
-
-  //         } else {
-  //             console.log("not ploading");
-  //         }
-  //     } else {
-  //         console.log("hash not set");
-  //     }
-  // }, [hash, compressedFile, resumable])
 
   //calculate hash
   const calculateHash = () => {
@@ -267,6 +256,19 @@ function UploadFilePage() {
     readNextChunk();
   };
 
+
+  const encryptChunk = (data) => {
+    return new Promise((resolve, reject) => {
+      try {
+        const encryptedData = CryptoJS.AES.encrypt(data, 'encryption_key').toString();
+        resolve(encryptedData);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+  
+
   const concatenateUint8Arrays = (arrays) => {
     const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
     const result = new Uint8Array(totalLength);
@@ -286,22 +288,34 @@ function UploadFilePage() {
     target: baseURL1,
     // fileType: ['png', 'jpg', 'jpeg', 'mp4', 'csv', 'h5', 'mkv', 'gz', 'zip', 'cfile', 'HEIC', 'iso'],
     fileType: ["png", "h5", "cfile", "gz"],
-    chunkSize: 1024 * 1024 * 5,
+    chunkSize: 1024 * 1024 * 10,
     uploadMethod: "POST",
     headers: {
       // 'X-CSRF-TOKEN': csrfToken,
       Accept: "application/json",
     },
+    // preprocess: function (chunk) {
+    //   console.log(chunk.data);
+    //   const encryptedData = CryptoJS.AES.encrypt(chunk.data, 'encryption_key').toString();
+    //   console.log('+++++++++++');
+    //   // Update the chunk data with the encrypted data
+    //   chunk.data = encryptedData;
+    //   console.log(chunk.data);
+    //   chunk.preprocessFinished();
+    // },
     simultaneousUploads: 3,
     testChunks: false,
     throttleProgressCallbacks: 1,
   });
 
   uploader.on("fileAdded", (file) => {
+    console.log("File added:");
     console.log("File added:", file);
     setIsFileAdded(true);
   });
 
+
+  
   uploader.on("uploadStart", function (file, response) {
     // trigger when file progress update
     console.log("uploading");
@@ -316,7 +330,6 @@ function UploadFilePage() {
   });
 
   uploader.on("fileProgress", function (file, response) {
-    console.log("fileProgress");
     // trigger when file progress update
     setProgress(Math.floor(file.progress() * 100));
 
@@ -330,6 +343,18 @@ function UploadFilePage() {
     console.log(file);
     alert("file uploading error.");
     navigate("/file_manage");
+  });
+
+  uploader.on("chunkingComplete", function (file, response) {
+    // trigger when there is any error
+    console.log('chunking complete');
+    file.chunks.forEach(function (chunk) {
+      var key = "1234"; // Use the same key generation logic
+      var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
+      chunk.data = encryptedChunk;
+      console.log(chunk.data);
+    });
+
   });
 
   useEffect(() => {
@@ -518,7 +543,7 @@ function UploadFilePage() {
                     id="file-input"
                     type="file"
                     onChange={handleFileSelect}
-                    accept="image/png, image/jpeg"
+                    inputProps={{ accept: ".h5, .cfile" }}
                   />
                 </FormControl>
 

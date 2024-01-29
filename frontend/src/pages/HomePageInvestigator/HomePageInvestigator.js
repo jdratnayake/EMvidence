@@ -1,16 +1,14 @@
-import React, {useEffect} from "react";
-import "./HomePage.css";
+import React from "react";
+import "./HomePageInvestigator.css";
 import { useUser } from "../../contexts/UserContext";
-import { useNavigate } from 'react-router-dom';
 
-function HomePage() {
+function HomePageInvestigator() {
   const { user, loginUser } = useUser();
-  const navigate = useNavigate();
 
   const checkStatus = () => {
     console.log(user);
   };
-
+  
   const updateStatus = () => {
     loginUser({ name: "Dave" });
   };
@@ -19,17 +17,9 @@ function HomePage() {
     loginUser(null);
   };
 
-  useEffect(() => {
-    if (user == null){
-      navigate('/');
-    }else if (user.role == "admin"){
-      navigate('/home_admin');
-    }
-  }, [user])
-
   return (
     <div>
-      <div>Home Page</div>
+      <div>Home Page Investigator</div>
       <div>
         <button onClick={checkStatus}>Check Status</button>
       </div>
@@ -43,4 +33,4 @@ function HomePage() {
   );
 }
 
-export default HomePage
+export default HomePageInvestigator;
