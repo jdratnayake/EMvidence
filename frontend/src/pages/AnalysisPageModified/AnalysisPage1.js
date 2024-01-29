@@ -61,7 +61,7 @@ const SelectLabel = styled(Typography)(() => ({
 }));
 
 const Selector = styled(Select)(() => ({
-  height:"40px",
+  height: "40px",
   width: "100%",
   boxShadow: "none",
   ".MuiOutlinedInput-notchedOutline": { border: 0 },
@@ -92,7 +92,7 @@ const FileSelectionBox = styled(Box)(() => ({
   borderStyle: "dotted",
   display: "flex",
   flexDirection: "row",
-  marginTop:"3%"
+  marginTop: "3%",
 }));
 
 const StepperSection = styled(Stepper)(() => ({
@@ -105,10 +105,17 @@ const FileSelectionLeft = styled(Box)(() => ({
   boxSizing: "border-box",
 }));
 
+const AnalysisLeftBox = styled(Box)(() => ({
+  flex: "0 0 auto",
+  padding: "5px",
+  boxSizing: "border-box",
+  width: "50%",
+}));
+
 const FileSelectionRight = styled(Box)(() => ({
   flex: 1,
   paddingLeft: "2%",
-  paddingTop:"8%",
+  paddingTop: "8%",
 }));
 
 const DividerLine = styled(Box)(() => ({
@@ -137,10 +144,15 @@ const FolderIconBox = styled(Box)(() => ({
   marginLeft: "20%",
 }));
 
-const ButtonGroupBox = styled(Box) (() => ({
-  display:"flex",
-  flexDirection:"row",
-  marginBottom: "10px"
+const ButtonGroupBox = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "row",
+  marginBottom: "10px",
+}));
+
+const ButtonAddPlugin = styled(Button)(() => ({
+  backgroundColor: "#00245A",
+  marginLeft: "5px",
 }));
 
 const steps = [
@@ -281,7 +293,6 @@ export default function AnalysisPage1() {
                 );
               })}
             </StepperSection>
-
             {activeStep === steps.length ? (
               <React.Fragment>
                 <Typography sx={{ mt: 2, mb: 1 }}>
@@ -411,22 +422,28 @@ export default function AnalysisPage1() {
                     <FileSelectionRight>
                       <Typography variant="caption" gutterBottom>
                         <strong>Size:</strong> 1.3 GB
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                       <Typography variant="caption" gutterBottom>
                         <strong>Sampling Rate:</strong> 20MHz
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                       <Typography variant="caption" gutterBottom>
                         <strong>Center Frequency:</strong> 16MHz
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                       <Typography variant="caption" gutterBottom>
                         <strong>Sampling Duration:</strong> 20s
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                       <Typography variant="caption" gutterBottom>
                         <strong>Hash Function:</strong> SHA256
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                       <Typography variant="caption" gutterBottom>
                         <strong>Device Name:</strong> iPhone 4S
-                      </Typography><br/>
+                      </Typography>
+                      <br />
                     </FileSelectionRight>
 
                     <FileSelectionRight />
@@ -447,36 +464,38 @@ export default function AnalysisPage1() {
                   </ButtonBottomRight>
                 </ButtonGroupBox>
               </React.Fragment>
-            ) : (
+            ) : activeStep === 2 ? (
               <React.Fragment>
-                <Typography sx={{ mt: 2, mb: 1 }}>
-                  step {activeStep + 1}
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "row", pt2: 2 }}>
-                  <Button
-                    color="inherit"
+                <ContentSectionBox>
+                  <AnalysisLeftBox>
+                    <ButtonAddPlugin variant="contained">
+                      Add Plugin
+                    </ButtonAddPlugin>
+                  </AnalysisLeftBox>
+                  <DividerLine />
+                  <FileSelectionRight>
+
+                  </FileSelectionRight>
+                </ContentSectionBox>
+                <ButtonGroupBox>
+                  <ButtonBottomLeft
                     disabled={activeStep === 0}
                     onClick={handleBack}
                     sx={{ mr: 1 }}
+                    variant="text"
                   >
                     Back
-                  </Button>
+                  </ButtonBottomLeft>
                   <Box sx={{ flex: "1 1 auto" }} />
-                  {isStepOptional(activeStep) && (
-                    <Button
-                      color="inherit"
-                      conClick={handleSkip}
-                      sx={{ mr: 1 }}
-                    >
-                      Skip
-                    </Button>
-                  )}
-                  <Button onClick={handleNext}>
-                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                  </Button>
-                </Box>
+                  <ButtonBottomRight variant="contained" onClick={handleNext}>
+                    Done
+                  </ButtonBottomRight>
+                </ButtonGroupBox>
               </React.Fragment>
+            ) : (
+              <React.Fragment></React.Fragment>
             )}
+            ;
           </StepperBox>
         </ComponentOuter>
       </ContainerBox>
