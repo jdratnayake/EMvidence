@@ -25,6 +25,10 @@ import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+
+const baseURL = 'http://127.0.0.1:8000/api/register';
 
 
 function Copyright(props) {
@@ -45,6 +49,8 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 function SignUpPage() {
+
+  const navigate = useNavigate();
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -52,6 +58,8 @@ function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+
 
   const handleFirstname = (event) => {
     setFirstname(event.target.value);
@@ -72,7 +80,7 @@ function SignUpPage() {
   const handleRole = (event) => {
     setRole(event.target.value);
   };
-  
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
@@ -82,12 +90,35 @@ function SignUpPage() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (password != confirmPassword){
+    if (password != confirmPassword) {
       alert("Password mismatched");
-    }else{
+    } else {
       console.log(firstname, lastname, email, password, confirmPassword, role);
+      axios.post(baseURL, {
+        first_name: firstname,
+        last_name: lastname,
+        role: role,
+        email: email,
+        password: password
+      })
+        .then((response) => {
+          if (response.data.status == 200) {
+            navigate('/login');
+          }else if(response.data.status == 380){
+            alert('Email is already in use')
+          }else{
+            alert('Registration is faild.')
+          }
+
+
+        })
+        .catch((error) => {
+          // Handle errors related to the HTTP request
+          console.error("Error making the request:", error);
+          alert('Failed to connect to the server. Please try again later.');
+        });;
     }
-   
+
   };
 
   return (

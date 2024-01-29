@@ -1,19 +1,19 @@
 version: "3"
 
 services:
-  # frontend-app:
-  #   container_name: frontend-app
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   command: "npm run start-watch"
-  #   ports:
-  #     - "${FRONTEND_APP_PORT}:3000"
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   volumes:
-  #     - ./frontend:/frontend
-  #     - /frontend/node_modules
+  frontend-app:
+    container_name: frontend-app
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: "npm run start-watch"
+    ports:
+      - "${FRONTEND_APP_PORT}:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
   backend-app:
     container_name: backend-app
     build:
@@ -25,39 +25,39 @@ services:
     volumes:
       - ./backend:/var/www/html
       - /var/www/html/vendor
-    # depends_on:
-    #   - mysql
-#   mysql:
-#     container_name: mysql
-#     image: mysql/mysql-server:8.0
-#     ports:
-#       - "3306:3306"
-#     environment:
-#       MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-#       MYSQL_DATABASE: "${DB_DATABASE}"
-#       MYSQL_USER: "${DB_USERNAME}"
-#       MYSQL_PASSWORD: "${DB_PASSWORD}"
-#     volumes:
-#       - mysql-db-data:/var/lib/mysql
-#     healthcheck:
-#       test:
-#         - CMD
-#         - mysqladmin
-#         - ping
-#         - "-p${DB_PASSWORD}"
-#       retries: 3
-#       timeout: 5s
+    depends_on:
+      - mysql
+  mysql:
+    container_name: mysql
+    image: mysql/mysql-server:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - mysql-db-data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - "-p${DB_PASSWORD}"
+      retries: 3
+      timeout: 5s
 
-#   phpmyadmin:
-#     container_name: phpmyadmin
-#     image: phpmyadmin/phpmyadmin
-#     ports:
-#       - "8080:80"
-#     environment:
-#       - PMA_HOST=mysql
-#       - PMA_PORT=3306
-#     depends_on:
-#       - mysql
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    depends_on:
+      - mysql
 
-# volumes:
-#   mysql-db-data:
+volumes:
+  mysql-db-data:
