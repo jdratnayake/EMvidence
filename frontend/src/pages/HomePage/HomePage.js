@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useUser } from "../../contexts/UserContext";
 import "./HomePage.css";
@@ -6,6 +7,7 @@ import "./HomePage.css";
 function HomePage() {
   const { user, loginUser } = useUser();
   const client = useQueryClient();
+  const navigate = useNavigate();
 
   const checkStatus = () => {
     console.log(user);
