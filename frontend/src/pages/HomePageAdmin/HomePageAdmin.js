@@ -1,16 +1,18 @@
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import React, {useEffect} from "react";
+import "./HomePageAdmin.css";
 import { useUser } from "../../contexts/UserContext";
-import "./HomePage.css";
+import { useNavigate } from 'react-router-dom';
 
-function HomePage() {
+
+
+function HomePageAdmin() {
   const { user, loginUser } = useUser();
-  const client = useQueryClient();
+  const navigate = useNavigate();
 
   const checkStatus = () => {
     console.log(user);
   };
-
+  
   const updateStatus = () => {
     loginUser({ name: "Dave" });
   };
@@ -20,16 +22,16 @@ function HomePage() {
   };
 
   useEffect(() => {
-    if (user == null) {
-      navigate("/");
-    } else if (user.role == "admin") {
-      navigate("/home_admin");
+    if (user === null || user.role != "admin"){
+      navigate('/');
     }
-  }, [user]);
+  }, [user])
+  
+
 
   return (
     <div>
-      <div>Home Page</div>
+      <div>Home Page Admin</div>
       <div>
         <button onClick={checkStatus}>Check Status</button>
       </div>
@@ -43,4 +45,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default HomePageAdmin;

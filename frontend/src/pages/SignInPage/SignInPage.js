@@ -15,7 +15,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TextBox from "../../components/TextBox/TextBox";
 import Copyright from "../../components/Copyright/Copyright";
 import { validateEmail, validatePassword } from "./Validation";
-import AuthUser from "../../components/AuthUser";
 import TextField from '@mui/material/TextField';
 import axios from "axios";
 import InputLabel from '@mui/material/InputLabel';
@@ -28,16 +27,17 @@ import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
+import { useUser } from "../../contexts/UserContext";
+import { useNavigate } from 'react-router-dom';
 
-
-
-
+const baseURL = 'http://127.0.0.1:8000/api/login';
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
 
-  const {http} = AuthUser();
+  const navigate = useNavigate();
+  const { user, loginUser } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -59,10 +59,51 @@ export default function SignIn() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    
+    if (email != "" && password != "") {
+      
+      axios.post(baseURL, {
+        email: email,
+        password: password
+      })
+        .then((response) => {
+          if (response.data.status == 200){
+            loginUser({ 
+              first_name : response.data.user.first_name, 
+              last_name : response.data.user.last_name, 
+              role : response.data.user.role, 
+              user_id : response.data.user.user_id,
+              token : response.data.token,
+              email : response.data.user.email, 
 
-    http.post('/login',{email:email, password:password}).then((res=>{
-      console.log(res.data);
-    }))
+            });
+           
+            if (response.data.user.role === "admin"){
+              navigate('/home_admin');
+            } else if (response.data.user.role === "developer"){
+              navigate('/home_dev');
+              
+            }else if (response.data.user.role === "invesigator"){
+              navigate('/home_investigator');
+              
+            }
+              
+          }else if (response.data.status == 401){
+            alert('Email or Password is invalid')
+          } else {
+            alert('Internel server error')
+          }
+          
+        })
+        .catch((error) => {
+          // Handle errors related to the HTTP request
+          console.error("Error making the request:", error);
+          alert('Failed to connect to the server. Please try again later.');
+        });
+    } else {
+      alert("Email or Password is empty.")
+    }
+
   };
 
   return (
@@ -101,9 +142,9 @@ export default function SignIn() {
                   onChange={handleEmail}
                 />
               </Grid>
-               <br/>
+              <br />
               <Grid item xs={12}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                   <OutlinedInput
                     id="password"
@@ -125,10 +166,14 @@ export default function SignIn() {
                   />
                 </FormControl>
               </Grid>
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              <Grid container justifyContent="flex-end">
+                <Grid>
+                <Link href="#" variant="body2">
+                  Forgot password?
+                </Link>
+                </Grid>
+                
+              </Grid>
               <Button
                 type="submit"
                 fullWidth
@@ -137,18 +182,12 @@ export default function SignIn() {
               >
                 Sign In
               </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
+              <Grid item>
+                <Link href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
               </Grid>
+
             </Box>
           </Box>
           <Copyright />
