@@ -92,11 +92,6 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(name, calories, fat) {
-  return { name, calories, fat };
-}
-
-
 function EmFilesPage() {
   const [data, setData] = useState([]);
 
