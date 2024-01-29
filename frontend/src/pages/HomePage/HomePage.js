@@ -1,9 +1,11 @@
 import React from "react";
-import "./HomePage.css";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useUser } from "../../contexts/UserContext";
+import "./HomePage.css";
 
 function HomePage() {
   const { user, loginUser } = useUser();
+  const client = useQueryClient();
 
   const checkStatus = () => {
     console.log(user);

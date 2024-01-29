@@ -5,12 +5,17 @@ import "normalize.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./contexts/UserContext";
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const client = new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <UserProvider>
-      <App />
+      <QueryClientProvider client={client}>
+        <App />
+      </QueryClientProvider>
     </UserProvider>
   </React.StrictMode>
 );
