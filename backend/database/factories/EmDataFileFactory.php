@@ -16,25 +16,25 @@ class EmDataFileFactory extends Factory
 
     public function definition(): array
     {
-        $existingUserIds = User::pluck('user_id')->toArray();
+        $existingUserIds = User::whereIn('user_type', ['investigator', 'developer'])->pluck('user_id')->toArray();
 
         $em_raw_file_name = '';
-        $em_raw_file_extension = '.dat';
+        $em_raw_file_extension = '.h5';
 
         do {
             // Generate a unique word without extension
-            $randomWord = Str::random(); // You can also use Faker to generate a random word
+            $randomWord = Str::random();
 
             // Append the extension
             $em_raw_file_name = $randomWord . $em_raw_file_extension;
-        } while (EmDataFile::where('em_preprocess_file_name', $em_raw_file_name)->exists());
+        } while (EmDataFile::where('em_raw_file_name', $em_raw_file_name)->exists());
 
         $em_preprocess_file_name = '';
-        $em_preprocess_file_extension = '.dat';
+        $em_preprocess_file_extension = '.npy';
 
         do {
             // Generate a unique word without extension
-            $randomWord = Str::random(); // You can also use Faker to generate a random word
+            $randomWord = Str::random();
 
             // Append the extension
             $em_preprocess_file_name = $randomWord . $em_preprocess_file_extension;
@@ -50,8 +50,10 @@ class EmDataFileFactory extends Factory
             'device_name' => $this->faker->word,
             'center_frequency' => $this->faker->randomFloat(2, 1, 100),
             'sampling_rate' => $this->faker->randomFloat(2, 1000, 10000),
-            'file_upload_timestamp' => $this->faker->optional()->dateTimeThisYear(),
-            'preprocessing_file_creation_timestamp' => $this->faker->optional()->dateTimeThisYear(),
+            // 'file_upload_timestamp' => $this->faker->optional()->dateTimeThisYear(),
+            'file_upload_timestamp' => $this->faker->dateTimeThisYear(),
+            // 'preprocessing_file_creation_timestamp' => $this->faker->optional()->dateTimeThisYear(),
+            'preprocessing_file_creation_timestamp' => $this->faker->dateTimeThisYear(),
             'updated_at' => now(),
             'user_id' => $this->faker->randomElement($existingUserIds),
         ];

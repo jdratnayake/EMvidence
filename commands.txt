@@ -1,4 +1,4 @@
-#Docker - START
+# Docker - START
 
 // To remove all stopped containers
 docker container prune
@@ -21,4 +21,14 @@ docker system prune -a --volumes --force
 // Starts Docker containers defined in a Docker Compose file, builds images if needed, and runs containers in the background.
 docker-compose up -d --build
 
-#Docker - END
+# Docker - END
+
+# Database - START
+
+// To run database migrations
+php artisan migrate
+
+// To seed the database with test or dummy data
+php artisan db:seed
+
+# Database - END

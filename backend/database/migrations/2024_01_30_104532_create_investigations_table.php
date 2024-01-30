@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('investigations', function (Blueprint $table) {
             $table->id('investigation_id');
+            $table->string('title', 128)->nullable(false);
             $table->string('description', 512)->nullable(true);
             // initial
             // in-progress

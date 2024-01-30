@@ -15,9 +15,10 @@ class InvestigationFactory extends Factory
 
     public function definition(): array
     {
-        $existingUserIds = User::pluck('user_id')->toArray();
+        $existingUserIds = User::whereIn('user_type', ['investigator', 'developer'])->pluck('user_id')->toArray();
 
         return [
+            'title' => $this->faker->sentence,
             'description' => $this->faker->sentence,
             'investigation_status' => $this->faker->randomElement(['initial', 'in-progress', 'completed']),
             'investigation_creation_timestamp' => $this->faker->dateTimeThisYear(),

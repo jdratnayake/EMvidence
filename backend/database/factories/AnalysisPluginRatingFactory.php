@@ -16,7 +16,7 @@ class AnalysisPluginRatingFactory extends Factory
 
     public function definition(): array
     {
-        $existingUserIds = User::pluck('user_id')->toArray();
+        $existingUserIds = User::whereIn('user_type', ['investigator', 'developer'])->pluck('user_id')->toArray();
         $existingPluginIds = AnalysisPlugin::pluck('plugin_id')->toArray();
 
         return [

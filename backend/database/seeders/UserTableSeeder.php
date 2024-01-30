@@ -17,26 +17,26 @@ class UserTableSeeder extends Seeder
         // Define dummy data
         $users = [
             [
-                'user_type' => 'admin',
+                'user_type' => 'investigator',
                 'account_status' => 'verified',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'email' => 'john@example.com',
+                'first_name' => 'Keaton',
+                'last_name' => 'Dickens',
+                'email' => 'investigator@example.com',
                 'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
-                'phone_number' => '+94767633100',
+                'phone_number' => '+94710554474',
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),
                 'last_login_timestamp' => null,
                 'updated_at' => now(),
             ],
             [
-                'user_type' => 'investigator',
+                'user_type' => 'admin',
                 'account_status' => 'verified',
-                'first_name' => 'Keaton',
-                'last_name' => 'Dickens',
-                'email' => 'keaton@example.com',
+                'first_name' => 'John',
+                'last_name' => 'Doe',
+                'email' => 'admin@example.com',
                 'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
-                'phone_number' => '+94710554474',
+                'phone_number' => '+94767633100',
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),
                 'last_login_timestamp' => null,
@@ -47,7 +47,7 @@ class UserTableSeeder extends Seeder
                 'account_status' => 'verified',
                 'first_name' => 'Isac',
                 'last_name' => 'Nader',
-                'email' => 'isac@example.com',
+                'email' => 'developer@example.com',
                 'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
                 'phone_number' => '+94704145651',
                 'profile_picture' => 'default.svg',

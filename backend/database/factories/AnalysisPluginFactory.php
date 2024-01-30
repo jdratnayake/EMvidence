@@ -16,24 +16,35 @@ class AnalysisPluginFactory extends Factory
     
     public function definition(): array
     {
-        $existingUserIds = User::pluck('user_id')->toArray();
+        $existingUserIds = User::where('user_type', 'developer')->pluck('user_id')->toArray();
         $existingAdminIds = User::where('user_type', 'admin')->pluck('user_id')->toArray();
 
         $plugin_filename = '';
-        $plugin_extension = '.dat';
+        $plugin_extension = '.py';
 
         do {
             // Generate a unique word without extension
-            $randomWord = Str::random(); // You can also use Faker to generate a random word
+            $randomWord = Str::random();
 
             // Append the extension
             $plugin_filename = $randomWord . $plugin_extension;
         } while (AnalysisPlugin::where('plugin_filename', $plugin_filename)->exists());
 
+        $machine_learning_model_name = '';
+        $machine_learning_model_extension = '.h5';
+
+        do {
+            // Generate a unique word without extension
+            $randomWord = Str::random();
+
+            // Append the extension
+            $machine_learning_model_name = $randomWord . $machine_learning_model_extension;
+        } while (AnalysisPlugin::where('machine_learning_model_name', $machine_learning_model_name)->exists());
+
         return [
             'plugin_name' => $this->faker->unique()->word,
             'plugin_filename' => $plugin_filename,
-            'machine_learning_model_name' => $this->faker->word,
+            'machine_learning_model_name' => $machine_learning_model_name,
             'analysis_plugin_dependency_name' => $this->faker->sentence(5),
             'plugin_upload_timestamp' => $this->faker->dateTimeThisYear(),
             'compatibility_status' => $this->faker->randomElement(['initial', 'compatible', 'incompatible']),

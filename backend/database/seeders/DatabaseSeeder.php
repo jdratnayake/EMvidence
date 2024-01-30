@@ -17,11 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call(UserTableSeeder::class);
-        User::factory()->count(3)->create();
-        EmDataFile::factory()->count(3)->create();
-        Investigation::factory()->count(3)->create();
-        AnalysisPlugin::factory()->count(3)->create();
-        AnalysisPluginRating::factory()->count(3)->create();
+        $this->call(UserTableSeeder::class);
+        $this->call(EmDataFileTableSeeder::class);
+        $this->call(InvestigationTableSeeder::class);
+        $this->call(AnalysisPluginTableSeeder::class);
+        $this->call(AnalysisPluginRatingTableSeeder::class);
+
+        User::factory()->count(6)->create();
+        EmDataFile::factory()->count(6)->create();
+        Investigation::factory()->count(6)->create();
+        AnalysisPlugin::factory()->count(6)->create();
+        AnalysisPluginRating::factory()->count(6)->create();
     }
 }
