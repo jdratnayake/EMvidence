@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('analysis_plugins_ratings', function (Blueprint $table) {
+        Schema::create('analysis_plugin_ratings', function (Blueprint $table) {
             $table->foreignId('user_id');
             $table->foreignId('plugin_id');
             $table->integer('rating_score')->nullable(false)->default(0);
         });
 
-        Schema::table('analysis_plugins_ratings', function($table) {
+        Schema::table('analysis_plugin_ratings', function($table) {
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('plugin_id')->references('plugin_id')->on('analysis_plugins')->onDelete('cascade');
         });

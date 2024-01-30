@@ -4,6 +4,11 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\EmDataFile;
+use App\Models\Investigation;
+use App\Models\AnalysisPlugin;
+use App\Models\AnalysisPluginRating;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,13 +17,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        \App\Models\User::factory()->create([
-            'first_name' => 'senal',
-            'last_name' => 'punsara',
-            'role' => 'admin',
-            'email' => 'senal@gmail.com',
-        ]);
+        // $this->call(UserTableSeeder::class);
+        User::factory()->count(3)->create();
+        EmDataFile::factory()->count(3)->create();
+        Investigation::factory()->count(3)->create();
+        AnalysisPlugin::factory()->count(3)->create();
+        AnalysisPluginRating::factory()->count(3)->create();
     }
 }
