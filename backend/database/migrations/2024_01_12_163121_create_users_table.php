@@ -13,17 +13,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('user_id');
-            $table->string('user_type', 32)->nullable(false);
-            $table->string('account_status', 32)->nullable(false);
+            // admin
+            // investigator
+            // developer
+            $table->string('user_type', 16)->nullable(false);
+            // unverified
+            // verified
+            $table->string('account_status', 16)->nullable(false)->default('unverified');
             $table->string('first_name', 64)->nullable(false);
             $table->string('last_name', 64)->nullable(false);
             $table->string('email', 128)->unique();
             $table->string('password', 60)->nullable(false);
-            $table->string('phone_number', 32);
-            $table->string('profile_picture', 512);
+            $table->string('phone_number', 32)->nullable(true);
+            $table->string('profile_picture', 512)->default('default.svg');
             $table->timestamp('account_creation_timestamp')->default(now())->nullable(false);
-            $table->timestamp('last_login_timestamp');
-            $table->timestamp('updated_at')->nullable(false);
+            $table->timestamp('last_login_timestamp')->nullable(true);
+            $table->timestamp('updated_at')->default(now())->nullable(false);
         });
     }
 
