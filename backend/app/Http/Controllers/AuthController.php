@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use \Firebase\JWT\JWT;
 
 class AuthController extends Controller
 {
@@ -14,56 +16,99 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:api', ['except' => ['login','register']]);
+    // }
+
+    // Generate JWT token for the user
+    private function generateJWTToken($user)
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        // Define your secret key (keep it secure)
+        $secret_key = env('JWT_SECRET_KEY');
+
+        // Define the payload data
+        $payload = [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'exp' => strtotime('+1 day') // Token expiration time
+        ];
+
+        // Generate JWT token
+        // HS256 specifies the algorithm to be used for encoding the JWT token
+        $token = JWT::encode($payload, $secret_key, 'HS256'); 
+
+        return $token;
     }
 
     public function register(Request $request)
     {
-        $request->validate([
-            'first_name'=>'required',
-            'last_name'=>'required',
-            'role'=>'required',
-            'email'=>'required|email',
-            'password'=>'required',
+        // Check if password contains at least one uppercase letter, one lowercase letter, one number, and one special character
+        Validator::extend('strong_password', function ($attribute, $value, $parameters, $validator) {
+            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $value);
+        });
+
+        // Custom validation message for strong password
+        Validator::replacer('strong_password', function ($message, $attribute, $rule, $parameters) {
+            return str_replace(':attribute', $attribute, 'The '.$attribute.' must contain at least one uppercase letter, one lowercase letter, one number, and one special character.');
+        });
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:64',
+            'last_name' => 'required|string|max:64',
+            'email' => 'required|email|unique:users|max:128',
+            'user_type' => 'required|string|in:admin,investigator,developer',
+            'password' => 'required|string|min:6|max:60|strong_password',
+            'confirm_password' => 'required|string|min:6|max:60|same:password',
         ]);
 
+        // If validation fails, return error messages
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
+
         try {
+            // Create a new user
             $user = User::create([
+                'user_type' => $request->user_type,
+                'account_status' => 'unverified', // Default account status
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'role'=> $request->role,
                 'email' => $request->email,
-                'password' => bcrypt($request->password),
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 380,
-                'message' => 'email_address_in_use.',
-            ]);
-        }
-
-        
-        $token = Auth::login($user);
-
-        if (!$token) {
-            return response()->json([
-                'status' => 401,
-                'message' => 'registration fail',
-            ]);
-
-        }else{
-            return response()->json([
-                'status' => 200,
-                'message' => 'user registered successfully',
-                'user' => $user,
-                'token' => $token
+                'password' => bcrypt($request->password1), // Hash the password
+                'phone_number' => null,
+                'profile_picture' => 'default.svg',
+                'account_creation_timestamp' => now(),
+                'last_login_timestamp' => null,
+                'updated_at' => now(),
             ]);
         }
-
+        catch (\Exception $e) {
+            // Log the exception for further investigation
+            Log::error('Error creating user: ' . $e->getMessage());
         
+            // Return an error response indicating that user creation failed
+            return response()->json(['error' => 'User creation failed. Please try again later.'], 500);
+        }
 
+
+        // Generate JWT token for the registered user
+        $token = $this->generateJWTToken($user);
+
+        // Check if the token is empty
+        if (empty($token)) {
+            // Log the error
+            Log::error('JWT token creation failed: Token is empty');
+
+            // Return an error response
+            return response()->json(['error' => 'JWT token creation failed'], 500);
+        }
+
+        // Return success response with token
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 201);
     }
 
     /**
@@ -73,31 +118,35 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {  
-
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required'
+        return response()->json([
+            'status' => 200,
+            'message' => 'user registered successfully',
         ]);
 
-        $credentials = $request->only('email', 'password') ;
+        // $request->validate([
+        //     'email' => 'required',
+        //     'password' => 'required'
+        // ]);
 
-        $token = Auth::attempt($credentials);
+        // $credentials = $request->only('email', 'password') ;
 
-        if (!$token) {
-            return response()->json([
-                'status' => 401,
-                'message' => 'Login fail',
-            ]);
+        // $token = Auth::attempt($credentials);
 
-        }else{
-            return response()->json([
-                'status' => 200,
-                'message' => 'Login Success',
-                'token' => $token,
-                'user' => auth()->user(),
-                'expires_in' => auth()->factory()->getTTL() * 60,
-            ]);
-        }
+        // if (!$token) {
+        //     return response()->json([
+        //         'status' => 401,
+        //         'message' => 'Login fail',
+        //     ]);
+
+        // }else{
+        //     return response()->json([
+        //         'status' => 200,
+        //         'message' => 'Login Success',
+        //         'token' => $token,
+        //         'user' => auth()->user(),
+        //         'expires_in' => auth()->factory()->getTTL() * 60,
+        //     ]);
+        // }
 
         
     }
@@ -107,10 +156,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
-    {
-        return response()->json(auth()->user());
-    }
+    // public function me()
+    // {
+    //     return response()->json(auth()->user());
+    // }
 
     /**
      * Log the user out (Invalidate the token).
@@ -119,9 +168,9 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        // auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        // return response()->json(['message' => 'Successfully logged out']);
     }
 
     /**
@@ -129,10 +178,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
+    // public function refresh()
+    // {
+    //     return $this->respondWithToken(auth()->refresh());
+    // }
 
     /**
      * Get the token array structure.
@@ -141,12 +190,12 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
-    }
+    // protected function respondWithToken($token)
+    // {
+    //     return response()->json([
+    //         'access_token' => $token,
+    //         'token_type' => 'bearer',
+    //         'expires_in' => auth()->factory()->getTTL() * 60
+    //     ]);
+    // }
 }
