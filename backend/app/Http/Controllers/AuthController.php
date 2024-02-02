@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -75,7 +76,7 @@ class AuthController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
-                'password' => bcrypt($request->password1), // Hash the password
+                'password' => bcrypt($request->password), // Hash the password
                 'phone_number' => null,
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),
@@ -111,44 +112,46 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function login(Request $request)
     {  
-        return response()->json([
-            'status' => 200,
-            'message' => 'user registered successfully',
+        // Check if password contains at least one uppercase letter, one lowercase letter, one number, and one special character
+        Validator::extend('strong_password', function ($attribute, $value, $parameters, $validator) {
+            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $value);
+        });
+
+        // Custom validation message for strong password
+        Validator::replacer('strong_password', function ($message, $attribute, $rule, $parameters) {
+            return str_replace(':attribute', $attribute, 'The '.$attribute.' must contain at least one uppercase letter, one lowercase letter, one number, and one special character.');
+        });
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:128',
+            'password' => 'required|string|min:6|max:60|strong_password',
         ]);
 
-        // $request->validate([
-        //     'email' => 'required',
-        //     'password' => 'required'
-        // ]);
+        // If validation fails, return error messages
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);
+        }
 
-        // $credentials = $request->only('email', 'password') ;
+        // Retrieve the user from the database
+        $user = User::where('email', $request->email)->first();
 
-        // $token = Auth::attempt($credentials);
+        // Check if the user exists and verify the password
+        if ($user && Hash::check($request->password, $user->password)) {
+            // Generate JWT token for the authenticated user
+            $token = $this->generateJWTToken($user);
 
-        // if (!$token) {
-        //     return response()->json([
-        //         'status' => 401,
-        //         'message' => 'Login fail',
-        //     ]);
+            // Return success response with token
+            return response()->json([
+                'user' => $user,
+                'token' => $token
+            ], 200);
+        } else {
+            // If login fails, return error message
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
 
-        // }else{
-        //     return response()->json([
-        //         'status' => 200,
-        //         'message' => 'Login Success',
-        //         'token' => $token,
-        //         'user' => auth()->user(),
-        //         'expires_in' => auth()->factory()->getTTL() * 60,
-        //     ]);
-        // }
-
-        
     }
 
     /**
