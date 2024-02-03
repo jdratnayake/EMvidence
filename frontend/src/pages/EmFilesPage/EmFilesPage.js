@@ -229,7 +229,7 @@ function EmFilesPage() {
                     ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     : data
                   ).map((data) => (
-                    <TableRow key={data.file_id} hover={true}>
+                    <TableRow key={data.em_raw_file_id} hover={true}>
 
                       <TableCell component="th" scope="row">
                         <Stack
@@ -239,15 +239,15 @@ function EmFilesPage() {
 
                           <InsertDriveFileIcon fontSize="medium" color="primary" />
                           <Typography variant="h7" >
-                            {data.file_name}
+                            {data.em_raw_file_visible_name}
                           </Typography>
                         </Stack>
                       </TableCell>
                       <TableCell >
-                        {bytesToSize(data.file_size)}
+                        {bytesToSize(data.em_raw_cfile_file_size)}
                       </TableCell>
                       <TableCell >
-                        {data.created_time}
+                        {data.file_upload_timestamp}
                       </TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error" onClick={() => {
@@ -255,7 +255,7 @@ function EmFilesPage() {
                             "Do you really want to delete this file?"
                           )
                           if (confirmBox === true) {
-                            deleteRecord(data.file_id)
+                            deleteRecord(data.em_raw_file_id)
                           }
 
                         }}>
