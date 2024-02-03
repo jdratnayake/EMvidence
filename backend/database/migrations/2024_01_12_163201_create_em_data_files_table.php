@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('em_data_files', function (Blueprint $table) {
-            $table->id('rm_raw_file_id');
+            $table->id('em_raw_file_id');
             $table->string('em_raw_file_name', 128)->unique()->nullable(false);
+            $table->string('em_raw_upload_status')->default('processing')->nullable(false);
             $table->string('em_raw_file_visible_name', 128)->nullable(false);
             $table->string('em_raw_cfile_hash', 256)->nullable(false);
             $table->string('em_preprocess_file_name', 128)->unique()->nullable(true);
+            $table->bigInteger('em_raw_cfile_file_size')->nullable(false);
             $table->bigInteger('em_raw_h5_file_size')->nullable(false);
             $table->string('em_raw_h5_hash', 256)->nullable(false);
             $table->string('device_name', 64)->nullable(false);

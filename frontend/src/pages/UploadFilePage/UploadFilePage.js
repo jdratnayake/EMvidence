@@ -84,9 +84,9 @@ function UploadFilePage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [selectedValue1, setSelectedValue1] = useState("test");
-  const [selectedValue2, setSelectedValue2] = useState("test");
-  const [selectedValue3, setSelectedValue3] = useState("test");
+  const [deviceName, setDeviceName] = useState("test");
+  const [centerFreq, setCenterFreq] = useState(100);
+  const [samplingRate, setSamplingRate] = useState(100);
   const [selectedValue4, setSelectedValue4] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -98,13 +98,13 @@ function UploadFilePage() {
   // Handler for dropdown value change
 
   const handleDropdownChange1 = (event) => {
-    setSelectedValue1(event.target.value);
+    setDeviceName(event.target.value);
   };
   const handleDropdownChange2 = (event) => {
-    setSelectedValue2(event.target.value);
+    setCenterFreq(event.target.value);
   };
   const handleDropdownChange3 = (event) => {
-    setSelectedValue3(event.target.value);
+    setSamplingRate(event.target.value);
   };
   const handleDropdownChange4 = (event) => {
     setSelectedValue4(event.target.value);
@@ -137,12 +137,13 @@ function UploadFilePage() {
       // Do something with the form data, e.g., send it to an API
       console.log(
         "Form submitted with selected value:",
-        selectedValue1,
-        selectedValue2,
-        selectedValue3
+        deviceName,
+        centerFreq,
+        samplingRate
       );
       console.log("Selected file:", selectedFile);
     }
+    
   };
 
   useEffect(() => {
@@ -288,7 +289,7 @@ function UploadFilePage() {
     target: baseURL1,
     // fileType: ['png', 'jpg', 'jpeg', 'mp4', 'csv', 'h5', 'mkv', 'gz', 'zip', 'cfile', 'HEIC', 'iso'],
     fileType: ["png", "h5", "cfile", "gz"],
-    chunkSize: 1024 * 1024 * 10,
+    chunkSize: 1024,
     uploadMethod: "POST",
     headers: {
       // 'X-CSRF-TOKEN': csrfToken,
@@ -341,6 +342,7 @@ function UploadFilePage() {
   uploader.on("fileError", function (file, response) {
     // trigger when there is any error
     console.log(file);
+    console.log(response);
     alert("file uploading error.");
     navigate("/file_manage");
   });
@@ -396,9 +398,9 @@ function UploadFilePage() {
           name: fileName,
           size: fileSize,
           unique_name: fileUniqueName,
-          device_name: selectedValue1,
-          center_freq: selectedValue2,
-          sampling_rate: selectedValue3,
+          device_name: deviceName,
+          center_freq: centerFreq,
+          sampling_rate: samplingRate,
           file_hash: hash,
         })
         .then((response) => {
@@ -464,7 +466,7 @@ function UploadFilePage() {
                                     <Select
                                         labelId="dropdown-label-1"
                                         id="dropdown-1"
-                                        value={selectedValue1}
+                                        value={deviceName}
                                         onChange={handleDropdownChange1}
                                         label="Device Name"
                                         style={{ borderColor: "#525252" }}
@@ -489,7 +491,7 @@ function UploadFilePage() {
                                         type="number"
                                         label="Center Frequency"
                                         variant="outlined"
-                                        value={selectedValue2}
+                                        value={centerFreq}
                                         onChange={handleDropdownChange2}
                                         style={{ borderColor: "#525252" }}
                                         sx={{
@@ -513,7 +515,7 @@ function UploadFilePage() {
                                     <Select
                                         labelId="dropdown-label-2"
                                         id="dropdown-2"
-                                        value={selectedValue3}
+                                        value={samplingRate}
                                         onChange={handleDropdownChange3}
                                         label="Sampling Rate"
                                         style={{ borderColor: "#525252" }}
@@ -525,11 +527,11 @@ function UploadFilePage() {
                                             }
                                         }}
                                     >
-                                        <MenuItem value="8 MHz">8 MHz</MenuItem>
-                                        <MenuItem value="10 MHz">10 MHz</MenuItem>
-                                        <MenuItem value="12.5 MHz">12.5 MHz</MenuItem>
-                                        <MenuItem value="16 MHz">16 MHz</MenuItem>
-                                        <MenuItem value="20 MHz">20 MHz</MenuItem>
+                                        <MenuItem value="8 MHz">8</MenuItem>
+                                        <MenuItem value="10 MHz">10</MenuItem>
+                                        <MenuItem value="12.5 MHz">12.5</MenuItem>
+                                        <MenuItem value="16 MHz">16</MenuItem>
+                                        <MenuItem value="20 MHz">20</MenuItem>
                                     </Select>
                                 </FormControl> */}
 
@@ -543,7 +545,7 @@ function UploadFilePage() {
                     id="file-input"
                     type="file"
                     onChange={handleFileSelect}
-                    inputProps={{ accept: ".h5, .cfile" }}
+                    inputProps={{ accept: ".h5, .cfilde, .png" }}
                   />
                 </FormControl>
 

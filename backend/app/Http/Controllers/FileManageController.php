@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmFileModel;
+use App\Models\EmDataFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
@@ -18,23 +18,51 @@ class FileManageController extends Controller
 {
     public function index()
     {
-        $emDataRecords = EmFileModel::where('upload_user_id',1)->get(['file_id', 'upload_user_id', 'file_name','created_time','file_size' ,'file_unique_name','device_name', 'center_freq',  'sampling_rate']);
+        $emDataRecords = EmDataFile::where('user_id',1)->get([
+                          'em_raw_file_id', 
+                          'em_raw_file_name',
+                          'em_raw_file_visible_name',
+                          'em_raw_cfile_hash',
+                          'em_preprocess_file_name',
+                          'em_raw_cfile_file_size',
+                          'em_raw_h5_file_size',
+                          'em_raw_h5_hash',
+                          'device_name',
+                          'center_frequency',
+                          'sampling_rate',
+                          'user_id',
+                          'file_upload_timestamp'
+           ]);
         return  $emDataRecords;
     }
 
     public function deleteFile(Request $request)
     {
-        $query = DB::table('em_data_file')->select('file_path')->where('file_id',$request->file_id)->first();
-        //print $query->path;
-        $emdata = EmFileModel::find($request->file_id);
-        if($emdata->delete() && unlink(storage_path(''.$query->file_path))){
-         return response()->json([
-            'response' => "deletion is succsess"
-        ]);
-        }
+
+        // try {
+        //      //$query = DB::table('em_data_files')->select('em_raw_file_name')->where('em_raw_file_id',$request->file_id)->first();
+        // //print $query->path;
+        // $emdata = EmDataFile::find($request->file_id);
+        // if($emdata->delete() && unlink(storage_path('em_raw/'.$emdata->file_path))){
+        //  return response()->json([
+        //     'response' => "deletion is succsess"
+        // ]);
+        // }else{
+        //     return response()->json([
+        //         'response' => 'deletion is unsuccsess'
+        //     ]);
+        // }
+        // } catch (\Throwable $th) {
+        //     return response()->json([
+        //         'response' => 'Internal Server error'
+        //     ]);
+        // }
+        
         return response()->json([
-            'response' => "deletion is unsuccsess"
-        ]);
+                    'response' => $request->file_id
+                ]);
+            
+
     }
 
     public function store(Request $request)
@@ -78,43 +106,56 @@ class FileManageController extends Controller
 
     protected function saveFile(UploadedFile $file)
     {
-
+        try {
         $fileName = $this->createFilename($file);
         // Group files by mime type
         $realFileName = $file->getClientOriginalName();
         $mime = str_replace('/', '-', $file->getMimeType());
 
-        // Group files by the date (week
-        $dateFolder = date("Y-m-W");
-
         // Build the file path
-        $filePath = "em_raw/{$mime}/{$dateFolder}";
+        $filePath = "em_raw";
         $finalPath = storage_path($filePath);
+        // 'file_path' => $filePath .'/'. $fileName,
         // move the file name
         $file->move($finalPath, $fileName);
-        $query = DB::table('em_data_file')->insert([
-            'upload_user_id' => 1,
-            'file_unique_name' => $fileName,
-            'file_path' => $filePath .'/'. $fileName,
-            'file_name' => 'test',
-            'device_name' => 'test',
-            'center_freq' => 'test',
-            'sampling_rate' => 'test',
-            'file_size' => 100,
-            'file_hash' => 'test',
-            'created_time' => Carbon::create(now())->format("Y-m-d H:i:s"),
-
+        return response()->json([
+            'file_unique_name' => $fileName
         ]);
-        if ($query) {
-            return response()->json([
-                'file_unique_name' => $fileName
-                // 'mime_type' => $mime
-            ]);
-        } else {
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'Internal server error'
             ]);
         }
+
+        // $query = DB::table('em_data_files')->insert([
+        //     'user_id' => 1,
+        //     'em_raw_file_name' => $fileName,
+        //     'em_raw_file_visible_name' => 'test',
+        //     'device_name' => 'test',
+        //     'center_frequency' => 100,
+        //     'sampling_rate' => 10,
+        //     'em_raw_cfile_file_size' => 100,
+        //     'em_raw_h5_file_size' => 0,
+        //     'em_raw_h5_hash' => 'test',
+        //     'em_raw_cfile_hash' => 'test',
+        //     'file_upload_timestamp' => Carbon::create(now())->format("Y-m-d H:i:s"),
+        // ]);
+
+
+        // $query = EmDataFile::create([
+        //     'user_id' => 1,
+        //     'em_raw_file_name' => $fileName,
+        //     'em_raw_file_visible_name' => 'test',
+        //     'device_name' => 'test',
+        //     'center_frequency' => 100,
+        //     'sampling_rate' => 10,
+        //     'em_raw_cfile_file_size' => 100,
+        //     'em_raw_h5_file_size' => 0,
+        //     'em_raw_h5_hash' => 'test',
+        //     'em_raw_cfile_hash' => 'test',
+        //     'file_upload_timestamp' => Carbon::create(now())->format("Y-m-d H:i:s"),
+        // ]);
+
     }
 
     public function sendRecord(Request $request)
@@ -129,22 +170,49 @@ class FileManageController extends Controller
         $file_hash = $request->input('file_hash');
 
 
-        $query = DB::table('em_data_file')
-            ->where('file_unique_name', $fileUniqueName)
-            ->update([
-                'file_name' => $name,
-                'file_size' => $size,
-                'created_time' => Carbon::create(now('Asia/Colombo'))->format("Y-m-d H:i:s"),
-                'device_name' => $deviceName,
-                'center_freq' => $centerFreq,
-                'sampling_rate' => $samplingRate,
-                'file_hash' => $file_hash,
-            ]);
+        // $query = DB::table('em_data_files')
+        //     ->where('em_raw_file_name', $fileUniqueName)
+        //     ->update([
+        //         'em_raw_file_visible_name' => $name,
+        //         'em_raw_cfile_file_size' => $size,
+        //         'file_upload_timestamp' => Carbon::create(now('Asia/Colombo'))->format("Y-m-d H:i:s"),
+        //         'device_name' => $deviceName,
+        //         'center_freq' => $centerFreq,
+        //         'sampling_rate' => $samplingRate,
+        //         'em_raw_cfile_hash' => $file_hash,
+        //     ]);
+
+         $query = EmDataFile::create([
+            'user_id' => 1,
+            'em_raw_file_name' => $fileUniqueName,
+            'em_raw_file_visible_name' => $name,
+            'device_name' => $deviceName,
+            'center_frequency' => $centerFreq,
+            'sampling_rate' => $samplingRate,
+            'em_raw_cfile_file_size' => $size,
+            'em_raw_h5_file_size' => 0,
+            'em_raw_h5_hash' => 'test',
+            'em_raw_cfile_hash' => $file_hash,
+            'file_upload_timestamp' => Carbon::create(now())->format("Y-m-d H:i:s"),
+        ]);
+
+        // $query = DB::table('em_data_files')->insert([
+        //     'user_id' => 1,
+        //     'em_raw_file_name' => $fileUniqueName,
+        //     'em_raw_file_visible_name' => $name,
+        //     'device_name' => $deviceName,
+        //     'center_frequency' => $centerFreq,
+        //     'sampling_rate' => $samplingRate,
+        //     'em_raw_cfile_file_size' => $size,
+        //     'em_raw_h5_file_size' => 0,
+        //     'em_raw_h5_hash' => 'test',
+        //     'em_raw_cfile_hash' => $file_hash,
+        //     'file_upload_timestamp' => Carbon::create(now())->format("Y-m-d H:i:s"),
+        // ]); 
 
         if ($query) {
             return response()->json([
-                'file_unique_name' => $fileUniqueName
-                // 'mime_type' => $mime
+                'status' => 'Success'
             ]);
         } else {
             return response()->json([
