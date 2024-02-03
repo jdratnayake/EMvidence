@@ -1,4 +1,6 @@
 import { React, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,12 +16,47 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextBox from "../../components/TextBox/TextBox";
 import Copyright from "../../components/Copyright/Copyright";
 import { validateEmail, validatePassword } from "./Validation";
+import { loginUser } from "../../services/authService";
+import { useUser } from "../../contexts/UserContext";
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
+  const { user, addUser } = useUser();
+  const {
+    mutate: login,
+    isLoading,
+    isError,
+  } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      const userData = {
+        user_id: data.user.user_id,
+        user_type: data.user.user_type,
+        account_status: data.user.account_status,
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
+        email: data.user.email,
+        profile_picture: data.user.profile_picture,
+        token: data.token,
+      };
+
+      addUser({ userData });
+
+      if (userData.user_type === "admin") {
+        navigate("/admin");
+      } else if (userData.user_type === "investigator") {
+        navigate("/investigator");
+      } else if (userData.user_type === "developer") {
+        navigate("/developer");
+      } else {
+        navigate("/error");
+      }
+    },
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -44,10 +81,13 @@ export default function SignIn() {
 
     if (isValid) {
       console.log("Form data is valid");
-      console.log({
+
+      const userData = {
         email: data.get("email"),
         password: data.get("password"),
-      });
+      };
+
+      login(userData);
     } else {
       console.log("Form data is invalid");
     }
@@ -126,6 +166,7 @@ export default function SignIn() {
             </Box>
           </Box>
           <Copyright />
+          {/* <h1>{catData?.fact}</h1> */}
         </Container>
       </ThemeProvider>
     </span>
