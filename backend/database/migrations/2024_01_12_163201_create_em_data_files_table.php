@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('em_data_files', function (Blueprint $table) {
-            $table->id('rm_raw_file_id');
+            $table->id('em_raw_file_id');
             // processing
             // processed
             // invalid
