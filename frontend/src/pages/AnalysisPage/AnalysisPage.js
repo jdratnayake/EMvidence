@@ -14,7 +14,7 @@ import {
   NativeSelect,
   Typography,
 } from "@mui/material";
-import folder from "./../../Resources/folder.png";
+import folder from "./../../resources/folder.png";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";

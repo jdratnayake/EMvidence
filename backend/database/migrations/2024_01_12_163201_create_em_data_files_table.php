@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('em_data_files', function (Blueprint $table) {
             $table->id('em_raw_file_id');
+            // processing
+            // processed
+            // invalid
+            $table->string('em_raw_upload_status', 16)->nullable(false)->default('processing');
             $table->string('em_raw_file_name', 128)->unique()->nullable(false);
-            $table->string('em_raw_upload_status')->default('processing')->nullable(false);
             $table->string('em_raw_file_visible_name', 128)->nullable(false);
             $table->string('em_raw_cfile_hash', 256)->nullable(false);
             $table->string('em_preprocess_file_name', 128)->unique()->nullable(true);

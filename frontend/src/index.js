@@ -7,7 +7,13 @@ import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./contexts/UserContext";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-const client = new QueryClient();
+const client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
