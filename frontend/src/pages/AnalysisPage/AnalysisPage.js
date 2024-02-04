@@ -30,6 +30,9 @@ const AnalysisPage = () => {
   const [insightTypeName, setInsightTypeName] = useState(
     "Behavior identification"
   );
+  const [downSamplingIndex,setDownSamplingIndex] = useState(0);
+  const [fourierTransformationIndex,setFourierTransformationIndex] = useState(0);
+  const [sampleSelectionIndex,setSampleSelectionIndex] = useState(0);
 
   const blackHeader = "#000000";
   const containerColor = "#1614140D";
@@ -38,11 +41,15 @@ const AnalysisPage = () => {
   const executePreprocessingPlugin = () => {
     // setIsPreprocessingFetching(true);
     setLoading(true);
+    console.log("Down Sampling Index: "+downSamplingIndex);
 
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
       preprocessing_plugin_name: "basic.py",
+      down_sampling_index: downSamplingIndex,
+      fourier_transformation_index : fourierTransformationIndex,
+      sample_selection_index : sampleSelectionIndex,
     };
 
     axios
@@ -91,6 +98,18 @@ const AnalysisPage = () => {
     }
   };
 
+  const handleDownSamplingChange = (event) => {
+    setDownSamplingIndex(event.target.value);
+  };
+
+  const handleFourierTransformationChange = (event) => {
+    setFourierTransformationIndex(event.target.value);
+  };
+
+  const handleSampleSelectionChange = (event) => {
+    setSampleSelectionIndex(event.target.value);
+  };
+
   const executeAnalysisPlugin = () => {
     setLoadingAnalyse(true);
     let analysisPluginMachineLearningModelName = "";
@@ -110,6 +129,7 @@ const AnalysisPage = () => {
       analysis_plugin_name:
         "apple_iphone_4s__detect_behaviour_of_10_classes.py",
       analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
+      
     };
 
     axios
@@ -356,11 +376,13 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
+                  value = {downSamplingIndex}
+                  onChange={handleDownSamplingChange}
                 >
-                  <option value={1}>Not downsampled</option>
-                  <option value={2}>To 10MHz</option>
-                  <option value={3}>To 8MHz</option>
-                  <option value={4}>To 4MHz</option>
+                  <option value={0}>Not downsampled</option>
+                  <option value={1}>To 10MHz</option>
+                  <option value={2}>To 8MHz</option>
+                  <option value={3}>To 4MHz</option>
                 </NativeSelect>
               </Box>
               <Box
@@ -386,14 +408,15 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
+                  value = {fourierTransformationIndex}
+                  onChange={handleFourierTransformationChange}
                 >
-                  <option value={1}>
+                  <option value={0}>
                     STFT (FFT_SIZE = 2048 & Overlap Size = 256)
                   </option>
-                  <option value={2}>
-                    STFT (FFT_SIZE = 20000 & Overlap Size = 256)
+                  <option value={1} disabled>
+                    STFT (FFT_SIZE = 1024 & Overlap Size = 256)
                   </option>
-                  <option value={3}>FFT </option>
                 </NativeSelect>
               </Box>
 
@@ -420,12 +443,12 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
+                  value = {sampleSelectionIndex}
+                  onChange={handleSampleSelectionChange}
                 >
+                  <option value={0}>All Samples</option>
                   <option value={1}>First 20000 Samples</option>
                   <option value={2}>
-                    Anomaly reduction (10000 samples selected)
-                  </option>
-                  <option value={3}>
                     Samples selected from 1/4 to 3/4 of the file
                   </option>
                 </NativeSelect>
