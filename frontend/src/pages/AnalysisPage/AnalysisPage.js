@@ -30,26 +30,27 @@ const AnalysisPage = () => {
   const [insightTypeName, setInsightTypeName] = useState(
     "Behavior identification"
   );
-  const [downSamplingIndex,setDownSamplingIndex] = useState(0);
-  const [fourierTransformationIndex,setFourierTransformationIndex] = useState(0);
-  const [sampleSelectionIndex,setSampleSelectionIndex] = useState(0);
+  const [downSamplingIndex, setDownSamplingIndex] = useState(0);
+  const [fourierTransformationIndex, setFourierTransformationIndex] =
+    useState(0);
+  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
 
-  const blackHeader = "#000000";
-  const containerColor = "#1614140D";
+  const blackHeader = "#00245A";
+  const containerColor = "rgba(0, 34, 86, 0.25)";
   const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
     // setIsPreprocessingFetching(true);
     setLoading(true);
-    console.log("Down Sampling Index: "+downSamplingIndex);
+    console.log("Down Sampling Index: " + downSamplingIndex);
 
     const headers = {
       "Content-Type": "application/json",
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
       preprocessing_plugin_name: "basic.py",
       down_sampling_index: downSamplingIndex,
-      fourier_transformation_index : fourierTransformationIndex,
-      sample_selection_index : sampleSelectionIndex,
+      fourier_transformation_index: fourierTransformationIndex,
+      sample_selection_index: sampleSelectionIndex,
     };
 
     axios
@@ -129,7 +130,6 @@ const AnalysisPage = () => {
       analysis_plugin_name:
         "apple_iphone_4s__detect_behaviour_of_10_classes.py",
       analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
-      
     };
 
     axios
@@ -219,13 +219,14 @@ const AnalysisPage = () => {
             >
               File Selection
             </Typography>
-            <IconButton
+            {/* Add sign button */}
+            {/* <IconButton
               sx={{ mt: "-10px" }}
               aria-label="add-plugin"
               color="success"
             >
               <ControlPointIcon />
-            </IconButton>
+            </IconButton> */}
           </Box>
           <Box
             sx={{
@@ -239,10 +240,11 @@ const AnalysisPage = () => {
               sx={{
                 display: "flex",
                 flexDirection: "row", // Horizontal layout
-                border: "2px solid #000000",
+                border: "2px solid rgba(50, 84, 136, 0.5)",
                 width: "60%",
                 marginTop: "10px",
-                backgroundColor: "#b4bdbf",
+                marginLeft: "10%",
+                marginBottom: "5%",
               }}
             >
               {/* Left Section */}
@@ -258,7 +260,7 @@ const AnalysisPage = () => {
                     width: "133px",
                     height: "20vh",
                     flexShrink: 0,
-                    background: `url(${folder}), #b4bdbf 100% / cover no-repeat`,
+                    background: `url(${folder}),  100% / cover no-repeat`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -273,7 +275,7 @@ const AnalysisPage = () => {
                   top: 0,
                   bottom: 0,
                   width: "2px",
-                  backgroundColor: blackHeader,
+                  backgroundColor: "rgba(50, 84, 136, 0.5)",
                   content: "''",
                   marginTop: "10px",
                   marginBottom: "10px",
@@ -307,12 +309,12 @@ const AnalysisPage = () => {
                 </Typography>
               </Box>
             </Box>
-            <Button
+            {/* <Button
               sx={{
                 mb: "10px",
                 marginLeft: "80%",
                 marginRight: "10%",
-                backgroundColor: "#525252",
+                backgroundColor: "#00245A",
                 color: "#ffffff",
                 "&:hover": {
                   backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
@@ -321,7 +323,7 @@ const AnalysisPage = () => {
               variant="contained"
             >
               Select
-            </Button>
+            </Button> */}
           </Box>
         </Box>
         <Box class="pre_processing" sx={{ mt: "40px" }}>
@@ -376,7 +378,7 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
-                  value = {downSamplingIndex}
+                  value={downSamplingIndex}
                   onChange={handleDownSamplingChange}
                 >
                   <option value={0}>Not downsampled</option>
@@ -408,7 +410,7 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
-                  value = {fourierTransformationIndex}
+                  value={fourierTransformationIndex}
                   onChange={handleFourierTransformationChange}
                 >
                   <option value={0}>
@@ -443,7 +445,7 @@ const AnalysisPage = () => {
                     id: "uncontrollerd-native",
                   }}
                   sx={{ mt: "-10px" }}
-                  value = {sampleSelectionIndex}
+                  value={sampleSelectionIndex}
                   onChange={handleSampleSelectionChange}
                 >
                   <option value={0}>All Samples</option>
@@ -491,7 +493,7 @@ const AnalysisPage = () => {
                   mb: "10px",
                   marginLeft: "80%",
                   marginRight: "10%",
-                  backgroundColor: "#525252",
+                  backgroundColor: "#00245A",
                   color: "#ffffff",
                   "&:hover": {
                     backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
@@ -605,7 +607,7 @@ const AnalysisPage = () => {
                 mb: "10px",
                 marginLeft: "80%",
                 marginRight: "10%",
-                backgroundColor: "#525252",
+                backgroundColor: "#00245A",
                 color: "#ffffff",
                 "&:hover": {
                   backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
@@ -660,11 +662,12 @@ const AnalysisPage = () => {
             <Box
               sx={{
                 mt: "30px",
-                bgcolor: "white",
                 ml: "10px",
                 width: "50%",
                 mb: "30px",
                 paddingLeft: "10px",
+                ml: "10%",
+                border: "2px solid rgba(50, 84, 136, 0.5)",
               }}
             >
               <Typography variant="h5" sx={{ mb: "30px" }}>
