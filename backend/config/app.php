@@ -171,6 +171,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
+        ZanySoft\Zip\ZipServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -186,6 +187,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        
     ])->toArray(),
 
 ];

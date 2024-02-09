@@ -142,10 +142,12 @@ function EmFilesPage() {
 
       });
   };
+
   const customStyles = {
     backgroundColor: '#525252',
     color: 'white',
   };
+
   function bytesToSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 
@@ -156,20 +158,15 @@ function EmFilesPage() {
     return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + ' ' + sizes[i];
   }
 
-  const files = [
-    { id: 1, name: 'File 1', url: 'https://example.com/file1.pdf' },
-    { id: 2, name: 'File 2', url: 'https://example.com/file2.docx' },
-    // Add more files as needed
-  ];
   return (
     <>
       <CssBaseline />
       <NavBar />
-      <main>
+      
 
-        <div className="maindiv" style={{ marginTop: '20px' }}>
+        <div className="maindiv" style={{ marginTop: '10px' }}>
           <Container  >
-            <Typography variant="h2" color="textPrimary" align="center" gutterBottom>
+            <Typography variant="h4" color="textPrimary" align="center" gutterBottom>
               File Manage
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -215,6 +212,12 @@ function EmFilesPage() {
                       </Typography>
 
                     </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography variant="h6" color="textPrimary" >
+                        Status
+                      </Typography>
+
+                    </TableCell>
                     <TableCell>
                       <Typography variant="h6" color="textPrimary" >
                         Action
@@ -248,6 +251,9 @@ function EmFilesPage() {
                       </TableCell>
                       <TableCell >
                         {data.file_upload_timestamp}
+                      </TableCell>
+                      <TableCell >
+                        {data.em_raw_upload_status}
                       </TableCell>
                       <TableCell>
                         <Button variant="outlined" color="error" onClick={() => {
@@ -299,7 +305,7 @@ function EmFilesPage() {
             </TableContainer>
           </Container>
         </div>
-      </main>
+    
     </>
 
   );
