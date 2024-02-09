@@ -9,6 +9,7 @@ use Symfony\Component\Process\Process;
 function execute_python_script($path, ...$variables)
 {
     $process = new Process(['python3', $path, ...$variables]);
+    $process->setTimeout(360);
 
     try {
         $process->mustRun();
@@ -26,13 +27,19 @@ class PluginController extends Controller
         // Header parameters
         $emRawFileName = $request->header("em_raw_file_name");
         $preprocessingPluginName = $request->header("preprocessing_plugin_name");
+        $downSamplingIndex = $request->header("down_sampling_index");
+        $fourierTransformationIndex = $request->header("fourier_transformation_index");
+        $sampleSelectionIndex = $request->header("sample_selection_index");
 
         // Set path variables
         $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
         $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
         $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
 
-        $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
+        // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
+
+        $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath, 
+        $downSamplingIndex, $fourierTransformationIndex, $sampleSelectionIndex);
 
         return response()->json(["output" => $output]);
     }
