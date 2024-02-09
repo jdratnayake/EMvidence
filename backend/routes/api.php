@@ -21,6 +21,7 @@ use App\Http\Controllers\PluginController;
 Route::post('/upload_data_file', [FileManageController::class, 'store']);
 Route::post('/send_to_database', [FileManageController::class, 'sendRecord']);
 Route::get("/em_data_records",[FileManageController::class,'index']);
+Route::get("/process",[FileManageController::class,'processEMFile']);
 Route::post('/delete_file', [FileManageController::class, 'deleteFile']);
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
