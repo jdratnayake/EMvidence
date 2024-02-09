@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
     };
   }, []);
 
-  const loginUser = (userData) => {
+  const addUser = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
 
@@ -42,7 +42,7 @@ export const UserProvider = ({ children }) => {
     broadcastChannel.postMessage({ type: "userUpdate", payload: userData });
   };
 
-  const logoutUser = () => {
+  const removeUser = () => {
     setUser(null);
     localStorage.removeItem("user");
 
@@ -52,7 +52,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, addUser, removeUser }}>
       {children}
     </UserContext.Provider>
   );
