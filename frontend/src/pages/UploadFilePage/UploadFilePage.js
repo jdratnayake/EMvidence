@@ -19,6 +19,7 @@ import pako from "pako";
 import { OutlinedInput } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 import {
   FormControl,
   InputLabel,
@@ -84,9 +85,9 @@ function UploadFilePage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("test");
-  const [centerFreq, setCenterFreq] = useState(100);
-  const [samplingRate, setSamplingRate] = useState(100);
+  const [deviceName, setDeviceName] = useState("");
+  const [centerFreq, setCenterFreq] = useState("");
+  const [samplingRate, setSamplingRate] = useState("");
   const [selectedValue4, setSelectedValue4] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -143,7 +144,7 @@ function UploadFilePage() {
       );
       console.log("Selected file:", selectedFile);
     }
-    
+
   };
 
   useEffect(() => {
@@ -160,6 +161,10 @@ function UploadFilePage() {
       console.log(resumable);
       const compressedFileName = `${selectedFile.name}.gz`;
       const zippedFile = new File([compressedFile], compressedFileName);
+
+      
+     console.log('this is zipped file');
+     console.log(zippedFile);
       if (resumable) {
         resumable.addFile(zippedFile);
         if (isFileAdded) {
@@ -175,7 +180,7 @@ function UploadFilePage() {
   const calculateHash = () => {
     if (selectedFile) {
       console.log("if---");
-      const chunkSize = 1024 * 1024; // 1 MB chunks
+      const chunkSize = 1024 * 1024 * 5; // 1 MB chunks
       const totalChunks = Math.ceil(selectedFile.size / chunkSize);
       let currentChunk = 0;
       let hash = CryptoJS.algo.SHA256.create();
@@ -218,7 +223,7 @@ function UploadFilePage() {
       return;
     }
     const compressedFileName = `${selectedFile.name}.gz`;
-    const CHUNK_SIZE = 1024 * 1024 * 20;
+    const CHUNK_SIZE = 1024 * 1024 * 5;
     const originalFileName = selectedFile.name;
     const compressedChunks = [];
 
@@ -228,10 +233,22 @@ function UploadFilePage() {
       const reader = new FileReader();
 
       reader.onload = (event) => {
+       // console.log(event.target.result);
         const chunkData = new Uint8Array(event.target.result);
+       // console.log(chunkData);
         const compressedData = pako.gzip(chunkData);
         compressedChunks.push(compressedData);
 
+        //encrypting
+        // console.log('encrypting');
+        // let chunkData = event.target.result;
+        // console.log(chunkData.toString());
+        // let encryptedData = CryptoJS.AES.encrypt(chunkData, 'encryption_key');
+        // let  dataToCompress = new Uint8Array(encryptedData);
+        // const compressedData = pako.gzip(dataToCompress);
+        // compressedChunks.push(compressedData);
+        // console.log('+++++++++++');
+        
         offset += CHUNK_SIZE;
         setCompressionProgress((offset / selectedFile.size) * 100);
 
@@ -268,7 +285,7 @@ function UploadFilePage() {
       }
     });
   };
-  
+
 
   const concatenateUint8Arrays = (arrays) => {
     const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
@@ -289,21 +306,24 @@ function UploadFilePage() {
     target: baseURL1,
     // fileType: ['png', 'jpg', 'jpeg', 'mp4', 'csv', 'h5', 'mkv', 'gz', 'zip', 'cfile', 'HEIC', 'iso'],
     fileType: ["png", "h5", "cfile", "gz"],
-    chunkSize: 1024,
+    chunkSize: 1024 * 1024 * 20,
     uploadMethod: "POST",
     headers: {
       // 'X-CSRF-TOKEN': csrfToken,
       Accept: "application/json",
     },
-    // preprocess: function (chunk) {
-    //   console.log(chunk.data);
-    //   const encryptedData = CryptoJS.AES.encrypt(chunk.data, 'encryption_key').toString();
-    //   console.log('+++++++++++');
-    //   // Update the chunk data with the encrypted data
-    //   chunk.data = encryptedData;
-    //   console.log(chunk.data);
-    //   chunk.preprocessFinished();
-    // },
+    preprocess: function (chunk) {
+      // console.log('preprocessing');
+      // console.log(chunk.data);
+      // const encryptedData = CryptoJS.AES.encrypt(chunk.data, 'encryption_key');
+      // console.log('+++++++++++');
+      // // Update the chunk data with the encrypted data
+      // chunk.data = encryptedData;
+      // console.log(chunk.data);
+      chunk.preprocessFinished();
+      // return chunk.data;
+
+    },
     simultaneousUploads: 3,
     testChunks: false,
     throttleProgressCallbacks: 1,
@@ -316,7 +336,7 @@ function UploadFilePage() {
   });
 
 
-  
+
   uploader.on("uploadStart", function (file, response) {
     // trigger when file progress update
     console.log("uploading");
@@ -328,16 +348,20 @@ function UploadFilePage() {
     console.log("this is file unique name:-", response.file_unique_name);
     setFileUniqueName(response.file_unique_name);
     setIsSuccess(1);
+    console.log(fileName, fileSize, response.file_unique_name, deviceName, centerFreq, samplingRate, hash);
   });
 
   uploader.on("fileProgress", function (file, response) {
     // trigger when file progress update
+    console.log("---- this is uploading files -----");
+    console.log(file);
     setProgress(Math.floor(file.progress() * 100));
 
     if (Math.floor(file.progress() * 100) == 100) {
       setPercentage(100);
     }
   });
+
 
   uploader.on("fileError", function (file, response) {
     // trigger when there is any error
@@ -349,11 +373,17 @@ function UploadFilePage() {
 
   uploader.on("chunkingComplete", function (file, response) {
     // trigger when there is any error
+    console.log('this is file chunks -----------');
+    console.log(file.chunks);
     console.log('chunking complete');
     file.chunks.forEach(function (chunk) {
+      console.log('before encryption');
+      console.log(chunk.data);
       var key = "1234"; // Use the same key generation logic
       var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
+      console.log('after encryption');
       chunk.data = encryptedChunk;
+      console.log(encryptedChunk);
       console.log(chunk.data);
     });
 
@@ -366,25 +396,25 @@ function UploadFilePage() {
   const handleFileSelect = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-    if (file) {
-      const fileName = file.name;
-      const fileExtension = fileName.split(".").pop().toLowerCase();
+    // if (file) {
+    //   const fileName = file.name;
+    //   const fileExtension = fileName.split(".").pop().toLowerCase();
 
-      if (
-        fileExtension === "png" ||
-        fileExtension === "cfile" ||
-        fileExtension === "h5"
-      ) {
-        // Valid PNG file selected, you can proceed with further handling
-        console.log("Valid cfile selected:", fileName);
-        // Add your additional logic here
-      } else {
-        // Display an error message or take appropriate action for invalid file
-        console.error("Invalid file type. Please select a cfile file.");
-        // Clear the file input if needed
-        event.target.value = null;
-      }
-    }
+    //   if (
+    //     fileExtension === "png" ||
+    //     fileExtension === "cfile" ||
+    //     fileExtension === "h5"
+    //   ) {
+    //     // Valid PNG file selected, you can proceed with further handling
+    //     console.log("Valid cfile selected:", fileName);
+    //     // Add your additional logic here
+    //   } else {
+    //     // Display an error message or take appropriate action for invalid file
+    //     console.error("Invalid file type. Please select a cfile file.");
+    //     // Clear the file input if needed
+    //     event.target.value = null;
+    //   }
+    // }
     console.log(file);
     setSelectedFile(file);
     setFileName(file.name);
@@ -393,6 +423,9 @@ function UploadFilePage() {
 
   useEffect(() => {
     if (isSuccess === 1 && percentage == 100) {
+      console.log('-- ---- --');
+      console.log(fileName, fileSize, fileUniqueName, deviceName, centerFreq, samplingRate, hash);
+      console.log('-- ---- --');
       axios
         .post(baseURL2, {
           name: fileName,
@@ -404,7 +437,7 @@ function UploadFilePage() {
           file_hash: hash,
         })
         .then((response) => {
-          console.log(response.status);
+          console.log(response);
           if (response.status == 200) {
             setIsSendToDatabase(true);
             setTimeout(() => {
@@ -442,11 +475,11 @@ function UploadFilePage() {
       <CssBaseline />
       <NavBar />
 
-      <div className="maindiv" style={{ marginTop: "100px" }}>
+      <div className="maindiv" style={{ marginTop: "50px" }}>
         {!isSubmitted && (
           <Container maxWidth="sm" id="form">
             <Typography
-              variant="h2"
+              variant="h4"
               color="textPrimary"
               align="center"
               gutterBottom
@@ -457,96 +490,98 @@ function UploadFilePage() {
               variant="h4"
               color="textPrimary"
               align="center"
+              marginTop={7}
               gutterBottom
             >
               <form onSubmit={handleSubmit}>
                 {/* Dropdown */}
-                {/* <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                    <InputLabel id="dropdown-label-1">Device Name</InputLabel>
-                                    <Select
-                                        labelId="dropdown-label-1"
-                                        id="dropdown-1"
-                                        value={deviceName}
-                                        onChange={handleDropdownChange1}
-                                        label="Device Name"
-                                        style={{ borderColor: "#525252" }}
-                                        sx={{
-                                            "&:hover": {
-                                                "&& fieldset": {
-                                                    border: "3px solid gray"
-                                                }
-                                            }
-                                        }}
+                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                  <InputLabel id="dropdown-label-1">Device Name</InputLabel>
+                  <Select
+                    labelId="dropdown-label-1"
+                    id="dropdown-1"
+                    value={deviceName}
+                    onChange={handleDropdownChange1}
+                    label="Device Name"
+                    style={{ borderColor: "#525252" }}
+                    sx={{
+                      "&:hover": {
+                        "&& fieldset": {
+                          border: "3px solid gray"
+                        }
+                      }
+                    }}
 
-                                    >
-                                        <MenuItem value="Arduino">Arduino</MenuItem>
-                                        <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
+                  >
+                    <MenuItem value="Arduino">Arduino</MenuItem>
+                    <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
 
-                                    </Select>
-                                </FormControl>
+                  </Select>
+                </FormControl>
 
-                                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                    <TextField
-                                        id="text-1"
-                                        type="number"
-                                        label="Center Frequency"
-                                        variant="outlined"
-                                        value={centerFreq}
-                                        onChange={handleDropdownChange2}
-                                        style={{ borderColor: "#525252" }}
-                                        sx={{
-                                            "&:hover": {
-                                                "&& fieldset": {
-                                                    border: "3px solid gray"
-                                                }
-                                            }
-                                        }}
-                                        InputProps={{
-                                            endAdornment: <InputAdornment position="end">Hz</InputAdornment>,
-                                            inputMode: 'numeric',
-                                            pattern: '/^-?\d+(?:\.\d+)?$/g',
-                                            inputProps: { min: 0, step: 0.01, style: { textAlign: 'center' } }
-                                        }}
-                                        required />
-                                </FormControl>
+                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                  <TextField
+                    id="text-1"
+                    type="number"
+                    label="Center Frequency"
+                    variant="outlined"
+                    value={centerFreq}
+                    onChange={handleDropdownChange2}
+                    style={{ borderColor: "#525252" }}
+                    sx={{
+                      "&:hover": {
+                        "&& fieldset": {
+                          border: "3px solid gray"
+                        }
+                      }
+                    }}
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">Hz</InputAdornment>,
+                      inputMode: 'numeric',
+                      pattern: '/^-?\d+(?:\.\d+)?$/g',
+                      inputProps: { min: 0, step: 0.01, style: { textAlign: 'center' } }
+                    }}
+                    required />
+                </FormControl>
 
-                                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
-                                    <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
-                                    <Select
-                                        labelId="dropdown-label-2"
-                                        id="dropdown-2"
-                                        value={samplingRate}
-                                        onChange={handleDropdownChange3}
-                                        label="Sampling Rate"
-                                        style={{ borderColor: "#525252" }}
-                                        sx={{
-                                            "&:hover": {
-                                                "&& fieldset": {
-                                                    border: "3px solid gray"
-                                                }
-                                            }
-                                        }}
-                                    >
-                                        <MenuItem value="8 MHz">8</MenuItem>
-                                        <MenuItem value="10 MHz">10</MenuItem>
-                                        <MenuItem value="12.5 MHz">12.5</MenuItem>
-                                        <MenuItem value="16 MHz">16</MenuItem>
-                                        <MenuItem value="20 MHz">20</MenuItem>
-                                    </Select>
-                                </FormControl> */}
+                <FormControl fullWidth style={{ marginBottom: '20px' }} required>
+                  <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
+                  <Select
+                    labelId="dropdown-label-2"
+                    id="dropdown-2"
+                    value={samplingRate}
+                    onChange={handleDropdownChange3}
+                    label="Sampling Rate"
+                    style={{ borderColor: "#525252" }}
+                    sx={{
+                      "&:hover": {
+                        "&& fieldset": {
+                          border: "3px solid gray"
+                        }
+                      }
+                    }}
+                  >
+                    <MenuItem value="8">8 MHz</MenuItem>
+                    <MenuItem value="10">10 MHz</MenuItem>
+                    <MenuItem value="12.5">12.5 MHz</MenuItem>
+                    <MenuItem value="16">16 MHz</MenuItem>
+                    <MenuItem value="20">20 MHz</MenuItem>
+                  </Select>
+                </FormControl>
 
                 <FormControl
                   fullWidth
-                  style={{ marginBottom: "20px" }}
                   required
+                  style={{ marginBottom: "20px" }}
                 >
-                  <InputLabel htmlFor="file-input"></InputLabel>
-                  <Input
-                    id="file-input"
-                    type="file"
-                    onChange={handleFileSelect}
-                    inputProps={{ accept: ".h5, .cfilde, .png" }}
-                  />
+                  <div className="container">
+                    <div className="fileUploadInput">
+                      <button>
+                        <AttachFileIcon fontSize="small" color="primary" />
+                      </button>
+                      <input type="file" onChange={handleFileSelect} accept=".h5, .cfile, .png, .pdf" />
+                    </div>
+                  </div>
                 </FormControl>
 
                 {/* Submit button */}
