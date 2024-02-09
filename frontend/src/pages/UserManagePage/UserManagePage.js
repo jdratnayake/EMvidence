@@ -3,6 +3,7 @@ import NavBarAdmin from "../../components/NavBarAdmin";
 import { Box, Container, styled } from "@mui/system";
 import {
   Button,
+  Chip,
   Paper,
   Table,
   TableBody,
@@ -16,6 +17,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import CircleIcon from "@mui/icons-material/Circle";
 
 const columns = [
   { id: "name", label: "Name", midWidth: 100 },
@@ -88,6 +90,11 @@ const TableHeadRow = styled(TableRow)(() => ({
   },
 }));
 
+const TableCellCenter = styled(TableCell)(() => ({
+  display: "flex",
+  justifyContent: "center",
+}));
+
 // const SearchField = styled(TextField)(() => ({
 //   color: 'var(--text-color, #00245A)',
 //   border: '2px solid #00245A', // Set border color and thickness
@@ -113,10 +120,93 @@ function UserManagePage() {
   };
 
   const rows = [
-    { name: "Doe, John", status: "Active", userId: "1" },
-    { name: "Doe, John", status: "Active", userId: "2" },
-    { name: "Doe, John", status: "Active", userId: "3" },
+    { name: "Doe, John", status: "Inactive", actions: "1" },
+    { name: "Doe, John", status: "Active", actions: "2" },
+    { name: "Doe, John", status: "Active", actions: "3" },
   ];
+
+  function getStatusByActions(actionsValue) {
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].actions === actionsValue) {
+        return rows[i].status;
+      }
+    }
+    return null;
+  }
+
+  function getActions(value) {
+    return (
+      <TableCell>
+        <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "#667085", cursor: "pointer" }}
+            gutterBottom
+          >
+            Edit
+          </Typography>
+          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+          <Typography
+            variant="body2"
+            sx={{ color: "#667085", cursor: "pointer" }}
+            gutterBottom
+          >
+            View
+          </Typography>
+          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+          {getStatusByActions(value) === "Active" ? (
+            <Typography
+              variant="body2"
+              sx={{ color: "#F90000", cursor: "pointer" }}
+              gutterBottom
+            >
+              Deactivate
+            </Typography>
+          ) : (
+            <Typography
+              variant="body2"
+              sx={{ color: "#00245A", cursor: "pointer" }}
+              gutterBottom
+            >
+              Activate
+            </Typography>
+          )}
+        </Box>
+      </TableCell>
+    );
+  }
+
+  function getStatus(value) {
+    if (value === "Active") {
+      return (
+        <TableCell>
+          <Chip
+            sx={{ background: "#ECFDF3", color: "#037847", mt: "10px" }}
+            label={
+              <>
+                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
+                {value}
+              </>
+            }
+          />
+        </TableCell>
+      );
+    } else {
+      return (
+        <TableCell>
+          <Chip
+            sx={{ background: "#F2F4F7", color: "#364254", mt: "10px" }}
+            label={
+              <>
+                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
+                {value}
+              </>
+            }
+          />
+        </TableCell>
+      );
+    }
+  }
 
   return (
     <>
@@ -176,7 +266,12 @@ function UserManagePage() {
                               >
                                 {columns.map((column) => {
                                   const value = row[column.id];
-                                  return (
+                                  console.log(column.id);
+                                  return column.id === "status" ? (
+                                    getStatus(value)
+                                  ) : column.id === "actions" ? (
+                                    getActions(value)
+                                  ) : (
                                     <TableCell key={column.id}>
                                       {value}
                                     </TableCell>
