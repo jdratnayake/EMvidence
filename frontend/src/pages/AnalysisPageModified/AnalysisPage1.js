@@ -19,7 +19,7 @@ import {
   stepConnectorClasses,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import folder from "./../../Resources/folder.png";
+import folder from "./../../resources/folder.png";
 
 const ComponentOuter = styled(Container)(() => ({
   marginTop: "20px",
@@ -473,9 +473,7 @@ export default function AnalysisPage1() {
                     </ButtonAddPlugin>
                   </AnalysisLeftBox>
                   <DividerLine />
-                  <FileSelectionRight>
-
-                  </FileSelectionRight>
+                  <FileSelectionRight></FileSelectionRight>
                 </ContentSectionBox>
                 <ButtonGroupBox>
                   <ButtonBottomLeft

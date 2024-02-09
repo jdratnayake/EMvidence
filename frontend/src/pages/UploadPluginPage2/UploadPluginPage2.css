@@ -1,36 +1,4 @@
-.bouncing-loader {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .bouncing-loader > div {
-    width: 16px;
-    height: 16px;
-    margin: 3px 6px;
-    border-radius: 30%;
-    background-color: #525252;
-    opacity: 1;
-    animation: bouncing-loader 0.6s infinite alternate;
-  }
-
-
-
-@keyframes bouncing-loader {
-    to {
-      opacity: 0.1;
-      transform: translateY(-16px);
-    }
-  }
-  
-  .bouncing-loader > div:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  
-  .bouncing-loader > div:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-
-  .fileUploadInput {
+.fileUploadInput {
     display: grid;
     grid-gap: 10px;
     position: relative;
@@ -50,8 +18,8 @@
       position: relative;
       z-index: 1;
       padding: 0 gap(m);
-      left: 21px;
-      width: 96%;
+      left: 10px;
+      width: 100%;
       height: 50px;
       border: 1px solid #000055;
       border-left-style: none;
@@ -72,9 +40,9 @@
           
     .fileUploadInput button {
       position: absolute;
-      left: 0px;
+      left: -3px;
       bottom: 0;
-      width: 21px;
+      width: 13px;
       height: 50px;
       line-height: 0;
       user-select: none;

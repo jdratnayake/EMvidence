@@ -16,10 +16,12 @@ class EmDataFileTableSeeder extends Seeder
     {
         $em_data_files = [
             [
+                'em_raw_upload_status' => 'processed',
                 'em_raw_file_name' => 'class_8_iphone4s_sms-app.cfile',
                 'em_raw_file_visible_name' => 'Iphone 4s SMS EM data',
                 'em_raw_cfile_hash' => Str::random(32),
                 'em_preprocess_file_name' => '',
+                'em_raw_cfile_file_size' => 5000,
                 'em_raw_h5_file_size' => 5000,
                 'em_raw_h5_hash' => Str::random(32),
                 'device_name' => 'Iphone 4s',
