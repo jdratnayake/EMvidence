@@ -19,6 +19,7 @@ import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import UserManagePage from "./pages/UserManagePage/UserManagePage";
 import UploadPluginPage1 from "./pages/UploadPluginPage1/UploadPluginPage1";
 import UploadPluginPage2 from "./pages/UploadPluginPage2/UploadPluginPage2";
+import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
       <Route path="user_manage" element={<UserManagePage />} />
       <Route path="plugin_upload1" element={<UploadPluginPage1 />} />
       <Route path="plugin_upload2" element={<UploadPluginPage2 />} />
+      <Route path="investigation" element={<InvestigationPage />} />
     </Route>
   )
 );
