@@ -144,7 +144,7 @@ function EmFilesPage() {
   };
 
   const customStyles = {
-    backgroundColor: '#525252',
+    backgroundColor: '#00245A',
     color: 'white',
   };
 
@@ -164,7 +164,7 @@ function EmFilesPage() {
       <NavBar />
       
 
-        <div className="maindiv" style={{ marginTop: '10px' }}>
+        <div className="maindiv" style={{ marginTop: '50px' }}>
           <Container  >
             <Typography variant="h4" color="textPrimary" align="center" gutterBottom>
               File Manage
