@@ -162,19 +162,19 @@ function EmFilesPage() {
     <>
       <CssBaseline />
       <NavBar />
-      
 
-        <div className="maindiv" style={{ marginTop: '50px' }}>
-          <Container  >
-            <Typography variant="h4" color="textPrimary" align="center" gutterBottom>
-              File Manage
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" onClick={navigateToUploadForm} style={customStyles}>
-                upload
-              </Button>
-            </Stack>
-            {/* <Grid container spacing={2} style={{ marginTop: '20px' }}>
+
+      <div className="maindiv" style={{ marginTop: '50px' }}>
+        <Container  >
+          <Typography variant="h4" color="textPrimary" align="center" gutterBottom>
+            File Manage
+          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={navigateToUploadForm} style={customStyles}>
+              upload
+            </Button>
+          </Stack>
+          {/* <Grid container spacing={2} style={{ marginTop: '20px' }}>
               {data.map((file) => (
                 <Grid item key={file.file_id} xs={10} sm={5} md={5} lg={5}>
                   <Card>
@@ -190,122 +190,135 @@ function EmFilesPage() {
                 </Grid>
               ))}
             </Grid> */}
-            <TableContainer component={Paper} style={{ marginTop: '10px' }}>
-              <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-                <TableBody>
-                  <TableRow>
-                    <TableCell component="th" scope="row" >
+          <TableContainer component={Paper} style={{ marginTop: '10px' }}>
+            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+              <TableBody>
+                <TableRow>
+                  <TableCell component="th" scope="row" >
 
-                      <Typography variant="h6" color="textPrimary" >
-                        File Name
-                      </Typography>
-                    </TableCell>
+                    <Typography variant="h6" color="textPrimary" >
+                      File Name
+                    </Typography>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h6" color="textPrimary" >
+                      Size
+                    </Typography>
+
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h6" color="textPrimary" >
+                      Created Date
+                    </Typography>
+
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h6" color="textPrimary" >
+                      Status
+                    </Typography>
+
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="h6" color="textPrimary" >
+                      Action
+                    </Typography>
+
+                  </TableCell>
+                  <TableCell>
+
+                  </TableCell>
+                </TableRow>
+                {(rowsPerPage > 0
+                  ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : data
+                ).map((data) => (
+                  <TableRow key={data.em_raw_file_id} hover={true}>
+
                     <TableCell component="th" scope="row">
-                      <Typography variant="h6" color="textPrimary" >
-                        Size
-                      </Typography>
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                      >
 
+                        <InsertDriveFileIcon fontSize="medium" color="primary" />
+                        <Typography variant="h7" >
+                          {data.em_raw_file_visible_name}
+                        </Typography>
+                      </Stack>
                     </TableCell>
-                    <TableCell component="th" scope="row">
-                      <Typography variant="h6" color="textPrimary" >
-                        Created Date
-                      </Typography>
-
+                    <TableCell >
+                      {bytesToSize(data.em_raw_cfile_file_size)}
                     </TableCell>
-                    <TableCell component="th" scope="row">
-                      <Typography variant="h6" color="textPrimary" >
-                        Status
-                      </Typography>
-
+                    <TableCell >
+                      {data.file_upload_timestamp}
+                    </TableCell>
+                    {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
+                    <TableCell >
+                      {data.em_raw_upload_status === "processing" && (
+                        <Typography style={{ color: 'orange' }}>processing</Typography>
+                      )
+                      }
+                      {data.em_raw_upload_status === "processed" && (
+                        <Typography style={{ color: 'green' }}>processed</Typography>
+                      )
+                      }
+                      {data.em_raw_upload_status === "faild" && (
+                        <Typography style={{ color: 'red' }}>faild</Typography>
+                      )
+                      }
+                      
                     </TableCell>
                     <TableCell>
-                      <Typography variant="h6" color="textPrimary" >
-                        Action
-                      </Typography>
+                      <Button variant="outlined" color="error" onClick={() => {
+                        const confirmBox = window.confirm(
+                          "Do you really want to delete this file?"
+                        )
+                        if (confirmBox === true) {
+                          deleteRecord(data.em_raw_file_id)
+                        }
 
+                      }}>
+                        Delete
+                      </Button>
                     </TableCell>
                     <TableCell>
-                
+                      <IconButton aria-label="MoreVertIcon"  >
+                        <MoreVertIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
-                  {(rowsPerPage > 0
-                    ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    : data
-                  ).map((data) => (
-                    <TableRow key={data.em_raw_file_id} hover={true}>
-
-                      <TableCell component="th" scope="row">
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                        >
-
-                          <InsertDriveFileIcon fontSize="medium" color="primary" />
-                          <Typography variant="h7" >
-                            {data.em_raw_file_visible_name}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell >
-                        {bytesToSize(data.em_raw_cfile_file_size)}
-                      </TableCell>
-                      <TableCell >
-                        {data.file_upload_timestamp}
-                      </TableCell>
-                      <TableCell >
-                        {data.em_raw_upload_status}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="outlined" color="error" onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you really want to delete this file?"
-                          )
-                          if (confirmBox === true) {
-                            deleteRecord(data.em_raw_file_id)
-                          }
-
-                        }}>
-                          Delete
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <IconButton aria-label="MoreVertIcon"  >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      rowsPerPageOptions={[10]}
-                      colSpan={3}
-                      count={data.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      SelectProps={{
-                        inputProps: {
-                          'aria-label': 'rows per page',
-                        },
-                        native: true,
-                      }}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                      ActionsComponent={TablePaginationActions}
-                    />
+                ))}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
                   </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </Container>
-        </div>
-    
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[10]}
+                    colSpan={3}
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: {
+                        'aria-label': 'rows per page',
+                      },
+                      native: true,
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </Container>
+      </div>
+
     </>
 
   );
