@@ -27,6 +27,13 @@ import { Grid, Card, CardContent } from '@mui/material';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import Divider from '@mui/material/Divider';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CardActions from '@mui/material/CardActions';
+import logo from "../PluginsPage/p4.png";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const baseURL1 = 'http://127.0.0.1:8000/api/em_data_records';
 const baseURL2 = 'http://127.0.0.1:8000/api/delete_file';
@@ -112,6 +119,88 @@ function EmFilesPage() {
   const navigateToUploadForm = () => {
     navigate('/file_upload');
   };
+
+  const [open, setOpen] = useState(false);
+  const [selectedFileData, setSelectedFileData] = useState(null);
+
+  const handleClickOpen = (data) => {
+    setSelectedFileData(data)
+    setOpen(true);
+  };
+
+
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
+  const renderFileDetails = () => {
+    if (selectedFileData) {
+      return (
+        <Card variant="outlined">
+          <CardContent>
+            <Grid container alignItems="center" justifyContent="center">
+              {/* <InsertDriveFileIcon fontSize="medium" color="primary"/> */}
+              <Typography variant="h6" color="textPrimary" align="center" gutterBottom>
+                {selectedFileData.em_raw_file_visible_name}
+              </Typography>
+            </Grid>
+            {/* <Typography color="textSecondary" align="left">
+              File Status : {selectedFileData.em_raw_upload_status}
+            </Typography> */}
+            {selectedFileData.em_raw_upload_status === "processing" && (
+              <Stack direction="row" spacing={1}>
+                <Typography color="textSecondary" align="left">
+                  File Status :
+                </Typography>
+                <Typography style={{ color: 'orange' }}>processing</Typography>
+              </Stack>
+            )
+            }
+            {selectedFileData.em_raw_upload_status === "processed" && (
+              <Stack direction="row" spacing={1}>
+                <Typography color="textSecondary" align="left">
+                  File Status :
+                </Typography>
+                <Typography style={{ color: 'green' }}>processed</Typography>
+              </Stack>
+            )
+            }
+            {selectedFileData.em_raw_upload_status === "faild" && (
+              <Stack direction="row" spacing={1}>
+                <Typography color="textSecondary" align="left">
+                  File Status :
+                </Typography>
+                <Typography style={{ color: 'red' }}>faild</Typography>
+              </Stack>
+            )
+            }
+            <Typography color="textSecondary" align="left">
+              File Size : {bytesToSize(selectedFileData.em_raw_cfile_file_size)}
+            </Typography>
+            <Typography color="textSecondary" align="left">
+              Created Date : {selectedFileData.file_upload_timestamp}
+            </Typography>
+            <Typography color="textSecondary" align="left">
+              Device : {selectedFileData.device_name}
+            </Typography>
+            <Typography color="textSecondary" align="left">
+              center_frequency : {selectedFileData.center_frequency} Hz
+            </Typography>
+            <Typography color="textSecondary" align="left">
+              Sampling Rate : {selectedFileData.sampling_rate} MHz
+            </Typography>
+            {/* Add more file details here as needed */}
+          </CardContent>
+        </Card>
+      );
+    } else {
+      return null;
+    }
+  };
+
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -133,10 +222,10 @@ function EmFilesPage() {
       .then((response) => {
         console.log(response.status);
         if (response.status == 200) {
-          alert('File is successfully deleted.');
+          // alert('File is successfully deleted.');
           window.location.reload();
         } else {
-          alert('Error occurs when file deleting.');
+          alert('An Error occured when deleting the file.');
           window.location.reload();
         }
 
@@ -162,7 +251,20 @@ function EmFilesPage() {
     <>
       <CssBaseline />
       <NavBar />
+      <div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+        >
+          <DialogContent>
+            {renderFileDetails()}
+          </DialogContent>
 
+        </Dialog>
+      </div>
 
       <div className="maindiv" style={{ marginTop: '50px' }}>
         <Container  >
@@ -195,37 +297,34 @@ function EmFilesPage() {
               <TableBody>
                 <TableRow>
                   <TableCell component="th" scope="row" >
-
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary" marginLeft={8} >
                       File Name
                     </Typography>
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary" align="center">
                       Size
                     </Typography>
-
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary" align="center">
                       Created Date
                     </Typography>
-
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary" align="center">
                       Status
                     </Typography>
-
                   </TableCell>
                   <TableCell>
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary" align="center">
                       Action
                     </Typography>
-
                   </TableCell>
                   <TableCell>
-
+                    <Typography variant="h6" color="textPrimary" align="center">
+                      More Details
+                    </Typography>
                   </TableCell>
                 </TableRow>
                 {(rowsPerPage > 0
@@ -246,14 +345,14 @@ function EmFilesPage() {
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell >
+                    <TableCell align="center">
                       {bytesToSize(data.em_raw_cfile_file_size)}
                     </TableCell>
-                    <TableCell >
+                    <TableCell align="center">
                       {data.file_upload_timestamp}
                     </TableCell>
                     {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
-                    <TableCell >
+                    <TableCell align="center">
                       {data.em_raw_upload_status === "processing" && (
                         <Typography style={{ color: 'orange' }}>processing</Typography>
                       )
@@ -266,9 +365,9 @@ function EmFilesPage() {
                         <Typography style={{ color: 'red' }}>faild</Typography>
                       )
                       }
-                      
+
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <Button variant="outlined" color="error" onClick={() => {
                         const confirmBox = window.confirm(
                           "Do you really want to delete this file?"
@@ -281,8 +380,8 @@ function EmFilesPage() {
                         Delete
                       </Button>
                     </TableCell>
-                    <TableCell>
-                      <IconButton aria-label="MoreVertIcon"  >
+                    <TableCell align="center">
+                      <IconButton aria-label="MoreVertIcon" onClick={() => handleClickOpen(data)}>
                         <MoreVertIcon />
                       </IconButton>
                     </TableCell>
