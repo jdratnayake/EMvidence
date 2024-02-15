@@ -139,7 +139,7 @@ function EmFilesPage() {
     if (selectedFileData) {
       return (
         <Card variant="outlined">
-          <CardContent>
+          <CardContent >
             <Grid container alignItems="center" justifyContent="center">
               {/* <InsertDriveFileIcon fontSize="medium" color="primary"/> */}
               <Typography variant="h6" color="textPrimary" align="center" gutterBottom>
@@ -186,7 +186,7 @@ function EmFilesPage() {
               Device : {selectedFileData.device_name}
             </Typography>
             <Typography color="textSecondary" align="left">
-              center_frequency : {selectedFileData.center_frequency} Hz
+              Center Frequency : {selectedFileData.center_frequency} Hz
             </Typography>
             <Typography color="textSecondary" align="left">
               Sampling Rate : {selectedFileData.sampling_rate} MHz
@@ -292,7 +292,7 @@ function EmFilesPage() {
                 </Grid>
               ))}
             </Grid> */}
-          <TableContainer component={Paper} style={{ marginTop: '10px' }}>
+          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow>
