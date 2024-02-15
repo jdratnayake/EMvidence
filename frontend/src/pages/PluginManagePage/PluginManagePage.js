@@ -20,7 +20,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
 
 const columns = [
-  { id: "name", label: "Name", midWidth: 100 },
+  { id: "plugin", label: "Plugin Name", midWidth: 150 },
   { id: "status", label: "Status", midWidth: 150 },
   { id: "actions", label: "Actions", midWidth: 300 },
 ];
@@ -91,21 +91,11 @@ const TableHeadRow = styled(TableRow)(() => ({
 }));
 
 const TableCellBlue = styled(TableCell)(() => ({
-  color: "#00245A",
-}));
+    color: "#00245A",
+  }));
+  
 
-// const SearchField = styled(TextField)(() => ({
-//   color: 'var(--text-color, #00245A)',
-//   border: '2px solid #00245A', // Set border color and thickness
-//   borderRadius: '4px', // Add optional rounded corners
-//   '& .MuiOutlinedInput-root': { // Target outlined variant properties
-//     '& fieldset': {
-//       borderColor: '#00245A', // Ensure consistency across variants
-//     },
-//   },
-// }));
-
-function UserManagePage() {
+function PluginManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -119,9 +109,9 @@ function UserManagePage() {
   };
 
   const rows = [
-    { name: "Doe, John", status: "Inactive", actions: "1" },
-    { name: "Doe, John", status: "Active", actions: "2" },
-    { name: "Doe, John", status: "Active", actions: "3" },
+    { plugin: "Firmware Version Detection", status: "Inactive", actions: "1" },
+    { plugin: "Firmware Version Detection", status: "Active", actions: "2" },
+    { plugin: "Firmware Version Detection", status: "Active", actions: "3" },
   ];
 
   function getStatusByActions(actionsValue) {
@@ -142,17 +132,10 @@ function UserManagePage() {
             sx={{ color: "#667085", cursor: "pointer" }}
             gutterBottom
           >
-            Edit
+            Test
           </Typography>
           <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-          <Typography
-            variant="body2"
-            sx={{ color: "#667085", cursor: "pointer" }}
-            gutterBottom
-          >
-            View
-          </Typography>
-          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+
           {getStatusByActions(value) === "Active" ? (
             <Typography
               variant="body2"
@@ -215,7 +198,7 @@ function UserManagePage() {
           <Box>
             <HeadingBox>
               <Typography variant="h4" gutterBottom>
-                Users
+                Plugins
               </Typography>
             </HeadingBox>
             <ContentBox>
@@ -301,4 +284,4 @@ function UserManagePage() {
   );
 }
 
-export default UserManagePage;
+export default PluginManagePage;

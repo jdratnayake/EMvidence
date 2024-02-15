@@ -28,7 +28,8 @@ class PluginController extends Controller
         $emRawFileName = $request->header("em_raw_file_name");
         $preprocessingPluginName = $request->header("preprocessing_plugin_name");
         $downSamplingIndex = $request->header("down_sampling_index");
-        $fourierTransformationIndex = $request->header("fourier_transformation_index");
+        $fftSizeIndex = $request->header("fft_size_index");
+        $overlapPercentageIndex = $request->header("overlap_percentage_index");
         $sampleSelectionIndex = $request->header("sample_selection_index");
 
         // Set path variables
@@ -39,7 +40,7 @@ class PluginController extends Controller
         // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
 
         $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath, 
-        $downSamplingIndex, $fourierTransformationIndex, $sampleSelectionIndex);
+        $downSamplingIndex, $fftSizeIndex,$overlapPercentageIndex, $sampleSelectionIndex);
 
         return response()->json(["output" => $output]);
     }
