@@ -27,14 +27,23 @@ def downSamplingHandle(data,down_sampling_index):
     elif down_sampling_index == "3":
         dataDownsampled = downSampling(data,20e6,4e6)
 
-    return dataDownsampled        
+    return dataDownsampled     
 
-def fourierTransformation(data,fourier_transformation_index):
-    if fourier_transformation_index == "0":
-        f, t, Zxx = signal.stft(data, fs=20e6, nperseg=2048, noverlap=256, return_onesided=False)
-    elif fourier_transformation_index == "1":
-        f, t, Zxx = signal.stft(data, fs=20e6, nperseg=1024, noverlap=256, return_onesided=False)
+def fftSize(fft_size_index):
+    fftSizeArray = [2048,1024]
+    fftSize = fftSizeArray[fft_size_index]
+    return fftSize
 
+def overlapSize(overlap_percentage_index,fft_size):
+    overlapPercentageArray = [10,20]
+    overlapSize = fft_size * overlapPercentageArray[overlap_percentage_index] / 100
+    return overlapSize
+    
+
+def fourierTransformation(data,fft_size_index,overlap_percentage_index):
+    fft_size = fftSize(fft_size_index)
+    overlap_size = overlapSize(overlap_percentage_index,fft_size)
+    f, t, Zxx = signal.stft(data, fs=20e6, nperseg=fft_size, noverlap=overlap_size, return_onesided=False)
     return Zxx    
 
 
@@ -65,22 +74,23 @@ em_raw_file_path = sys.argv[1]
 em_preprocessed_directory_path = sys.argv[2]
 # 0 -> no downsampling 1 -> 10MHz 2-> 8MHz 3 -> 4MHz
 down_sampling_index = sys.argv[3]
-# 0 -> stft with fft size 2048 2 -> stft with fft size 1024
-fourier_transformation_index = sys.argv[4]
+# 0 -> 2048 2 -> 1024
+fft_size_index = sys.argv[4]
+# 0 -> 10% 2 -> 20%
+overlap_percentage_index = sys.argv[5]
 
-sample_selection_index = sys.argv[5]
+sample_selection_index = sys.argv[6]
 
 # Customizable parameters
-num_samp_per_class = 10000
 # fft_size = 2048
-fft_size = 2048
-fft_overlap = 256
+# fft_size = 2048
+# fft_overlap = 256
 
 
 
 data = getData(em_raw_file_path)
 dataDownsampled = downSamplingHandle(data,down_sampling_index)
-Zxx = fourierTransformation(dataDownsampled,fourier_transformation_index)
+Zxx = fourierTransformation(dataDownsampled,fft_size_index,overlap_percentage_index)
 X = Zxx.transpose()
 X = abs(X)
 X = sampleSelectionHandle(X,sample_selection_index)
