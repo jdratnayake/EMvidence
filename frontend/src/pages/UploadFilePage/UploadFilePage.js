@@ -85,10 +85,9 @@ function UploadFilePage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("");
-  const [centerFreq, setCenterFreq] = useState("");
-  const [samplingRate, setSamplingRate] = useState("");
-  const [selectedValue4, setSelectedValue4] = useState("");
+  const [deviceName, setDeviceName] = useState("arduino");
+  const [centerFreq, setCenterFreq] = useState(100);
+  const [samplingRate, setSamplingRate] = useState(100);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
@@ -107,9 +106,7 @@ function UploadFilePage() {
   const handleDropdownChange3 = (event) => {
     setSamplingRate(event.target.value);
   };
-  const handleDropdownChange4 = (event) => {
-    setSelectedValue4(event.target.value);
-  };
+  
   // Handler for form submission
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -438,7 +435,7 @@ function UploadFilePage() {
         })
         .then((response) => {
           console.log(response);
-          if (response.status == 200) {
+          if (response.data.status == 200) {
             setIsSendToDatabase(true);
             setTimeout(() => {
               navigate("/file_manage");
@@ -592,7 +589,7 @@ function UploadFilePage() {
                   style={{
                     marginTop: "20px",
                     width: "200px",
-                    backgroundColor: "#525252",
+                    backgroundColor: "#00245A",
                     color: "white",
                   }}
                 >

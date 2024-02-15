@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -12,9 +13,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->call(function(){
-           info('every minitue');
-        })->everyMinute();
+        $schedule->command('process:compressed-file3')->everyFiveSeconds()->withoutOverlapping();
     }
 
     /**
