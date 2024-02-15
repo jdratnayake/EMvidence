@@ -17,8 +17,10 @@ import EmFilesPage from "./pages/EmFilesPage/EmFilesPage";
 import UploadFilePage from "./pages/UploadFilePage/UploadFilePage";
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import UserManagePage from "./pages/UserManagePage/UserManagePage";
+import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
 import UploadPluginPage1 from "./pages/UploadPluginPage1/UploadPluginPage1";
 import UploadPluginPage2 from "./pages/UploadPluginPage2/UploadPluginPage2";
+import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 import Plugins from "./pages/PluginsPage/PluginsPage";
 
 const router = createBrowserRouter(
@@ -36,9 +38,13 @@ const router = createBrowserRouter(
       <Route path="file_manage" element={<EmFilesPage />} />
       <Route path="file_upload" element={<UploadFilePage />} />
       <Route path="user_manage" element={<UserManagePage />} />
+
+      <Route path="plugin_manage" element={<PluginManagePage />} />
+
       <Route path="plugins" element={<Plugins />} />
       <Route path="plugin_upload1" element={<UploadPluginPage1 />} />
       <Route path="plugin_upload2" element={<UploadPluginPage2 />} />
+      <Route path="investigation" element={<InvestigationPage />} />
     </Route>
   )
 );

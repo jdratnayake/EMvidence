@@ -33,7 +33,9 @@ const AnalysisPage = () => {
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
   const [fourierTransformationIndex, setFourierTransformationIndex] =
     useState(0);
-  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+    const [fftSizeIndex, setFftSizeIndex] = useState(0);
+    const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);  
+    const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
 
   const blackHeader = "#00245A";
   const containerColor = "rgba(0, 34, 86, 0.25)";
@@ -49,7 +51,8 @@ const AnalysisPage = () => {
       em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
       preprocessing_plugin_name: "basic.py",
       down_sampling_index: downSamplingIndex,
-      fourier_transformation_index: fourierTransformationIndex,
+      fft_size_index: fftSizeIndex,
+      overlap_percentage_index: overLapPercentageIndex,
       sample_selection_index: sampleSelectionIndex,
     };
 
@@ -103,8 +106,12 @@ const AnalysisPage = () => {
     setDownSamplingIndex(event.target.value);
   };
 
-  const handleFourierTransformationChange = (event) => {
-    setFourierTransformationIndex(event.target.value);
+  const handleFftSizeChange = (event) => {
+    setFftSizeIndex(event.target.value);
+  };
+
+  const handleOverLapPercentageChange = (event) => {
+    setOverLapPercentageIndex(event.target.value);
   };
 
   const handleSampleSelectionChange = (event) => {
@@ -387,7 +394,7 @@ const AnalysisPage = () => {
                   <option value={3}>To 4MHz</option>
                 </NativeSelect>
               </Box>
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   justifyContent: "flex-start",
@@ -420,6 +427,83 @@ const AnalysisPage = () => {
                     STFT (FFT_SIZE = 1024 & Overlap Size = 256)
                   </option>
                 </NativeSelect>
+              </Box> */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  mt: "20px",
+                  mb: "20px",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Short term fourier transformation:
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    mt: "20px",
+                    mb: "20px",
+                  }}
+                >
+                  <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  FFT Size:
+                </Typography>
+                  <NativeSelect
+                    defaultValue={1}
+                    inputProps={{
+                      name: "domain-conversion",
+                      id: "uncontrollerd-native",
+                    }}
+                    sx={{ mt: "-10px" }}
+                    value={fftSizeIndex}
+                    onChange={handleFftSizeChange}
+                  >
+                    <option value={0}>
+                    2048
+                    </option>
+                    <option value={1} disabled>
+                      1024
+                    </option>
+                  </NativeSelect>
+
+                  <Typography
+                  variant="body1"
+                  display="block"
+                  sx={{ ml: "20px", mr: "20px" }}
+                  gutterBottom
+                >
+                  Overlap Size:
+                </Typography>
+                  <NativeSelect
+                    defaultValue={1}
+                    inputProps={{
+                      name: "domain-conversion",
+                      id: "uncontrollerd-native",
+                    }}
+                    sx={{ mt: "-10px" }}
+                    value={overLapPercentageIndex}
+                    onChange={handleOverLapPercentageChange}
+                  >
+                    <option value={0}>
+                    10%
+                    </option>
+                    <option value={1} disabled>
+                      20%
+                    </option>
+                  </NativeSelect>
+                </Box>
               </Box>
 
               <Box
