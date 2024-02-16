@@ -6,6 +6,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./contexts/UserContext";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { CssBaseline } from "@mui/material";
 
 const client = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,7 @@ root.render(
   <React.StrictMode>
     <UserProvider>
       <QueryClientProvider client={client}>
+        <CssBaseline />
         <App />
       </QueryClientProvider>
     </UserProvider>

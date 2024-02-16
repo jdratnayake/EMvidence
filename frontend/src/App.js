@@ -5,6 +5,10 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
+import DeveloperTemplate from "./templates/DeveloperTemplate/DeveloperTemplate";
+import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorTemplate";
+
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
@@ -37,14 +41,20 @@ const router = createBrowserRouter(
 
       {/* Investigator */}
       <Route path="investigator" element={<InvestigatorPage />} />
-      <Route path="analysis" element={<AnalysisPage />} />
+      <Route
+        path="analysis"
+        element={<InvestigatorTemplate children={<AnalysisPage />} />}
+      />
       <Route path="file-list" element={<EmFileListPage />} />
       <Route path="file-upload" element={<EmFileUploadPage />} />
       <Route path="investigation" element={<InvestigationPage />} />
 
       {/* Developer */}
       <Route path="developer" element={<DeveloperPage />} />
-      <Route path="plugin-upload-list" element={<PluginUploadListPage />} />
+      <Route
+        path="plugin-upload-list"
+        element={<DeveloperTemplate children={<PluginUploadListPage />} />}
+      />
       <Route path="plugin-upload" element={<PluginUploadPage />} />
 
       {/* Modification Required UIs If Time Permits */}
