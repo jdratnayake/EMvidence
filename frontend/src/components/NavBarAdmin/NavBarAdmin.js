@@ -11,12 +11,12 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import logo from "./../resources/logo.png";
+import logo from "../../resources/logo.png";
 
-const pages = ["Dashboard", "Analysis", "Uploaded Files", "Settings"];
+const pages = ["Dashboard", "Users", "Plugins"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-function NavBar(pageName) {
+function NavBarAdmin(pageName) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   // const borderBottom = "1px solid black";
@@ -186,4 +186,4 @@ function NavBar(pageName) {
     </AppBar>
   );
 }
-export default NavBar;
+export default NavBarAdmin;

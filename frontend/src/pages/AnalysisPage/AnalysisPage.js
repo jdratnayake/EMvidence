@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import NavBar from "../../components/NavBar";
+import NavBar from "../../components/NavBar/NavBar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
@@ -33,9 +33,9 @@ const AnalysisPage = () => {
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
   const [fourierTransformationIndex, setFourierTransformationIndex] =
     useState(0);
-    const [fftSizeIndex, setFftSizeIndex] = useState(0);
-    const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);  
-    const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  const [fftSizeIndex, setFftSizeIndex] = useState(0);
+  const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
+  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
 
   const blackHeader = "#00245A";
   const containerColor = "rgba(0, 34, 86, 0.25)";
@@ -453,13 +453,13 @@ const AnalysisPage = () => {
                   }}
                 >
                   <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  FFT Size:
-                </Typography>
+                    variant="body1"
+                    display="block"
+                    sx={{ ml: "20px", mr: "20px" }}
+                    gutterBottom
+                  >
+                    FFT Size:
+                  </Typography>
                   <NativeSelect
                     defaultValue={1}
                     inputProps={{
@@ -470,22 +470,20 @@ const AnalysisPage = () => {
                     value={fftSizeIndex}
                     onChange={handleFftSizeChange}
                   >
-                    <option value={0}>
-                    2048
-                    </option>
+                    <option value={0}>2048</option>
                     <option value={1} disabled>
                       1024
                     </option>
                   </NativeSelect>
 
                   <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Overlap Size:
-                </Typography>
+                    variant="body1"
+                    display="block"
+                    sx={{ ml: "20px", mr: "20px" }}
+                    gutterBottom
+                  >
+                    Overlap Size:
+                  </Typography>
                   <NativeSelect
                     defaultValue={1}
                     inputProps={{
@@ -496,9 +494,7 @@ const AnalysisPage = () => {
                     value={overLapPercentageIndex}
                     onChange={handleOverLapPercentageChange}
                   >
-                    <option value={0}>
-                    10%
-                    </option>
+                    <option value={0}>10%</option>
                     <option value={1} disabled>
                       20%
                     </option>
