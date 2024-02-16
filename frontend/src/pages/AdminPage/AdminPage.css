@@ -1,10 +1,10 @@
-.dashboard-admin {
+.admin-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-.dashboard-admin .container {
+.admin-page .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -15,14 +15,14 @@
   padding-right: 200px; */
 }
 
-.dashboard-admin .container .summaries {
+.admin-page .container .summaries {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
   /* padding: 0px; */
 }
 
-.dashboard-admin .container .charts {
+.admin-page .container .charts {
   display: flex;
   justify-content: space-evenly;
   width: 100%;

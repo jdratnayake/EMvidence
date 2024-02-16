@@ -1,7 +1,7 @@
 import { AppBar, CssBaseline, Toolbar, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./EmFilesPage.css";
+import "./EmFileListPage.css";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -106,7 +106,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function EmFilesPage() {
+function EmFileListPage() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -436,4 +436,4 @@ function EmFilesPage() {
   );
 }
 
-export default EmFilesPage;
+export default EmFileListPage;

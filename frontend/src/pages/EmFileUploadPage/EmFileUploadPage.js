@@ -1,7 +1,7 @@
 import { CssBaseline, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./UploadFilePage.css";
+import "./EmFileUploadPage.css";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import CryptoJS from "crypto-js";
@@ -67,7 +67,7 @@ LinearProgressWithLabel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-function UploadFilePage() {
+function EmFileUploadPage() {
   const baseURL1 = "http://127.0.0.1:8000/api/upload_data_file";
   const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
 
@@ -719,4 +719,4 @@ function UploadFilePage() {
   );
 }
 
-export default UploadFilePage;
+export default EmFileUploadPage;

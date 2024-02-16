@@ -1,7 +1,7 @@
 import { CssBaseline, Typography } from "@mui/material";
 import { Container, width } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./UploadPluginPage1.css";
+import "./PluginUploadListPage.css";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import CryptoJS from "crypto-js";
@@ -32,7 +32,7 @@ import LinearProgress, {
 import Grid from "@mui/material/Grid";
 import { List } from "@mui/material";
 
-function UploadPluginPage1() {
+function PluginUploadListPage() {
   const containerStyle = {
     backgroundColor: "white", // Set your desired color here
     // You can also add other styles as needed
@@ -122,4 +122,4 @@ function UploadPluginPage1() {
   );
 }
 
-export default UploadPluginPage1;
+export default PluginUploadListPage;
