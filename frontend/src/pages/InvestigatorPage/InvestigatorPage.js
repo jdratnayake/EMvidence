@@ -1,7 +1,7 @@
 import React from "react";
-import "./HomePageInvestigator.css";
+import "./InvestigatorPage.css";
 
-function HomePageInvestigator() {
+function InvestigatorPage() {
   return (
     <div>
       <div>Home Page Investigator</div>
@@ -9,4 +9,4 @@ function HomePageInvestigator() {
   );
 }
 
-export default HomePageInvestigator;
+export default InvestigatorPage;

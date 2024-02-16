@@ -1,7 +1,7 @@
 import React from "react";
-import "./HomePageDeveloper.css";
+import "./DeveloperPage.css";
 
-function HomePageDeveloper() {
+function DeveloperPage() {
   return (
     <div>
       <div>Home Page Developer</div>
@@ -9,4 +9,4 @@ function HomePageDeveloper() {
   );
 }
 
-export default HomePageDeveloper;
+export default DeveloperPage;

@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "../../components/NavBar";
+import NavBar from "../../components/NavBar/NavBar";
 import Copyright from "../../components/Copyright/Copyright";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import DashboardLineChart from "../../components/DashboardLineChart/DashboardLineChart";
@@ -7,11 +7,11 @@ import { CssBaseline } from "@mui/material";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import PersonIcon from "@mui/icons-material/Person";
 
-import "./DashboardAdmin.css";
+import "./AdminPage.css";
 
-function DashboardAdmin() {
+function AdminPage() {
   return (
-    <span className="dashboard-admin">
+    <span className="admin-page">
       <CssBaseline />
       <NavBar page={"analysis"} />
       <div className="container">
@@ -73,4 +73,4 @@ function DashboardAdmin() {
   );
 }
 
-export default DashboardAdmin;
+export default AdminPage;

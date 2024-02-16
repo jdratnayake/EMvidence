@@ -1,42 +1,42 @@
 import { AppBar, CssBaseline, Toolbar, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./EmFilesPage.css";
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import NavBar from "../../components/NavBar";
-import { Grid, Card, CardContent } from '@mui/material';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import Divider from '@mui/material/Divider';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CardActions from '@mui/material/CardActions';
+import "./EmFileListPage.css";
+import PropTypes from "prop-types";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import NavBar from "../../components/NavBar/NavBar";
+import { Grid, Card, CardContent } from "@mui/material";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import Divider from "@mui/material/Divider";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CardActions from "@mui/material/CardActions";
 import logo from "../PluginsPage/p4.png";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
-const baseURL1 = 'http://127.0.0.1:8000/api/em_data_records';
-const baseURL2 = 'http://127.0.0.1:8000/api/delete_file';
+const baseURL1 = "http://127.0.0.1:8000/api/em_data_records";
+const baseURL2 = "http://127.0.0.1:8000/api/delete_file";
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -57,7 +57,6 @@ function TablePaginationActions(props) {
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
-
   return (
     <Box sx={{ flexShrink: 0, ml: 2.5 }}>
       <IconButton
@@ -65,28 +64,36 @@ function TablePaginationActions(props) {
         disabled={page === 0}
         aria-label="first page"
       >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
       <IconButton
         onClick={handleBackButtonClick}
         disabled={page === 0}
         aria-label="previous page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
       >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </Box>
   );
@@ -99,50 +106,49 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function EmFilesPage() {
+function EmFileListPage() {
   const [data, setData] = useState([]);
-
 
   useEffect(() => {
     fetch(baseURL1)
       .then((res) => res.json())
       .then((res) => setData(res))
       // .then(res => console.log(res.data.emDataRecords))
-      .catch(res => console.log(res));
+      .catch((res) => console.log(res));
   }, []);
-
-
 
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const navigateToUploadForm = () => {
-    navigate('/file_upload');
+    navigate("/file_upload");
   };
 
   const [open, setOpen] = useState(false);
   const [selectedFileData, setSelectedFileData] = useState(null);
 
   const handleClickOpen = (data) => {
-    setSelectedFileData(data)
+    setSelectedFileData(data);
     setOpen(true);
   };
-
-
 
   const handleClose = () => {
     setOpen(false);
   };
 
-
   const renderFileDetails = () => {
     if (selectedFileData) {
       return (
         <Card variant="outlined">
-          <CardContent >
+          <CardContent>
             <Grid container alignItems="center" justifyContent="center">
               {/* <InsertDriveFileIcon fontSize="medium" color="primary"/> */}
-              <Typography variant="h6" color="textPrimary" align="center" gutterBottom>
+              <Typography
+                variant="h6"
+                color="textPrimary"
+                align="center"
+                gutterBottom
+              >
                 {selectedFileData.em_raw_file_visible_name}
               </Typography>
             </Grid>
@@ -154,28 +160,25 @@ function EmFilesPage() {
                 <Typography color="textSecondary" align="left">
                   File Status :
                 </Typography>
-                <Typography style={{ color: 'orange' }}>processing</Typography>
+                <Typography style={{ color: "orange" }}>processing</Typography>
               </Stack>
-            )
-            }
+            )}
             {selectedFileData.em_raw_upload_status === "processed" && (
               <Stack direction="row" spacing={1}>
                 <Typography color="textSecondary" align="left">
                   File Status :
                 </Typography>
-                <Typography style={{ color: 'green' }}>processed</Typography>
+                <Typography style={{ color: "green" }}>processed</Typography>
               </Stack>
-            )
-            }
+            )}
             {selectedFileData.em_raw_upload_status === "faild" && (
               <Stack direction="row" spacing={1}>
                 <Typography color="textSecondary" align="left">
                   File Status :
                 </Typography>
-                <Typography style={{ color: 'red' }}>faild</Typography>
+                <Typography style={{ color: "red" }}>faild</Typography>
               </Stack>
-            )
-            }
+            )}
             <Typography color="textSecondary" align="left">
               File Size : {bytesToSize(selectedFileData.em_raw_cfile_file_size)}
             </Typography>
@@ -200,7 +203,6 @@ function EmFilesPage() {
     }
   };
 
-
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
@@ -216,35 +218,35 @@ function EmFilesPage() {
 
   function deleteRecord(id) {
     console.log(id);
-    axios.post(baseURL2, {
-      file_id: id,
-    })
+    axios
+      .post(baseURL2, {
+        file_id: id,
+      })
       .then((response) => {
         console.log(response.status);
         if (response.status == 200) {
           // alert('File is successfully deleted.');
           window.location.reload();
         } else {
-          alert('An Error occured when deleting the file.');
+          alert("An Error occured when deleting the file.");
           window.location.reload();
         }
-
       });
-  };
+  }
 
   const customStyles = {
-    backgroundColor: '#00245A',
-    color: 'white',
+    backgroundColor: "#00245A",
+    color: "white",
   };
 
   function bytesToSize(bytes) {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
 
-    if (bytes === 0) return '0 Byte';
+    if (bytes === 0) return "0 Byte";
 
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 
-    return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + ' ' + sizes[i];
+    return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + " " + sizes[i];
   }
 
   return (
@@ -259,20 +261,26 @@ function EmFilesPage() {
           aria-describedby="alert-dialog-description"
           fullWidth
         >
-          <DialogContent>
-            {renderFileDetails()}
-          </DialogContent>
-
+          <DialogContent>{renderFileDetails()}</DialogContent>
         </Dialog>
       </div>
 
-      <div className="maindiv" style={{ marginTop: '50px' }}>
-        <Container  >
-          <Typography variant="h4" color="textPrimary" align="center" gutterBottom>
+      <div className="maindiv" style={{ marginTop: "50px" }}>
+        <Container>
+          <Typography
+            variant="h4"
+            color="textPrimary"
+            align="center"
+            gutterBottom
+          >
             File Manage
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Button variant="contained" onClick={navigateToUploadForm} style={customStyles}>
+            <Button
+              variant="contained"
+              onClick={navigateToUploadForm}
+              style={customStyles}
+            >
               upload
             </Button>
           </Stack>
@@ -292,12 +300,12 @@ function EmFilesPage() {
                 </Grid>
               ))}
             </Grid> */}
-          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow>
-                  <TableCell component="th" scope="row" >
-                    <Typography variant="h6" color="textPrimary" marginLeft={8} >
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h6" color="textPrimary" marginLeft={8}>
                       File Name
                     </Typography>
                   </TableCell>
@@ -328,19 +336,20 @@ function EmFilesPage() {
                   </TableCell>
                 </TableRow>
                 {(rowsPerPage > 0
-                  ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ? data.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
                   : data
                 ).map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
-
                     <TableCell component="th" scope="row">
-                      <Stack
-                        direction="row"
-                        spacing={2}
-                      >
-
-                        <InsertDriveFileIcon fontSize="medium" color="primary" />
-                        <Typography variant="h7" >
+                      <Stack direction="row" spacing={2}>
+                        <InsertDriveFileIcon
+                          fontSize="medium"
+                          color="primary"
+                        />
+                        <Typography variant="h7">
                           {data.em_raw_file_visible_name}
                         </Typography>
                       </Stack>
@@ -354,34 +363,40 @@ function EmFilesPage() {
                     {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
                     <TableCell align="center">
                       {data.em_raw_upload_status === "processing" && (
-                        <Typography style={{ color: 'orange' }}>processing</Typography>
-                      )
-                      }
+                        <Typography style={{ color: "orange" }}>
+                          processing
+                        </Typography>
+                      )}
                       {data.em_raw_upload_status === "processed" && (
-                        <Typography style={{ color: 'green' }}>processed</Typography>
-                      )
-                      }
+                        <Typography style={{ color: "green" }}>
+                          processed
+                        </Typography>
+                      )}
                       {data.em_raw_upload_status === "faild" && (
-                        <Typography style={{ color: 'red' }}>faild</Typography>
-                      )
-                      }
-
+                        <Typography style={{ color: "red" }}>faild</Typography>
+                      )}
                     </TableCell>
                     <TableCell align="center">
-                      <Button variant="outlined" color="error" onClick={() => {
-                        const confirmBox = window.confirm(
-                          "Do you really want to delete this file?"
-                        )
-                        if (confirmBox === true) {
-                          deleteRecord(data.em_raw_file_id)
-                        }
-
-                      }}>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          const confirmBox = window.confirm(
+                            "Do you really want to delete this file?"
+                          );
+                          if (confirmBox === true) {
+                            deleteRecord(data.em_raw_file_id);
+                          }
+                        }}
+                      >
                         Delete
                       </Button>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton aria-label="MoreVertIcon" onClick={() => handleClickOpen(data)}>
+                      <IconButton
+                        aria-label="MoreVertIcon"
+                        onClick={() => handleClickOpen(data)}
+                      >
                         <MoreVertIcon />
                       </IconButton>
                     </TableCell>
@@ -403,7 +418,7 @@ function EmFilesPage() {
                     page={page}
                     SelectProps={{
                       inputProps: {
-                        'aria-label': 'rows per page',
+                        "aria-label": "rows per page",
                       },
                       native: true,
                     }}
@@ -417,10 +432,8 @@ function EmFilesPage() {
           </TableContainer>
         </Container>
       </div>
-
     </>
-
   );
 }
 
-export default EmFilesPage;
+export default EmFileListPage;
