@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
-import NavBar from "../../components/NavBar";
+import NavBar from "../../components/NavBar/NavBar";
 import {
   Box,
   Button,

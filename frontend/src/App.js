@@ -5,46 +5,60 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
+import DeveloperTemplate from "./templates/DeveloperTemplate/DeveloperTemplate";
+import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorTemplate";
+
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
-import DashboardAdmin from "./pages/DashboardAdmin/DashboardAdmin";
-import HomePageDeveloper from "./pages/HomePageDeveloper/HomePageDeveloper";
-import HomePageInvestigator from "./pages/HomePageInvestigator/HomePageInvestigator";
+import AdminPage from "./pages/AdminPage/AdminPage";
+import DeveloperPage from "./pages/DeveloperPage/DeveloperPage";
+import InvestigatorPage from "./pages/InvestigatorPage/InvestigatorPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import AnalysisPage from "./pages/AnalysisPage/AnalysisPage";
-import EmFilesPage from "./pages/EmFilesPage/EmFilesPage";
-import UploadFilePage from "./pages/UploadFilePage/UploadFilePage";
-import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
+import EmFileListPage from "./pages/EmFileListPage/EmFileListPage";
+import EmFileUploadPage from "./pages/EmFileUploadPage/EmFileUploadPage";
 import UserManagePage from "./pages/UserManagePage/UserManagePage";
-import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
-import UploadPluginPage1 from "./pages/UploadPluginPage1/UploadPluginPage1";
-import UploadPluginPage2 from "./pages/UploadPluginPage2/UploadPluginPage2";
+import PluginUploadListPage from "./pages/PluginUploadListPage/PluginUploadListPage";
+import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
 import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
-import Plugins from "./pages/PluginsPage/PluginsPage";
+
+import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
-      <Route index element={<HomePage />} />
+      {/* General */}
       <Route path="*" element={<ErrorPage />} />
-      <Route path="admin" element={<DashboardAdmin />} />
-      <Route path="investigator" element={<HomePageInvestigator />} />
-      <Route path="developer" element={<HomePageDeveloper />} />
+      <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-      <Route path="analysis" element={<AnalysisPage />} />
-      <Route path="analysis1" element={<AnalysisPage1 />} />
-      <Route path="file_manage" element={<EmFilesPage />} />
-      <Route path="file_upload" element={<UploadFilePage />} />
-      <Route path="user_manage" element={<UserManagePage />} />
 
-      <Route path="plugin_manage" element={<PluginManagePage />} />
+      {/* Admin */}
+      <Route path="admin" element={<AdminPage />} />
+      <Route path="user-list" element={<UserManagePage />} />
 
-      <Route path="plugins" element={<Plugins />} />
-      <Route path="plugin_upload1" element={<UploadPluginPage1 />} />
-      <Route path="plugin_upload2" element={<UploadPluginPage2 />} />
+      {/* Investigator */}
+      <Route path="investigator" element={<InvestigatorPage />} />
+      <Route
+        path="analysis"
+        element={<InvestigatorTemplate children={<AnalysisPage />} />}
+      />
+      <Route path="file-list" element={<EmFileListPage />} />
+      <Route path="file-upload" element={<EmFileUploadPage />} />
       <Route path="investigation" element={<InvestigationPage />} />
+
+      {/* Developer */}
+      <Route path="developer" element={<DeveloperPage />} />
+      <Route
+        path="plugin-upload-list"
+        element={<DeveloperTemplate children={<PluginUploadListPage />} />}
+      />
+      <Route path="plugin-upload" element={<PluginUploadPage />} />
+
+      {/* Modification Required UIs If Time Permits */}
+      <Route path="analysis1" element={<AnalysisPage1 />} />
     </Route>
   )
 );

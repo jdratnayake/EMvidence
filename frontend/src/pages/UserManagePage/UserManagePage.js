@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBarAdmin from "../../components/NavBarAdmin";
+import NavBarAdmin from "../../components/NavBarAdmin/NavBarAdmin";
 import { Box, Container, styled } from "@mui/system";
 import {
   Button,
