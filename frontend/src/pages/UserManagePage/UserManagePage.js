@@ -116,12 +116,18 @@ const TableCellBlue = styled(TableCell)(() => ({
 function UserManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isModalOpen,setIsModalOpen] = useState(true);
-  const [deactivateUserId,setDeactivateUserId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deactivateUserId, setDeactivateUserId] = useState(null);
   const handleClose = () => setIsModalOpen(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+  };
+
+  const handleClicked = (userId) => {
+    setDeactivateUserId(userId);
+    setIsModalOpen(true);
+    console.log(userId);
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -165,13 +171,15 @@ function UserManagePage() {
           </Typography>
           <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
           {getStatusByActions(value) === "Active" ? (
-            <Typography
-              variant="body2"
-              sx={{ color: "#F90000", cursor: "pointer" }}
-              gutterBottom
-            >
-              Deactivate
-            </Typography>
+            <Button onClick={() => handleClicked(value)}>
+              <Typography
+                variant="caption"
+                sx={{ color: "#F90000", cursor: "pointer" }}
+                gutterBottom
+              >
+                Deactivate
+              </Typography>
+            </Button>
           ) : (
             <Typography
               variant="body2"
@@ -220,7 +228,7 @@ function UserManagePage() {
 
   return (
     <>
-      <DeactivateModal open={isModalOpen} userId={1} onClose={handleClose}/>
+      <DeactivateModal open={isModalOpen} userId={deactivateUserId} onClose={handleClose} />
       <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
@@ -272,7 +280,7 @@ function UserManagePage() {
                           >
                             {columns.map((column) => {
                               const value = row[column.id];
-                              console.log(column.id);
+                              // console.log(column.id);
                               return column.id === "status" ? (
                                 getStatus(value)
                               ) : column.id === "actions" ? (
