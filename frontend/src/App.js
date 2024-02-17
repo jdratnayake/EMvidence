@@ -37,7 +37,10 @@ const router = createBrowserRouter(
 
       {/* Admin */}
       <Route path="admin" element={<AdminPage />} />
-      <Route path="user-list" element={<UserManagePage />} />
+      <Route
+        path="user-list"
+        element={<AdminTemplate children={<UserManagePage />} />}
+      />
 
       {/* Investigator */}
       <Route path="investigator" element={<InvestigatorPage />} />
