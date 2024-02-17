@@ -20,18 +20,17 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
 
 const columns = [
-  { id: "name", label: "Name", midWidth: 100 },
+  { id: "name", label: "Name", midWidth: 200 },
   { id: "status", label: "Status", midWidth: 150 },
   { id: "actions", label: "Actions", midWidth: 300 },
 ];
 
 const ContainerBox = styled(Box)(() => ({
-  backgroundColor: "#EAECF0",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignContent: "center",
   alignItems: "center",
+  padding: "0 0 3% 0",
 }));
 
 const HeadingBox = styled(Box)(() => ({
@@ -46,12 +45,20 @@ const ContentBox = styled(Box)(() => ({
   backgroundColor: "#FFFFFF",
   borderRadius: "24px",
   width: "80vw",
-  marginLeft: "2vw",
+  marginLeft: "0",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 const SearchBox = styled(Box)(() => ({
-  margin: "3% 3% 3% 3%",
-  padding: "5% 2% 3% 2%",
+  margin: "0% 0% 3% 0%",
+  padding: "3% 0% 0% 0%",
+}));
+
+const TableBox = styled(Box)(() => ({
+  width: "100%",
 }));
 
 const SearchButton = styled(Button)(() => ({
@@ -209,7 +216,7 @@ function UserManagePage() {
 
   return (
     <>
-      <Box>
+      <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
             Users
@@ -226,7 +233,7 @@ function UserManagePage() {
               <SearchIcon />
             </SearchButton>
           </SearchBox>
-          <Box>
+          <TableBox>
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
               <TableContainer sx={{ maxHeight: "440" }}>
                 <Table stickyHeader aria-label="sticky table">
@@ -287,9 +294,9 @@ function UserManagePage() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </Paper>
-          </Box>
+          </TableBox>
         </ContentBox>
-      </Box>
+      </ContainerBox>
     </>
   );
 }

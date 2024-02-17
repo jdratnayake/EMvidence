@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import NavBarAdmin from "../../components/NavBarAdmin";
 import { Box, Container, styled } from "@mui/system";
 import {
   Button,
@@ -26,12 +25,11 @@ const columns = [
 ];
 
 const ContainerBox = styled(Box)(() => ({
-  backgroundColor: "#EAECF0",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignContent: "center",
   alignItems: "center",
+  padding: "0 0 3% 0",
 }));
 
 const HeadingBox = styled(Box)(() => ({
@@ -46,12 +44,20 @@ const ContentBox = styled(Box)(() => ({
   backgroundColor: "#FFFFFF",
   borderRadius: "24px",
   width: "80vw",
-  marginLeft: "2vw",
+  marginLeft: "0",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 const SearchBox = styled(Box)(() => ({
-  margin: "3% 3% 3% 3%",
-  padding: "5% 2% 3% 2%",
+  margin: "0% 0% 3% 0%",
+  padding: "3% 0% 0% 0%",
+}));
+
+const TableBox = styled(Box)(() => ({
+  width: "100%",
 }));
 
 const SearchButton = styled(Button)(() => ({
@@ -91,9 +97,8 @@ const TableHeadRow = styled(TableRow)(() => ({
 }));
 
 const TableCellBlue = styled(TableCell)(() => ({
-    color: "#00245A",
-  }));
-  
+  color: "#00245A",
+}));
 
 function PluginManagePage() {
   const [page, setPage] = useState(0);
@@ -193,92 +198,85 @@ function PluginManagePage() {
   return (
     <>
       <ContainerBox>
-        <NavBarAdmin page={"Users"} />
-        <Container maxWidth="lg">
-          <Box>
-            <HeadingBox>
-              <Typography variant="h4" gutterBottom>
-                Plugins
-              </Typography>
-            </HeadingBox>
-            <ContentBox>
-              <SearchBox>
-                <SearchField
-                  id="outlined-basic"
-                  variant="outlined"
-                  placeholder="Search User"
-                />
-                <SearchButton variant="contained">
-                  <SearchIcon />
-                </SearchButton>
-              </SearchBox>
-              <Box>
-                <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                  <TableContainer sx={{ maxHeight: "440" }}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableHead>
-                        <TableHeadRow>
-                          {columns.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              style={{ minWidth: column.minWidth }}
-                            >
-                              {column.label}{" "}
-                              <span style={{ marginLeft: "10px" }}>
-                                {"\u00A0"}
-                              </span>
-                              <ArrowDownwardIcon />
-                            </TableCell>
-                          ))}
-                        </TableHeadRow>
-                      </TableHead>
-                      <TableBody>
-                        {rows
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((row) => {
-                            return (
-                              <TableRow
-                                hover
-                                role="checkbox"
-                                tableIndex={-1}
-                                key={row.code}
-                              >
-                                {columns.map((column) => {
-                                  const value = row[column.id];
-                                  console.log(column.id);
-                                  return column.id === "status" ? (
-                                    getStatus(value)
-                                  ) : column.id === "actions" ? (
-                                    getActions(value)
-                                  ) : (
-                                    <TableCellBlue key={column.id}>
-                                      {value}
-                                    </TableCellBlue>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
-                </Paper>
-              </Box>
-            </ContentBox>
-          </Box>
-        </Container>
+        <HeadingBox>
+          <Typography variant="h4" gutterBottom>
+            Plugins
+          </Typography>
+        </HeadingBox>
+        <ContentBox>
+          <SearchBox>
+            <SearchField
+              id="outlined-basic"
+              variant="outlined"
+              placeholder="Search User"
+            />
+            <SearchButton variant="contained">
+              <SearchIcon />
+            </SearchButton>
+          </SearchBox>
+          <TableBox>
+            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+              <TableContainer sx={{ maxHeight: "440" }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableHeadRow>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          style={{ minWidth: column.minWidth }}
+                        >
+                          {column.label}{" "}
+                          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+                          <ArrowDownwardIcon />
+                        </TableCell>
+                      ))}
+                    </TableHeadRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tableIndex={-1}
+                            key={row.code}
+                          >
+                            {columns.map((column) => {
+                              const value = row[column.id];
+                              console.log(column.id);
+                              return column.id === "status" ? (
+                                getStatus(value)
+                              ) : column.id === "actions" ? (
+                                getActions(value)
+                              ) : (
+                                <TableCellBlue key={column.id}>
+                                  {value}
+                                </TableCellBlue>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </TableBox>
+        </ContentBox>
       </ContainerBox>
     </>
   );
