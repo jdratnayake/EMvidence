@@ -209,94 +209,87 @@ function UserManagePage() {
 
   return (
     <>
-      <ContainerBox>
-        <NavBarAdmin page={"Users"} />
-        <Container maxWidth="lg">
+      <Box>
+        <HeadingBox>
+          <Typography variant="h4" gutterBottom>
+            Users
+          </Typography>
+        </HeadingBox>
+        <ContentBox>
+          <SearchBox>
+            <SearchField
+              id="outlined-basic"
+              variant="outlined"
+              placeholder="Search User"
+            />
+            <SearchButton variant="contained">
+              <SearchIcon />
+            </SearchButton>
+          </SearchBox>
           <Box>
-            <HeadingBox>
-              <Typography variant="h4" gutterBottom>
-                Users
-              </Typography>
-            </HeadingBox>
-            <ContentBox>
-              <SearchBox>
-                <SearchField
-                  id="outlined-basic"
-                  variant="outlined"
-                  placeholder="Search User"
-                />
-                <SearchButton variant="contained">
-                  <SearchIcon />
-                </SearchButton>
-              </SearchBox>
-              <Box>
-                <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                  <TableContainer sx={{ maxHeight: "440" }}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableHead>
-                        <TableHeadRow>
-                          {columns.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              style={{ minWidth: column.minWidth }}
-                            >
-                              {column.label}{" "}
-                              <span style={{ marginLeft: "10px" }}>
-                                {"\u00A0"}
-                              </span>
-                              <ArrowDownwardIcon />
-                            </TableCell>
-                          ))}
-                        </TableHeadRow>
-                      </TableHead>
-                      <TableBody>
-                        {rows
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((row) => {
-                            return (
-                              <TableRow
-                                hover
-                                role="checkbox"
-                                tableIndex={-1}
-                                key={row.code}
-                              >
-                                {columns.map((column) => {
-                                  const value = row[column.id];
-                                  console.log(column.id);
-                                  return column.id === "status" ? (
-                                    getStatus(value)
-                                  ) : column.id === "actions" ? (
-                                    getActions(value)
-                                  ) : (
-                                    <TableCellBlue key={column.id}>
-                                      {value}
-                                    </TableCellBlue>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
-                </Paper>
-              </Box>
-            </ContentBox>
+            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+              <TableContainer sx={{ maxHeight: "440" }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableHeadRow>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          style={{ minWidth: column.minWidth }}
+                        >
+                          {column.label}{" "}
+                          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+                          <ArrowDownwardIcon />
+                        </TableCell>
+                      ))}
+                    </TableHeadRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tableIndex={-1}
+                            key={row.code}
+                          >
+                            {columns.map((column) => {
+                              const value = row[column.id];
+                              console.log(column.id);
+                              return column.id === "status" ? (
+                                getStatus(value)
+                              ) : column.id === "actions" ? (
+                                getActions(value)
+                              ) : (
+                                <TableCellBlue key={column.id}>
+                                  {value}
+                                </TableCellBlue>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
           </Box>
-        </Container>
-      </ContainerBox>
+        </ContentBox>
+      </Box>
     </>
   );
 }
