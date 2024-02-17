@@ -18,6 +18,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 
 const columns = [
   { id: "name", label: "Name", midWidth: 200 },
@@ -115,6 +116,9 @@ const TableCellBlue = styled(TableCell)(() => ({
 function UserManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [isModalOpen,setIsModalOpen] = useState(true);
+  const [deactivateUserId,setDeactivateUserId] = useState(null);
+  const handleClose = () => setIsModalOpen(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -126,9 +130,9 @@ function UserManagePage() {
   };
 
   const rows = [
-    { name: "Doe, John", status: "Inactive", actions: "1" },
-    { name: "Doe, John", status: "Active", actions: "2" },
-    { name: "Doe, John", status: "Active", actions: "3" },
+    { name: "User 1", status: "Inactive", actions: "1" },
+    { name: "User 2", status: "Active", actions: "2" },
+    { name: "User 3", status: "Active", actions: "3" },
   ];
 
   function getStatusByActions(actionsValue) {
@@ -216,6 +220,7 @@ function UserManagePage() {
 
   return (
     <>
+      <DeactivateModal open={isModalOpen} userId={1} onClose={handleClose}/>
       <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
