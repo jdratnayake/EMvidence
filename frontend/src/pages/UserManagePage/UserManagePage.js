@@ -19,6 +19,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
 
 const columns = [
   { id: "name", label: "Name", midWidth: 200 },
@@ -117,8 +118,11 @@ function UserManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
   const [deactivateUserId, setDeactivateUserId] = useState(null);
+  const [activateUserId, setActivateUserId] = useState(null);
   const handleClose = () => setIsModalOpen(false);
+  const handleActivateClose = () => setIsActivateModalOpen(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -128,6 +132,12 @@ function UserManagePage() {
     setDeactivateUserId(userId);
     setIsModalOpen(true);
     console.log(userId);
+  };
+
+  const handleActivateClicked = (userId) => {
+    setActivateUserId(userId);
+    setIsActivateModalOpen(true);
+
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -181,6 +191,7 @@ function UserManagePage() {
               </Typography>
             </Button>
           ) : (
+            <Button onClick={() => handleActivateClicked(value)}>
             <Typography
               variant="body2"
               sx={{ color: "#00245A", cursor: "pointer" }}
@@ -188,6 +199,7 @@ function UserManagePage() {
             >
               Activate
             </Typography>
+            </Button>
           )}
         </Box>
       </TableCell>
@@ -229,6 +241,7 @@ function UserManagePage() {
   return (
     <>
       <DeactivateModal open={isModalOpen} userId={deactivateUserId} onClose={handleClose} />
+      <ActivateModal open={isActivateModalOpen} userId={activateUserId} onClose={handleActivateClose} />
       <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
