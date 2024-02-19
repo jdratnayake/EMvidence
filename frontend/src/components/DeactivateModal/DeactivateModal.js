@@ -22,9 +22,13 @@ const ButtonBox = styled(Box)(() => ({
 }));
 
 const DeactivateButton = styled(Button)(() => ({
-  background: "#00245A",
   margin: "10px",
 }));
+
+const DeactivateCancelButton = styled(Button)(() => ({
+  margin: "10px",
+}));
+
 function DeactivateModal({ open, userId, onClose }) {
   const users = [
     { name: "User 1", status: "Inactive", user_id: "1" },
@@ -58,8 +62,16 @@ function DeactivateModal({ open, userId, onClose }) {
             Are you sure you want to deactivate {getUserName(userId)} ?
           </Typography>
           <ButtonBox>
-            <DeactivateButton variant="contained">Deactivate</DeactivateButton>
-            <DeactivateButton variant="contained" onClick={handleCancel}>Cancel</DeactivateButton>
+            <DeactivateCancelButton
+              variant="contained"
+              color="grey"
+              onClick={handleCancel}
+            >
+              Cancel
+            </DeactivateCancelButton>
+            <DeactivateButton variant="contained" color="error">
+              Deactivate
+            </DeactivateButton>
           </ButtonBox>
         </Box>
       </Modal>
