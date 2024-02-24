@@ -24,12 +24,25 @@ import "./AnalysisPage.css";
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 
 const AnalysisPage = () => {
-  const AnalysisPlugins = [
-    {id: "1", name: "Behavior Identification", descrption: "Description 1"},
-    {id: "2", name: "Malicious Firmware Modification Detection", descrption: "Description 2"},
-    {id: "3", name: "FirmWare Version Detection", descrption: "Description 3"},
-  ]
+  const analyisPlugins = [
+    {
+      id: "1",
+      name: "Behavior Identification",
+      descrption: "Description 1",
+    },
+    {
+      id: "2",
+      name: "Malicious Firmware Modification Detection",
+      descrption: "Description 2",
+    },
+    {
+      id: "3",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    },
+  ];
 
+  const [checkedPlugin, setCheckedPlugin] = useState(0);
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
@@ -190,6 +203,17 @@ const AnalysisPage = () => {
         setLoadingAnalyse(false);
         setIsAnalysisFetching(false);
       });
+  };
+
+  const handleChecked = (id) => {
+    console.log("Id: ", id);
+    setCheckedPlugin(id);
+    setAnalysisPlugin(parseInt(id));
+    if (id == "1") {
+      setInsightTypeName("Behavior identification");
+    } else if (id == "2") {
+      setInsightTypeName("Malicious firmware modification detection");
+    }
   };
 
   return (
@@ -694,12 +718,19 @@ const AnalysisPage = () => {
               container
               spacing={0}
               alignItems="center"
-              justifyContent="center"
+              justifyContent="left"
               marginTop={4}
             >
-              <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
-                    <PluginCardAnalysis/>
-              </Grid>
+              {analyisPlugins.map((plugin) => (
+                <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
+                  <PluginCardAnalysis
+                    id={plugin.id}
+                    name={plugin.name}
+                    isChecked={plugin.id == checkedPlugin ? true : false}
+                    modifyChecked={handleChecked}
+                  />
+                </Grid>
+              ))}
             </Grid>
           </Box>
           <LoadingButton
