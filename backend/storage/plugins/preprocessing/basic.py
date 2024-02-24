@@ -90,6 +90,8 @@ sample_selection_index = sys.argv[6]
 
 data = getData(em_raw_file_path)
 dataDownsampled = downSamplingHandle(data,down_sampling_index)
+fft_size_index = int(fft_size_index)
+overlap_percentage_index = int(overlap_percentage_index)
 Zxx = fourierTransformation(dataDownsampled,fft_size_index,overlap_percentage_index)
 X = Zxx.transpose()
 X = abs(X)
