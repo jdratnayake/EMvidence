@@ -23,6 +23,7 @@ import UserManagePage from "./pages/UserManagePage/UserManagePage";
 import PluginUploadListPage from "./pages/PluginUploadListPage/PluginUploadListPage";
 import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
 import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
+import PluginPage from "./pages/PluginsPage/PluginsPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
+      <Route path="plugin" element={<PluginPage />} />
 
       {/* Admin */}
       <Route path="admin" element={<AdminPage />} />
