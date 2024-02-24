@@ -6,10 +6,12 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   Button,
+  Card,
   Chip,
   Container,
   CssBaseline,
   FormControl,
+  Grid,
   IconButton,
   NativeSelect,
   Typography,
@@ -19,8 +21,15 @@ import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 import "./AnalysisPage.css";
+import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 
 const AnalysisPage = () => {
+  const AnalysisPlugins = [
+    {id: "1", name: "Behavior Identification", descrption: "Description 1"},
+    {id: "2", name: "Malicious Firmware Modification Detection", descrption: "Description 2"},
+    {id: "3", name: "FirmWare Version Detection", descrption: "Description 3"},
+  ]
+
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
@@ -679,6 +688,19 @@ const AnalysisPage = () => {
               </option>
               <option value={3}>Firmware version detection</option>
             </NativeSelect>
+          </Box>
+          <Box>
+            <Grid
+              container
+              spacing={0}
+              alignItems="center"
+              justifyContent="center"
+              marginTop={4}
+            >
+              <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
+                    <PluginCardAnalysis/>
+              </Grid>
+            </Grid>
           </Box>
           <LoadingButton
             sx={{
