@@ -26,6 +26,7 @@ import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
+import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -42,6 +43,10 @@ const router = createBrowserRouter(
       <Route
         path="user-list"
         element={<AdminTemplate children={<UserManagePage />} />}
+      />
+      <Route
+        path="plugin-list"
+        element={<AdminTemplate children={<PluginManagePage />} />}
       />
 
       {/* Investigator */}
