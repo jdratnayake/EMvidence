@@ -3,10 +3,21 @@ import React from "react";
 import plugin from "./../../resources/plugins.png";
 import { Box } from "@mui/system";
 
-function PluginCardAnalysis({ id,name,isChecked,modifyChecked }) {
-    const handleChange = () => {
-        modifyChecked(id)
-    };
+function PluginCardAnalysis({
+  id,
+  name,
+  description,
+  isChecked,
+  modifyChecked,
+  handleClicked,
+}) {
+  const handleChange = () => {
+    modifyChecked(id);
+  };
+
+  const handleClick = () => {
+    handleClicked(name, description);
+  };
 
   return (
     <>
@@ -22,13 +33,13 @@ function PluginCardAnalysis({ id,name,isChecked,modifyChecked }) {
           },
         }}
       >
-        <Card sx={{ height: 200 }}>
-          <Checkbox
-              checked={isChecked}
-              onChange={handleChange}
-            inputProps={{ "aria-label": "controlled" }}
-            sx={{ marginLeft: "80%", marginBottom: "-10%" }}
-          />
+        <Checkbox
+          checked={isChecked}
+          onChange={handleChange}
+          inputProps={{ "aria-label": "controlled" }}
+          sx={{ marginLeft: "80%", marginBottom: "-10%" }}
+        />
+        <Card sx={{ height: 200 }} onClick={handleClick}>
           <CardContent>
             <Grid container alignItems="center" justifyContent="center">
               <img

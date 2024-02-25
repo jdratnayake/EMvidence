@@ -22,18 +22,21 @@ import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 import "./AnalysisPage.css";
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
+import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
 
 const AnalysisPage = () => {
   const analyisPlugins = [
     {
       id: "1",
       name: "Behavior Identification",
-      descrption: "Description 1",
+      descrption:
+        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
     },
     {
       id: "2",
       name: "Malicious Firmware Modification Detection",
-      descrption: "Description 2",
+      descrption:
+        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
     },
     {
       id: "3",
@@ -58,6 +61,10 @@ const AnalysisPage = () => {
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
+    useState(false);
+  const [pluginModalName, setPluginModalName] = useState(null);
+  const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
   const blackHeader = "#00245A";
   const containerColor = "#FFFFFF";
@@ -216,6 +223,16 @@ const AnalysisPage = () => {
     }
   };
 
+  const handleClicked = (name, description) => {
+    setPluginModalName(name);
+    setPluginModalDescription(description);
+    setIsAnalysisPluginModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsAnalysisPluginModalOpen(false);
+  };
+
   return (
     <>
       <ToastContainer
@@ -228,6 +245,12 @@ const AnalysisPage = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+      />
+      <AnalysisPluginModal
+        name={pluginModalName}
+        description={pluginModalDescription}
+        open={isAnalysisPluginModalOpen}
+        onClose={handleClose}
       />
 
       <Box class="file_selection">
@@ -726,8 +749,10 @@ const AnalysisPage = () => {
                   <PluginCardAnalysis
                     id={plugin.id}
                     name={plugin.name}
+                    description={plugin.descrption}
                     isChecked={plugin.id == checkedPlugin ? true : false}
                     modifyChecked={handleChecked}
+                    handleClicked={handleClicked}
                   />
                 </Grid>
               ))}
