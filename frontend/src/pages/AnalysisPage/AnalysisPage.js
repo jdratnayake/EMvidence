@@ -60,7 +60,7 @@ const AnalysisPage = () => {
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
 
   const blackHeader = "#00245A";
-  const containerColor = "rgba(0, 34, 86, 0.25)";
+  const containerColor = "#FFFFFF";
   const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
