@@ -1,5 +1,7 @@
 import {
+  Button,
   Card,
+  CardActions,
   CardContent,
   Dialog,
   DialogContent,
@@ -9,7 +11,12 @@ import {
 import React from "react";
 import plugin from "./../../resources/plugins.png";
 
-function AnalysisPluginModal({ name, description, open, onClose }) {
+function AnalysisPluginModal({ id,name, description, open, onClose,modifyChecked }) {
+    const handleClicked = () => {
+        modifyChecked(id);
+        onClose();
+    };
+
   return (
     <>
       <Dialog
@@ -50,6 +57,13 @@ function AnalysisPluginModal({ name, description, open, onClose }) {
                 {description}
               </Typography>
             </CardContent>
+            <CardActions>
+              <Grid container alignItems="center" justifyContent="center">
+                <Button size="medium" variant="outlined" onClick={handleClicked}>
+                  USE
+                </Button>
+              </Grid>
+            </CardActions>
           </Card>
         </DialogContent>
       </Dialog>

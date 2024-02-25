@@ -63,6 +63,7 @@ const AnalysisPage = () => {
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
   const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
     useState(false);
+  const [pluginModalId, setPluginModalId] = useState(null);
   const [pluginModalName, setPluginModalName] = useState(null);
   const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
@@ -223,7 +224,8 @@ const AnalysisPage = () => {
     }
   };
 
-  const handleClicked = (name, description) => {
+  const handleClicked = (id, name, description) => {
+    setPluginModalId(id);
     setPluginModalName(name);
     setPluginModalDescription(description);
     setIsAnalysisPluginModalOpen(true);
@@ -247,10 +249,12 @@ const AnalysisPage = () => {
         pauseOnHover
       />
       <AnalysisPluginModal
+        id={pluginModalId}
         name={pluginModalName}
         description={pluginModalDescription}
         open={isAnalysisPluginModalOpen}
         onClose={handleClose}
+        modifyChecked={handleChecked}
       />
 
       <Box class="file_selection">
@@ -707,19 +711,19 @@ const AnalysisPage = () => {
             sx={{
               display: "flex",
               justifyContent: "flex-start",
-              mt: "20px",
+              mt: "5px",
               mb: "20px",
             }}
           >
-            <Typography
+            {/* <Typography
               variant="body1"
               display="block"
               sx={{ ml: "20px", mr: "20px" }}
               gutterBottom
             >
               Analysis plugin:
-            </Typography>
-            <NativeSelect
+            </Typography> */}
+            {/* <NativeSelect
               defaultValue={1}
               inputProps={{
                 name: "domain-conversion",
@@ -734,15 +738,15 @@ const AnalysisPage = () => {
                 Malicious firmware modification detection
               </option>
               <option value={3}>Firmware version detection</option>
-            </NativeSelect>
+            </NativeSelect> */}
           </Box>
           <Box>
             <Grid
               container
-              spacing={0}
+              spacing={2}
               alignItems="center"
               justifyContent="left"
-              marginTop={4}
+              marginTop={0}
             >
               {analyisPlugins.map((plugin) => (
                 <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>

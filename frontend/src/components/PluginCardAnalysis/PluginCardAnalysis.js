@@ -16,7 +16,7 @@ function PluginCardAnalysis({
   };
 
   const handleClick = () => {
-    handleClicked(name, description);
+    handleClicked(id, name, description);
   };
 
   return (
@@ -37,7 +37,7 @@ function PluginCardAnalysis({
           checked={isChecked}
           onChange={handleChange}
           inputProps={{ "aria-label": "controlled" }}
-          sx={{ marginLeft: "80%", marginBottom: "-10%" }}
+          sx={{ marginLeft: "80%", marginBottom: "-5%" }}
         />
         <Card sx={{ height: 200 }} onClick={handleClick}>
           <CardContent>
