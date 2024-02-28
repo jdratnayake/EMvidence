@@ -712,17 +712,17 @@ const AnalysisPage = () => {
               display: "flex",
               justifyContent: "flex-start",
               mt: "5px",
-              mb: "20px",
+              mb: "5px",
             }}
           >
-            {/* <Typography
+            <Typography
               variant="body1"
               display="block"
-              sx={{ ml: "20px", mr: "20px" }}
+              sx={{ ml: "20px", mr: "20px", mt: "20px" }}
               gutterBottom
             >
-              Analysis plugin:
-            </Typography> */}
+              Select the Analysis plugin:
+            </Typography>
             {/* <NativeSelect
               defaultValue={1}
               inputProps={{
