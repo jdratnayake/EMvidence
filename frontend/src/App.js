@@ -27,6 +27,7 @@ import PluginPage from "./pages/PluginsPage/PluginsPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,6 +59,10 @@ const router = createBrowserRouter(
       <Route path="file-list" element={<EmFileListPage />} />
       <Route path="file-upload" element={<EmFileUploadPage />} />
       <Route path="investigation" element={<InvestigationPage />} />
+      <Route
+        path="profile"
+        element={<InvestigatorTemplate children={<ProfilePage />} />}
+      />
 
       {/* Developer */}
       <Route path="developer" element={<DeveloperPage />} />
