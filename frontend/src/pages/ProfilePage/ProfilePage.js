@@ -1,4 +1,4 @@
-import { IconButton, TextField, Typography } from "@mui/material";
+import { Button, IconButton, TextField, Typography } from "@mui/material";
 import { Box, styled } from "@mui/system";
 import React from "react";
 import image from "./../../resources/profile.jpg";
@@ -83,6 +83,26 @@ const InputField = styled(TextField)(() => ({
   margin: "3% 3% 3% 3%",
 }));
 
+const ButtonBox = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+}));
+
+const SaveButton = styled(Button)(() => ({
+  backgroundColor: "#00245A",
+  color: "#ffffff",
+  "&:hover": {
+    backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+  },
+  margin: "2%",
+}));
+
+const ResetButton = styled(Button)(() => ({
+  color: "#00245A",
+  margin: "1%",
+}));
+
 function ProfilePage() {
   return (
     <>
@@ -148,6 +168,14 @@ function ProfilePage() {
                 fullWidth
               />
             </FieldBox>
+            <ButtonBox>
+              <ResetButton variant="text" size="medium">
+                Reset
+              </ResetButton>
+              <SaveButton variant="contained" size="medium">
+                Save
+              </SaveButton>
+            </ButtonBox>
           </RightBox>
         </ContentBox>
       </ContainerBox>
