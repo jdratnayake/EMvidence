@@ -1,10 +1,4 @@
-import {
-  Button,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, IconButton, TextField, Typography } from "@mui/material";
 import { Box, styled } from "@mui/system";
 import React from "react";
 import image from "./../../resources/profile.jpg";
@@ -53,7 +47,7 @@ const RightBox = styled(Box)(() => ({
 const FieldBox = styled(Box)(() => ({
   display: "flex",
   flexDirection: "column",
-  margin: "10% 0 5% 10%",
+  marginTop: "7%",
 }));
 
 const TextBox = styled(Box)(() => ({
@@ -106,12 +100,12 @@ const SaveButton = styled(Button)(() => ({
   margin: "2%",
 }));
 
-const LabelPaper = styled(Paper)(() => ({
-  margin: "5%",
-  padding: "2%",
+const ResetButton = styled(Button)(() => ({
+  color: "#00245A",
+  margin: "1%",
 }));
 
-function ProfilePage() {
+function EditProfilePage() {
   return (
     <>
       <ContainerBox>
@@ -135,39 +129,53 @@ function ProfilePage() {
                 height="200vh"
                 style={{ borderRadius: "50%" }}
               />
-              {/* <UploadButton aria-label="upload">
+              <UploadButton aria-label="upload">
                 <CameraAltIcon />
-              </UploadButton> */}
+              </UploadButton>
             </ImageBox>
           </LeftBox>
           <DividerLine />
           <RightBox>
             <FieldBox>
-              <LabelPaper elevation={3}>
-                {" "}
-                <Typography variant="h6" component="span">
-                  <span style={{ fontWeight: "bold" }}>First Name:</span> Dinil
-                </Typography>{" "}
-              </LabelPaper>
+              <InputField
+                required
+                id="outlined-required"
+                label="First Name"
+                defaultValue="Dinil"
+                fullWidth
+              />
 
-              <LabelPaper elevation={3}>
-                {" "}
-                <Typography variant="h6" component="span">
-                  <span style={{ fontWeight: "bold" }}>Last Name:</span>{" "}
-                  Ratnayake
-                </Typography>{" "}
-              </LabelPaper>
-              <LabelPaper elevation={3}>
-                {" "}
-                <Typography variant="h6" component="span">
-                  <span style={{ fontWeight: "bold" }}>Phone Number:</span> +94
-                  70 414 5651
-                </Typography>{" "}
-              </LabelPaper>
+              <InputField
+                required
+                id="outlined-required"
+                label="Last Name"
+                defaultValue="Ratnayake"
+                fullWidth
+              />
+
+              <InputField
+                required
+                id="outlined-required"
+                label="Password"
+                type="password"
+                defaultValue="Password123"
+                fullWidth
+              />
+
+              <InputField
+                required
+                id="outlined-required"
+                label="Phone Number"
+                defaultValue="+94 70 414 5651"
+                fullWidth
+              />
             </FieldBox>
             <ButtonBox>
+              <ResetButton variant="text" size="medium">
+                Reset
+              </ResetButton>
               <SaveButton variant="contained" size="medium">
-                Edit Profile & Password
+                Save
               </SaveButton>
             </ButtonBox>
           </RightBox>
@@ -177,4 +185,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+export default EditProfilePage;

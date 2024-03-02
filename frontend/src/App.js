@@ -28,6 +28,7 @@ import PluginPage from "./pages/PluginsPage/PluginsPage";
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import EditProfilePage from "./pages/EditProfilePage/EditProfilePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -62,6 +63,10 @@ const router = createBrowserRouter(
       <Route
         path="profile"
         element={<InvestigatorTemplate children={<ProfilePage />} />}
+      />
+      <Route 
+        path="edit-profile"
+        element={<InvestigatorTemplate children={<EditProfilePage />} />}
       />
 
       {/* Developer */}
