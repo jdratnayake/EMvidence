@@ -5,15 +5,18 @@ import NavBarInvestigator from "../../components/NavBarInvestigator/NavBarInvest
 import Copyright from "../../components/Copyright/Copyright";
 
 import "./InvestigatorTemplate.css";
+import { Box } from "@mui/system";
 
 function InvestigatorTemplate({ children = "" }) {
   return (
     <span className="investigator-template">
-      <NavBarInvestigator page={"analysis"} />
-      <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
-        {children}
-      </Container>
-      <Copyright />
+      <Box sx={{ backgroundColor: "#EAECF0", paddingBottom: "0.5%" }}>
+        <NavBarInvestigator page={"analysis"} />
+        <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
+          {children}
+        </Container>
+        <Copyright />
+      </Box>
     </span>
   );
 }

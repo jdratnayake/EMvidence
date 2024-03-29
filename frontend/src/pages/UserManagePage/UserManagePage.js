@@ -18,20 +18,21 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
 
 const columns = [
-  { id: "name", label: "Name", midWidth: 100 },
+  { id: "name", label: "Name", midWidth: 200 },
   { id: "status", label: "Status", midWidth: 150 },
   { id: "actions", label: "Actions", midWidth: 300 },
 ];
 
 const ContainerBox = styled(Box)(() => ({
-  backgroundColor: "#EAECF0",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignContent: "center",
   alignItems: "center",
+  padding: "0 0 3% 0",
 }));
 
 const HeadingBox = styled(Box)(() => ({
@@ -46,12 +47,20 @@ const ContentBox = styled(Box)(() => ({
   backgroundColor: "#FFFFFF",
   borderRadius: "24px",
   width: "80vw",
-  marginLeft: "2vw",
+  marginLeft: "0",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 const SearchBox = styled(Box)(() => ({
-  margin: "3% 3% 3% 3%",
-  padding: "5% 2% 3% 2%",
+  margin: "0% 0% 3% 0%",
+  padding: "3% 0% 0% 0%",
+}));
+
+const TableBox = styled(Box)(() => ({
+  width: "100%",
 }));
 
 const SearchButton = styled(Button)(() => ({
@@ -108,9 +117,27 @@ const TableCellBlue = styled(TableCell)(() => ({
 function UserManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
+  const [deactivateUserId, setDeactivateUserId] = useState(null);
+  const [activateUserId, setActivateUserId] = useState(null);
+  const handleClose = () => setIsModalOpen(false);
+  const handleActivateClose = () => setIsActivateModalOpen(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+  };
+
+  const handleClicked = (userId) => {
+    setDeactivateUserId(userId);
+    setIsModalOpen(true);
+    console.log(userId);
+  };
+
+  const handleActivateClicked = (userId) => {
+    setActivateUserId(userId);
+    setIsActivateModalOpen(true);
+
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -119,9 +146,9 @@ function UserManagePage() {
   };
 
   const rows = [
-    { name: "Doe, John", status: "Inactive", actions: "1" },
-    { name: "Doe, John", status: "Active", actions: "2" },
-    { name: "Doe, John", status: "Active", actions: "3" },
+    { name: "User 1", status: "Inactive", actions: "1" },
+    { name: "User 2", status: "Active", actions: "2" },
+    { name: "User 3", status: "Active", actions: "3" },
   ];
 
   function getStatusByActions(actionsValue) {
@@ -154,14 +181,17 @@ function UserManagePage() {
           </Typography>
           <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
           {getStatusByActions(value) === "Active" ? (
-            <Typography
-              variant="body2"
-              sx={{ color: "#F90000", cursor: "pointer" }}
-              gutterBottom
-            >
-              Deactivate
-            </Typography>
+            <Button onClick={() => handleClicked(value)}>
+              <Typography
+                variant="caption"
+                sx={{ color: "#F90000", cursor: "pointer" }}
+                gutterBottom
+              >
+                Deactivate
+              </Typography>
+            </Button>
           ) : (
+            <Button onClick={() => handleActivateClicked(value)}>
             <Typography
               variant="body2"
               sx={{ color: "#00245A", cursor: "pointer" }}
@@ -169,6 +199,7 @@ function UserManagePage() {
             >
               Activate
             </Typography>
+            </Button>
           )}
         </Box>
       </TableCell>
@@ -209,93 +240,88 @@ function UserManagePage() {
 
   return (
     <>
+      <DeactivateModal open={isModalOpen} userId={deactivateUserId} onClose={handleClose} />
+      <ActivateModal open={isActivateModalOpen} userId={activateUserId} onClose={handleActivateClose} />
       <ContainerBox>
-        <NavBarAdmin page={"Users"} />
-        <Container maxWidth="lg">
-          <Box>
-            <HeadingBox>
-              <Typography variant="h4" gutterBottom>
-                Users
-              </Typography>
-            </HeadingBox>
-            <ContentBox>
-              <SearchBox>
-                <SearchField
-                  id="outlined-basic"
-                  variant="outlined"
-                  placeholder="Search User"
-                />
-                <SearchButton variant="contained">
-                  <SearchIcon />
-                </SearchButton>
-              </SearchBox>
-              <Box>
-                <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                  <TableContainer sx={{ maxHeight: "440" }}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableHead>
-                        <TableHeadRow>
-                          {columns.map((column) => (
-                            <TableCell
-                              key={column.id}
-                              style={{ minWidth: column.minWidth }}
-                            >
-                              {column.label}{" "}
-                              <span style={{ marginLeft: "10px" }}>
-                                {"\u00A0"}
-                              </span>
-                              <ArrowDownwardIcon />
-                            </TableCell>
-                          ))}
-                        </TableHeadRow>
-                      </TableHead>
-                      <TableBody>
-                        {rows
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((row) => {
-                            return (
-                              <TableRow
-                                hover
-                                role="checkbox"
-                                tableIndex={-1}
-                                key={row.code}
-                              >
-                                {columns.map((column) => {
-                                  const value = row[column.id];
-                                  console.log(column.id);
-                                  return column.id === "status" ? (
-                                    getStatus(value)
-                                  ) : column.id === "actions" ? (
-                                    getActions(value)
-                                  ) : (
-                                    <TableCellBlue key={column.id}>
-                                      {value}
-                                    </TableCellBlue>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
-                </Paper>
-              </Box>
-            </ContentBox>
-          </Box>
-        </Container>
+        <HeadingBox>
+          <Typography variant="h4" gutterBottom>
+            Users
+          </Typography>
+        </HeadingBox>
+        <ContentBox>
+          <SearchBox>
+            <SearchField
+              id="outlined-basic"
+              variant="outlined"
+              placeholder="Search User"
+            />
+            <SearchButton variant="contained">
+              <SearchIcon />
+            </SearchButton>
+          </SearchBox>
+          <TableBox>
+            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+              <TableContainer sx={{ maxHeight: "440" }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableHeadRow>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column.id}
+                          style={{ minWidth: column.minWidth }}
+                        >
+                          {column.label}{" "}
+                          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
+                          <ArrowDownwardIcon />
+                        </TableCell>
+                      ))}
+                    </TableHeadRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tableIndex={-1}
+                            key={row.code}
+                          >
+                            {columns.map((column) => {
+                              const value = row[column.id];
+                              // console.log(column.id);
+                              return column.id === "status" ? (
+                                getStatus(value)
+                              ) : column.id === "actions" ? (
+                                getActions(value)
+                              ) : (
+                                <TableCellBlue key={column.id}>
+                                  {value}
+                                </TableCellBlue>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </TableBox>
+        </ContentBox>
       </ContainerBox>
     </>
   );
