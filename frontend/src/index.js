@@ -4,11 +4,27 @@ import "./index.css";
 import "normalize.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { UserProvider } from "./contexts/UserContext";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { CssBaseline } from "@mui/material";
+
+const client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <UserProvider>
+      <QueryClientProvider client={client}>
+        <CssBaseline />
+        <App />
+      </QueryClientProvider>
+    </UserProvider>
   </React.StrictMode>
 );
 

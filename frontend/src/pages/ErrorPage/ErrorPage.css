@@ -1,0 +1,33 @@
+.errorPage {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.errorImg {
+  display: block;
+  margin-bottom: 2rem;
+  transform: scale(1.5);
+  margin-top: 32%;
+}
+
+.errorTopic {
+  margin-bottom: 0.5rem;
+}
+
+.errorDescription {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: black;
+}
+
+.errorTag {
+  color: var(--primary-100);
+  text-decoration: underline;
+  text-transform: capitalize;
+}
+.errorTag:hover {
+  color: var(--blue-100);
+}

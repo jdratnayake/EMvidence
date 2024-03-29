@@ -1,0 +1,6 @@
+export const API_URL = "http://localhost:8000/api/v1";
+
+// React Query Keys
+export const queryKeys = {
+  login: "login",
+};

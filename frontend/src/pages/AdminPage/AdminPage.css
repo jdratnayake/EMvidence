@@ -1,0 +1,31 @@
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.admin-page .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding-top: 30px;
+  /* padding-left: 200px;
+  padding-right: 200px; */
+}
+
+.admin-page .container .summaries {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  /* padding: 0px; */
+}
+
+.admin-page .container .charts {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 40px;
+  /* padding: 60px; */
+}
