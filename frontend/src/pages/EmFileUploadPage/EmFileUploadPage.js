@@ -317,7 +317,7 @@ function EmFileUploadPage() {
       // chunk.data = encryptedData;
       // console.log(chunk.data);
       chunk.preprocessFinished();
-      // return chunk.data;
+     
     },
     simultaneousUploads: 3,
     testChunks: false,
@@ -368,7 +368,7 @@ function EmFileUploadPage() {
     console.log(file);
     console.log(response);
     alert("file uploading error.");
-    navigate("/file_manage");
+    navigate("/file-list");
   });
 
   uploader.on("chunkingComplete", function (file, response) {
@@ -395,25 +395,7 @@ function EmFileUploadPage() {
   const handleFileSelect = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-    // if (file) {
-    //   const fileName = file.name;
-    //   const fileExtension = fileName.split(".").pop().toLowerCase();
-
-    //   if (
-    //     fileExtension === "png" ||
-    //     fileExtension === "cfile" ||
-    //     fileExtension === "h5"
-    //   ) {
-    //     // Valid PNG file selected, you can proceed with further handling
-    //     console.log("Valid cfile selected:", fileName);
-    //     // Add your additional logic here
-    //   } else {
-    //     // Display an error message or take appropriate action for invalid file
-    //     console.error("Invalid file type. Please select a cfile file.");
-    //     // Clear the file input if needed
-    //     event.target.value = null;
-    //   }
-    // }
+  
     console.log(file);
     setSelectedFile(file);
     setFileName(file.name);
@@ -448,11 +430,11 @@ function EmFileUploadPage() {
           if (response.data.status == 200) {
             setIsSendToDatabase(true);
             setTimeout(() => {
-              navigate("/file_manage");
+              navigate("/file-list");
             }, 1000);
           } else {
             alert("Error");
-            navigate("/file_manage");
+            navigate("/file-list");
           }
         });
       console.log(fileName, fileSize, fileUniqueName);
