@@ -22,14 +22,30 @@ import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 import "./AnalysisPage.css";
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
+import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
 
 const AnalysisPage = () => {
-  const AnalysisPlugins = [
-    {id: "1", name: "Behavior Identification", descrption: "Description 1"},
-    {id: "2", name: "Malicious Firmware Modification Detection", descrption: "Description 2"},
-    {id: "3", name: "FirmWare Version Detection", descrption: "Description 3"},
-  ]
+  const analyisPlugins = [
+    {
+      id: "1",
+      name: "Behavior Identification",
+      descrption:
+        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
+    },
+    {
+      id: "2",
+      name: "Malicious Firmware Modification Detection",
+      descrption:
+        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
+    },
+    {
+      id: "3",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    },
+  ];
 
+  const [checkedPlugin, setCheckedPlugin] = useState(0);
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
@@ -45,9 +61,14 @@ const AnalysisPage = () => {
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
+    useState(false);
+  const [pluginModalId, setPluginModalId] = useState(null);
+  const [pluginModalName, setPluginModalName] = useState(null);
+  const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
   const blackHeader = "#00245A";
-  const containerColor = "rgba(0, 34, 86, 0.25)";
+  const containerColor = "#FFFFFF";
   const buttonColor = "#525252";
 
   const executePreprocessingPlugin = () => {
@@ -192,6 +213,28 @@ const AnalysisPage = () => {
       });
   };
 
+  const handleChecked = (id) => {
+    console.log("Id: ", id);
+    setCheckedPlugin(id);
+    setAnalysisPlugin(parseInt(id));
+    if (id == "1") {
+      setInsightTypeName("Behavior identification");
+    } else if (id == "2") {
+      setInsightTypeName("Malicious firmware modification detection");
+    }
+  };
+
+  const handleClicked = (id, name, description) => {
+    setPluginModalId(id);
+    setPluginModalName(name);
+    setPluginModalDescription(description);
+    setIsAnalysisPluginModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsAnalysisPluginModalOpen(false);
+  };
+
   return (
     <>
       <ToastContainer
@@ -204,6 +247,14 @@ const AnalysisPage = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+      />
+      <AnalysisPluginModal
+        id={pluginModalId}
+        name={pluginModalName}
+        description={pluginModalDescription}
+        open={isAnalysisPluginModalOpen}
+        onClose={handleClose}
+        modifyChecked={handleChecked}
       />
 
       <Box class="file_selection">
@@ -660,19 +711,19 @@ const AnalysisPage = () => {
             sx={{
               display: "flex",
               justifyContent: "flex-start",
-              mt: "20px",
-              mb: "20px",
+              mt: "5px",
+              mb: "5px",
             }}
           >
             <Typography
               variant="body1"
               display="block"
-              sx={{ ml: "20px", mr: "20px" }}
+              sx={{ ml: "20px", mr: "20px", mt: "20px" }}
               gutterBottom
             >
-              Analysis plugin:
+              Select the Analysis plugin:
             </Typography>
-            <NativeSelect
+            {/* <NativeSelect
               defaultValue={1}
               inputProps={{
                 name: "domain-conversion",
@@ -687,19 +738,28 @@ const AnalysisPage = () => {
                 Malicious firmware modification detection
               </option>
               <option value={3}>Firmware version detection</option>
-            </NativeSelect>
+            </NativeSelect> */}
           </Box>
           <Box>
             <Grid
               container
-              spacing={0}
+              spacing={2}
               alignItems="center"
-              justifyContent="center"
-              marginTop={4}
+              justifyContent="left"
+              marginTop={0}
             >
-              <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
-                    <PluginCardAnalysis/>
-              </Grid>
+              {analyisPlugins.map((plugin) => (
+                <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
+                  <PluginCardAnalysis
+                    id={plugin.id}
+                    name={plugin.name}
+                    description={plugin.descrption}
+                    isChecked={plugin.id == checkedPlugin ? true : false}
+                    modifyChecked={handleChecked}
+                    handleClicked={handleClicked}
+                  />
+                </Grid>
+              ))}
             </Grid>
           </Box>
           <LoadingButton
