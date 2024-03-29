@@ -42,7 +42,7 @@ function PluginUploadListPage() {
   };
   const navigate = useNavigate();
   const navigateToPluginUploadPage2 = () => {
-    navigate("/plugin_upload2");
+    navigate("/plugin-upload");
   };
   return (
     <>

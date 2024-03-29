@@ -121,7 +121,7 @@ function EmFileListPage() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const navigateToUploadForm = () => {
-    navigate("/file_upload");
+    navigate("/file-upload");
   };
 
   const [open, setOpen] = useState(false);
