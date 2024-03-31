@@ -29,6 +29,37 @@ function TextBox({
         autoFocus={autoFocusStatus}
         error={errorStatus}
         helperText={helperTextValue}
+        sx={{
+          // "&:hover": {
+          //   "&& fieldset": {
+          //     border: "2px solid gray",
+          //   },
+          // },
+          "& .MuiInputLabel-outlined": {
+            color: "grey", // Initial color
+            "&.Mui-focused": {
+                color: "#00245A", // Color when focused
+            },
+        },
+          color:"#00245A",
+          "& .MuiOutlinedInput-root": {
+           
+            "&.Mui-focused": {
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#00245A",
+                borderWidth: "2px",
+              },
+            },
+            "& .MuiInputLabel-outlined": {
+              color: "#2e2e2e",
+              fontWeight: "bold",
+              "&.Mui-focused": {
+                color: "secondary.main",
+                fontWeight: "bold",
+              },
+            },
+          },
+        }}
       />
     </span>
   );

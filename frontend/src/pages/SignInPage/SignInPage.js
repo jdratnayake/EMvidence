@@ -9,15 +9,19 @@ import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import { useTheme } from '@mui/material/styles';
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import useMediaQuery from '@mui/material/useMediaQuery';
 import TextBox from "../../components/TextBox/TextBox";
+import TextField from "@mui/material/TextField";
 import Copyright from "../../components/Copyright/Copyright";
 import { validateEmail, validatePassword } from "./Validation";
 import { loginUser } from "../../services/authService";
 import { useUser } from "../../contexts/UserContext";
+import logo from "../../resources/logo8.png";
+import logo2 from "../../resources/logo9.png";
 
 const defaultTheme = createTheme();
 
@@ -26,6 +30,9 @@ export default function SignIn() {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
   const { user, addUser } = useUser();
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down('sm'));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down('md'));
   const {
     mutate: login,
     isLoading,
@@ -61,7 +68,6 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
     // Reset error messages
     setEmailError("");
     setPasswordError("");
@@ -91,83 +97,149 @@ export default function SignIn() {
     } else {
       console.log("Form data is invalid");
     }
+
+
   };
 
   return (
-    <span className="sign-in-pages">
+    <span className="sign-in-pages" >
       <ThemeProvider theme={defaultTheme}>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              {/* <LockOutlinedIcon /> */}
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1 }}
-            >
-              <TextBox
-                idValue="email"
-                labelValue="Email Address"
-                nameValue="email"
-                autoCompleteValue="email"
-                autoFocusStatus={true}
-                errorStatus={emailError !== ""}
-                helperTextValue={emailError}
-              />
-
-              <TextBox
-                idValue="password"
-                labelValue="Password"
-                typeName="password"
-                nameValue="password"
-                autoCompleteValue="current-password"
-                autoFocusStatus={true}
-                errorStatus={passwordError !== ""}
-                helperTextValue={passwordError}
-              />
-
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+        <Grid container spacing={0} style={{ height: '100vh' }}>
+          <Grid xs={12} sm={6}  sx={{ backgroundColor: '#00245A' }}>
+            <Container maxWidth="xs">
+              <CssBaseline />
+              <Box marginTop={lessThanSm ? 2 : lessThanMd ? 20 : 10} marginBottom={lessThanSm ? 2 :0}
+              //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
+                sx={{
+                  display: "flex",
+                  flexDirection: lessThanSm ? 'row' : 'column',
+                  alignItems: "center",
+                  marginLeft: lessThanSm ? 14 : 0,
+                }}
               >
-                Sign In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-          <Copyright />
-          {/* <h1>{catData?.fact}</h1> */}
-        </Container>
+                <Box
+                  component="img"
+                  sx={{
+                    height: 520,
+                    width: 680,
+                    maxHeight: { xs: 200,sm: 300, md: 500 },
+                    maxWidth: { xs: 200,sm: 300 , md: 500 },
+                  }}
+                  src={logo}
+                />
+                {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
+                  paddingBottom: 4,
+                  marginTop: lessThanSm ? 4 : 2,
+                  marginLeft: lessThanSm ? '20px' : 0,
+                  variant: lessThanSm ? 'h4' : 'h1',
+                  }}>
+                  EMvidence
+                </Typography> */}
+              </Box>
+
+            </Container>
+          </Grid>
+          <Grid xs={12} sm={6} sx={{ backgroundColor: 'white' }}>
+            <Container component="main" maxWidth="xs">
+              <CssBaseline />
+              <Box
+                sx={{
+                  marginTop: lessThanSm ? 2 : 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar sx={{ m: 1, bgcolor: "#00245A" }}>
+                  {/* <LockOutlinedIcon /> */}
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                  Sign in
+                </Typography>
+                <Box
+                  component="form"
+                  onSubmit={handleSubmit}
+                  noValidate
+                  sx={{ mt: 1 }}
+                >
+                  <TextBox
+                    idValue="email"
+                    labelValue="Email Address"
+                    nameValue="email"
+                    autoCompleteValue="email"
+                    autoFocusStatus={true}
+                    errorStatus={emailError !== ""}
+                    helperTextValue={emailError}
+
+                  />
+
+                  <TextBox
+                    idValue="password"
+                    labelValue="Password"
+                    typeName="password"
+                    nameValue="password"
+                    autoCompleteValue="current-password"
+                    autoFocusStatus={true}
+                    errorStatus={passwordError !== ""}
+                    helperTextValue={passwordError}
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{
+                          "& .MuiSvgIcon-root": {
+                            fill: "#00245A",
+                          },
+                        }}
+                      />
+                    }
+                    label="Remember me"
+                  />
+                  <Button
+                    type="submit"
+                    fullWidth
+                    sx={{
+                      bgcolor: '#00245A', color: 'white', mt: 3, mb: 2, pt: 1, pb: 1,
+                      '&:hover': {
+                        bgcolor: 'rgba(0, 36, 90, 0.8)',
+                      },
+                    }}
+                    variant="contained"
+
+                  >
+                    Sign In
+                  </Button>
+                  <Grid container>
+                    <Grid item xs>
+                      <Link href="#" variant="body2" color={'#00245A'} sx={{
+                        '&:hover': {
+                          color: 'rgba(0, 36, 90, 0.8)',
+                        },
+                      }}>
+                        Forgot password?
+                      </Link>
+                    </Grid>
+                    <Grid item>
+                      <Link href="#" variant="body2" color={'#00245A'} sx={{
+                        '&:hover': {
+                          color: 'rgba(0, 36, 90, 0.8)',
+                        },
+                      }}>
+                        {"Don't have an account? Sign Up"}
+                      </Link>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+              <Copyright />
+              {/* <h1>{catData?.fact}</h1> */}
+            </Container>
+          </Grid>
+
+
+
+        </Grid>
       </ThemeProvider>
     </span>
   );
