@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBar from "../../components/NavBar/NavBar";
+import NavBar from "../../components/NavBarInvestigator/NavBarInvestigator";
 import Copyright from "../../components/Copyright/Copyright";
 import RecentInvestigationCard from "../../components/RecentInvestigationCard/RecentInvestigationCard";
 import DashboardLineChart from "../../components/DashboardLineChart/DashboardLineChart";

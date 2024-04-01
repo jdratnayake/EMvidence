@@ -22,7 +22,7 @@ class UserTableSeeder extends Seeder
                 'first_name' => 'Keaton',
                 'last_name' => 'Dickens',
                 'email' => 'investigator@example.com',
-                'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
+                'password' => bcrypt('As@nk@Sir99'), // You might want to use hashed passwords
                 'phone_number' => '+94710554474',
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),
@@ -35,7 +35,7 @@ class UserTableSeeder extends Seeder
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'admin@example.com',
-                'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
+                'password' => bcrypt('As@nk@Sir99'), // You might want to use hashed passwords
                 'phone_number' => '+94767633100',
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),
@@ -48,7 +48,7 @@ class UserTableSeeder extends Seeder
                 'first_name' => 'Isac',
                 'last_name' => 'Nader',
                 'email' => 'developer@example.com',
-                'password' => bcrypt('AsankaSir'), // You might want to use hashed passwords
+                'password' => bcrypt('As@nk@Sir99'), // You might want to use hashed passwords
                 'phone_number' => '+94704145651',
                 'profile_picture' => 'default.svg',
                 'account_creation_timestamp' => now(),

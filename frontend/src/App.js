@@ -12,8 +12,6 @@ import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorT
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
-import DeveloperPage from "./pages/DeveloperPage/DeveloperPage";
-import InvestigatorPage from "./pages/InvestigatorPage/InvestigatorPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import AnalysisPage from "./pages/AnalysisPage/AnalysisPage";
@@ -52,7 +50,6 @@ const router = createBrowserRouter(
       />
 
       {/* Investigator */}
-      <Route path="investigator" element={<InvestigatorPage />} />
       <Route
         path="analysis"
         element={<InvestigatorTemplate children={<AnalysisPage />} />}
@@ -64,13 +61,12 @@ const router = createBrowserRouter(
         path="profile"
         element={<InvestigatorTemplate children={<ProfilePage />} />}
       />
-      <Route 
+      <Route
         path="edit-profile"
         element={<InvestigatorTemplate children={<EditProfilePage />} />}
       />
 
       {/* Developer */}
-      <Route path="developer" element={<DeveloperPage />} />
       <Route
         path="plugin-upload-list"
         element={<DeveloperTemplate children={<PluginUploadListPage />} />}

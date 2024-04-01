@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import NavBar from "../../components/NavBar/NavBar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
-  Button,
-  Card,
-  Chip,
-  Container,
-  CssBaseline,
   FormControl,
   Grid,
-  IconButton,
   NativeSelect,
   Typography,
 } from "@mui/material";
-import folder from "./../../resources/folder.png";
-import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { API_URL } from "../../constants";
-import "react-toastify/dist/ReactToastify.css";
-import "./AnalysisPage.css";
+
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
+import { API_URL } from "../../constants";
+import folder from "./../../resources/folder.png";
+
+import "react-toastify/dist/ReactToastify.css";
+import "./AnalysisPage.css";
 
 const AnalysisPage = () => {
+  const blackHeader = "#00245A";
+  const containerColor = "#FFFFFF";
+  const buttonColor = "#525252";
+
   const analyisPlugins = [
     {
       id: "1",
@@ -56,8 +54,6 @@ const AnalysisPage = () => {
     "Behavior identification"
   );
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
-  const [fourierTransformationIndex, setFourierTransformationIndex] =
-    useState(0);
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
@@ -67,12 +63,7 @@ const AnalysisPage = () => {
   const [pluginModalName, setPluginModalName] = useState(null);
   const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
-  const blackHeader = "#00245A";
-  const containerColor = "#FFFFFF";
-  const buttonColor = "#525252";
-
   const executePreprocessingPlugin = () => {
-    // setIsPreprocessingFetching(true);
     setLoading(true);
     console.log("Down Sampling Index: " + downSamplingIndex);
 
@@ -117,35 +108,7 @@ const AnalysisPage = () => {
           progress: undefined,
         });
         setLoading(false);
-        // setIsPreprocessingFetching(false);
       });
-  };
-
-  const handleAnalysisPLuginChange = (event) => {
-    // console.log(analysisPlugin);
-    setAnalysisPlugin(event.target.value);
-
-    if (event.target.value == 1) {
-      setInsightTypeName("Behavior identification");
-    } else if (event.target.value == 2) {
-      setInsightTypeName("Malicious firmware modification detection");
-    }
-  };
-
-  const handleDownSamplingChange = (event) => {
-    setDownSamplingIndex(event.target.value);
-  };
-
-  const handleFftSizeChange = (event) => {
-    setFftSizeIndex(event.target.value);
-  };
-
-  const handleOverLapPercentageChange = (event) => {
-    setOverLapPercentageIndex(event.target.value);
-  };
-
-  const handleSampleSelectionChange = (event) => {
-    setSampleSelectionIndex(event.target.value);
   };
 
   const executeAnalysisPlugin = () => {
@@ -284,14 +247,6 @@ const AnalysisPage = () => {
           >
             File Selection
           </Typography>
-          {/* Add sign button */}
-          {/* <IconButton
-              sx={{ mt: "-10px" }}
-              aria-label="add-plugin"
-              color="success"
-            >
-              <ControlPointIcon />
-            </IconButton> */}
         </Box>
         <Box
           sx={{
@@ -374,21 +329,6 @@ const AnalysisPage = () => {
               </Typography>
             </Box>
           </Box>
-          {/* <Button
-              sx={{
-                mb: "10px",
-                marginLeft: "80%",
-                marginRight: "10%",
-                backgroundColor: "#00245A",
-                color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-            >
-              Select
-            </Button> */}
         </Box>
       </Box>
       <Box class="pre_processing" sx={{ mt: "40px" }}>
@@ -444,7 +384,7 @@ const AnalysisPage = () => {
                 }}
                 sx={{ mt: "-10px" }}
                 value={downSamplingIndex}
-                onChange={handleDownSamplingChange}
+                onChange={(event) => setDownSamplingIndex(event.target.value)}
               >
                 <option value={0}>Not downsampled</option>
                 <option value={1}>To 10MHz</option>
@@ -452,40 +392,6 @@ const AnalysisPage = () => {
                 <option value={3}>To 4MHz</option>
               </NativeSelect>
             </Box>
-            {/* <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Domain Conversion:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                  value={fourierTransformationIndex}
-                  onChange={handleFourierTransformationChange}
-                >
-                  <option value={0}>
-                    STFT (FFT_SIZE = 2048 & Overlap Size = 256)
-                  </option>
-                  <option value={1} disabled>
-                    STFT (FFT_SIZE = 1024 & Overlap Size = 256)
-                  </option>
-                </NativeSelect>
-              </Box> */}
             <Box
               sx={{
                 display: "flex",
@@ -526,7 +432,7 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                   value={fftSizeIndex}
-                  onChange={handleFftSizeChange}
+                  onChange={(event) => setFftSizeIndex(event.target.value)}
                 >
                   <option value={0}>2048</option>
                   <option value={1} disabled>
@@ -550,7 +456,9 @@ const AnalysisPage = () => {
                   }}
                   sx={{ mt: "-10px" }}
                   value={overLapPercentageIndex}
-                  onChange={handleOverLapPercentageChange}
+                  onChange={(event) =>
+                    setOverLapPercentageIndex(event.target.value)
+                  }
                 >
                   <option value={0}>10%</option>
                   <option value={1} disabled>
@@ -584,7 +492,9 @@ const AnalysisPage = () => {
                 }}
                 sx={{ mt: "-10px" }}
                 value={sampleSelectionIndex}
-                onChange={handleSampleSelectionChange}
+                onChange={(event) =>
+                  setSampleSelectionIndex(event.target.value)
+                }
               >
                 <option value={0}>All Samples</option>
                 <option value={1}>First 20000 Samples</option>
@@ -675,13 +585,6 @@ const AnalysisPage = () => {
           >
             Analysis Plugins
           </Typography>
-          {/* <IconButton
-              sx={{ mt: "-10px" }}
-              aria-label="add-plugin"
-              color="success"
-            >
-              <ControlPointIcon />
-            </IconButton> */}
         </Box>
         <Box
           sx={{
@@ -691,22 +594,6 @@ const AnalysisPage = () => {
             flexDirection: "column",
           }}
         >
-          {/* <Box
-              sx={{
-                display: "flex",
-                mt: "30px",
-                ml: "10px",
-                justifyContent: "flex-start",
-                mb: "30px",
-              }}
-            > */}
-          {/* <Chip
-                label="Random Forest Algorithm"
-                onDelete
-                sx={{ mr: "20px" }}
-              />
-              <Chip label="K-Means Clustering" onDelete /> */}
-          {/* </Box> */}
           <Box
             sx={{
               display: "flex",
@@ -723,22 +610,6 @@ const AnalysisPage = () => {
             >
               Select the Analysis plugin:
             </Typography>
-            {/* <NativeSelect
-              defaultValue={1}
-              inputProps={{
-                name: "domain-conversion",
-                id: "uncontrollerd-native",
-              }}
-              sx={{ mt: "-10px" }}
-              value={analysisPlugin}
-              onChange={handleAnalysisPLuginChange}
-            >
-              <option value={1}>Behavior identification</option>
-              <option value={2}>
-                Malicious firmware modification detection
-              </option>
-              <option value={3}>Firmware version detection</option>
-            </NativeSelect> */}
           </Box>
           <Box>
             <Grid
@@ -838,10 +709,6 @@ const AnalysisPage = () => {
               <strong>Insight Type:</strong> {insightTypeName}
             </Typography>
 
-            {/* <Typography variant="body1">
-                <strong>Identified Behavior:</strong> Asking a definition
-              </Typography> */}
-
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
                 <strong style={{ display: "inline-block", width: "200px" }}>
@@ -850,25 +717,6 @@ const AnalysisPage = () => {
                 <span>{result.probability}%</span>
               </Typography>
             ))}
-
-            {/* <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 1 accuracy:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography>
-              <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 2 accuracy:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography>
-              <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 3:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography> */}
           </Box>
         </Box>
       </Box>
