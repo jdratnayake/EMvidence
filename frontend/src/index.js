@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import "normalize.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./contexts/UserContext";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { CssBaseline } from "@mui/material";
+import "./index.css";
+import "normalize.css";
 
 const client = new QueryClient({
   defaultOptions: {

@@ -1,39 +1,35 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  Container,
+  Avatar,
+  Button,
+  Tooltip,
+  MenuItem,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
+import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
 const pages = ["Dashboard", "Analysis", "Uploaded Files", "Settings"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarDeveloper(pageName) {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  // const borderBottom = "1px solid black";
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const { removeUser } = useUser();
+  const navigate = useNavigate();
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
+  const handleLogout = () => {
     setAnchorElUser(null);
+    removeUser();
+    navigate("/login");
   };
 
   return (
@@ -77,7 +73,7 @@ function NavBarDeveloper(pageName) {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              onClick={(event) => setAnchorElNav(event.currentTarget)}
               color="#000000"
             >
               <MenuIcon />
@@ -95,13 +91,13 @@ function NavBarDeveloper(pageName) {
                 horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              onClose={() => setAnchorElNav(null)}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page} onClick={() => setAnchorElNav(null)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -134,7 +130,7 @@ function NavBarDeveloper(pageName) {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => setAnchorElNav(null)}
                 variant="plain"
                 sx={{
                   borderRadius: "0",
@@ -154,7 +150,10 @@ function NavBarDeveloper(pageName) {
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton
+                onClick={(event) => setAnchorElUser(event.currentTarget)}
+                sx={{ p: 0 }}
+              >
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
@@ -172,13 +171,19 @@ function NavBarDeveloper(pageName) {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={() => setAnchorElUser(null)}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              {settings.map((setting) =>
+                setting === "Logout" ? (
+                  <MenuItem key={setting} onClick={handleLogout}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ) : (
+                  <MenuItem key={setting} onClick={() => setAnchorElUser(null)}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                )
+              )}
             </Menu>
           </Box>
         </Toolbar>
