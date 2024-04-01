@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "../../components/NavBar/NavBar";
+import NavBar from "../../components/NavBarAdmin/NavBarAdmin";
 import Copyright from "../../components/Copyright/Copyright";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import DashboardLineChart from "../../components/DashboardLineChart/DashboardLineChart";
