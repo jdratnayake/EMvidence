@@ -19,6 +19,7 @@ import pako from "pako";
 import { OutlinedInput } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import Link from '@mui/material/Link';
 import {
   FormControl,
   InputLabel,
@@ -35,13 +36,43 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 function PluginUploadPage() {
   const containerStyle = {
-    backgroundColor: "white", // Set your desired color here
-    // You can also add other styles as needed
-    padding: "20px",
+    backgroundColor: "white", 
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: "8px",
-    marginTop: "10px",
+    marginTop: "80px",
   };
 
+  const [selectedFileIcon, setSelectedFileIcon] = useState(null);
+  const [selectedFileDependency, setSelectedFileDependency] = useState(null);
+  const [selectedFilePlugin, setSelectedFilePlugin] = useState(null);
+
+  const handleFileIcon = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    if (file != null) {
+      setSelectedFileIcon(file);
+    }
+
+  };
+
+  const handleFileDependency = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    if (file != null) {
+      setSelectedFileDependency(file);
+    }
+
+  };
+
+  const handleFilePlugin = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    if (file != null) {
+      setSelectedFilePlugin(file);
+    }
+
+  };
   return (
     <>
       <CssBaseline />
@@ -52,28 +83,36 @@ function PluginUploadPage() {
           variant="h4"
           color="textPrimary"
           align="center"
-          marginBottom={3}
-          marginLeft={2}
+          marginBottom={0}
+          marginLeft={0}
         >
           Upload Plugin
         </Typography>
 
-        <Typography variant="h6" color="textSecondary" align="left">
-          <ul>
-            <li>
-              Please read the guidelines section, download the template and edit
-              it and upload in the advised format.
-            </li>
-            <li>File have to be in .py format</li>
-            <li>Size limit 10mb - xxxmb</li>
-            <li>Example for the output: xxxxxxx</li>
-            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-          </ul>
-        </Typography>
+        <Grid container justifyContent="flex-end">
+          <Grid item sx={{ marginBottom: 3 }}>
+            <Link href="#" variant="body2" color={'#00245A'} sx={{
+              '&:hover': {
+                color: 'rgba(0, 36, 90, 0.8)',
+              },
+              fontSize: 20,
+              fontWeight: 1
+            }}>
+              Guidlines
+            </Link>
+          </Grid>
+        </Grid>
 
-        <Box component="form" onSubmit={() => {}} sx={{ mt: 3, ml: 5 }} c>
+
+        <Box component="form" onSubmit={() => { }} sx={{ mt: 3, }}
+          display="flex"
+          flexDirection="column" // Change flex direction to row
+          alignItems="center"
+          justifyContent="center">
+
           <Grid container spacing={5} align="center">
-            <Grid item xs={12} sm={5}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 name="Plugin Name"
                 required
@@ -81,26 +120,81 @@ function PluginUploadPage() {
                 id="pluginName"
                 label="Plugin Name"
                 autoFocus
-                onChange={() => {}}
+                sx={{
+                  // "&:hover": {
+                  //   "&& fieldset": {
+                  //     border: "2px solid gray",
+                  //   },
+                  // },
+                  "& .MuiInputLabel-outlined": {
+                    color: "grey", // Initial color
+                    "&.Mui-focused": {
+                      color: "#00245A", // Color when focused
+                    },
+                  },
+                  color: "#00245A",
+                  "& .MuiOutlinedInput-root": {
+
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00245A",
+                        borderWidth: "2px",
+                      },
+                    },
+                    "& .MuiInputLabel-outlined": {
+                      color: "#2e2e2e",
+                      fontWeight: "bold",
+                      "&.Mui-focused": {
+                        color: "secondary.main",
+                        fontWeight: "bold",
+                      },
+                    },
+                  },
+                }}
+                onChange={() => { }}
               />
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 id="centerFreq"
                 type="number"
                 label="Center Frequency"
                 variant="outlined"
                 fullWidth
-                // value={centerFreq}
-                // onChange={handleDropdownChange2}
-                style={{ borderColor: "#525252" }}
                 sx={{
-                  "&:hover": {
-                    "&& fieldset": {
-                      border: "3px solid gray",
+                  // "&:hover": {
+                  //   "&& fieldset": {
+                  //     border: "2px solid gray",
+                  //   },
+                  // },
+                  "& .MuiInputLabel-outlined": {
+                    color: "grey", // Initial color
+                    "&.Mui-focused": {
+                      color: "#00245A", // Color when focused
+                    },
+                  },
+                  color: "#00245A",
+                  "& .MuiOutlinedInput-root": {
+
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00245A",
+                        borderWidth: "2px",
+                      },
+                    },
+                    "& .MuiInputLabel-outlined": {
+                      color: "#2e2e2e",
+                      fontWeight: "bold",
+                      "&.Mui-focused": {
+                        color: "secondary.main",
+                        fontWeight: "bold",
+                      },
                     },
                   },
                 }}
+                // value={centerFreq}
+                // onChange={handleDropdownChange2}
+
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">Hz</InputAdornment>
@@ -116,28 +210,121 @@ function PluginUploadPage() {
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 required
                 fullWidth
                 id="deviceName"
                 label="Device Name"
                 name="Device Name"
-                onChange={() => {}}
+                sx={{
+                  // "&:hover": {
+                  //   "&& fieldset": {
+                  //     border: "2px solid gray",
+                  //   },
+                  // },
+                  "& .MuiInputLabel-outlined": {
+                    color: "grey", // Initial color
+                    "&.Mui-focused": {
+                      color: "#00245A", // Color when focused
+                    },
+                  },
+                  color: "#00245A",
+                  "& .MuiOutlinedInput-root": {
+
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00245A",
+                        borderWidth: "2px",
+                      },
+                    },
+                    "& .MuiInputLabel-outlined": {
+                      color: "#2e2e2e",
+                      fontWeight: "bold",
+                      "&.Mui-focused": {
+                        color: "secondary.main",
+                        fontWeight: "bold",
+                      },
+                    },
+                  },
+                }}
+                onChange={() => { }}
               />
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 required
                 fullWidth
                 id="des"
                 label="Description"
                 name="Description"
-                onChange={() => {}}
+                sx={{
+                  // "&:hover": {
+                  //   "&& fieldset": {
+                  //     border: "2px solid gray",
+                  //   },
+                  // },
+                  "& .MuiInputLabel-outlined": {
+                    color: "grey", // Initial color
+                    "&.Mui-focused": {
+                      color: "#00245A", // Color when focused
+                    },
+                  },
+                  color: "#00245A",
+                  "& .MuiOutlinedInput-root": {
+
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00245A",
+                        borderWidth: "2px",
+                      },
+                    },
+                    "& .MuiInputLabel-outlined": {
+                      color: "#2e2e2e",
+                      fontWeight: "bold",
+                      "&.Mui-focused": {
+                        color: "secondary.main",
+                        fontWeight: "bold",
+                      },
+                    },
+                  },
+                }}
+                onChange={() => { }}
               />
             </Grid>
-            <Grid item xs={12} sm={5}>
-              <FormControl fullWidth required>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required
+                sx={{
+                  // "&:hover": {
+                  //   "&& fieldset": {
+                  //     border: "2px solid gray",
+                  //   },
+                  // },
+                  "& .MuiInputLabel-outlined": {
+                    color: "grey", // Initial color
+                    "&.Mui-focused": {
+                      color: "#00245A", // Color when focused
+                    },
+                  },
+                  color: "#00245A",
+                  "& .MuiOutlinedInput-root": {
+
+                    "&.Mui-focused": {
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#00245A",
+                        borderWidth: "2px",
+                      },
+                    },
+                    "& .MuiInputLabel-outlined": {
+                      color: "#2e2e2e",
+                      fontWeight: "bold",
+                      "&.Mui-focused": {
+                        color: "secondary.main",
+                        fontWeight: "bold",
+                      },
+                    },
+                  },
+                }}>
                 <InputLabel id="samplingRate">Sampling Rate</InputLabel>
                 <Select
                   id="samplingRate"
@@ -145,13 +332,6 @@ function PluginUploadPage() {
                   // onChange={handleDropdownChange3}
                   label="Sampling Rate"
                   style={{ borderColor: "#525252" }}
-                  sx={{
-                    "&:hover": {
-                      "&& fieldset": {
-                        border: "3px solid gray",
-                      },
-                    },
-                  }}
                 >
                   <MenuItem value="8">8 MHz</MenuItem>
                   <MenuItem value="10">10 MHz</MenuItem>
@@ -161,8 +341,38 @@ function PluginUploadPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={5}>
-              <FormControl fullWidth required>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required sx={{
+                // "&:hover": {
+                //   "&& fieldset": {
+                //     border: "2px solid gray",
+                //   },
+                // },
+                "& .MuiInputLabel-outlined": {
+                  color: "grey", // Initial color
+                  "&.Mui-focused": {
+                    color: "#00245A", // Color when focused
+                  },
+                },
+                color: "#00245A",
+                "& .MuiOutlinedInput-root": {
+
+                  "&.Mui-focused": {
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#00245A",
+                      borderWidth: "2px",
+                    },
+                  },
+                  "& .MuiInputLabel-outlined": {
+                    color: "#2e2e2e",
+                    fontWeight: "bold",
+                    "&.Mui-focused": {
+                      color: "secondary.main",
+                      fontWeight: "bold",
+                    },
+                  },
+                },
+              }}>
                 <InputLabel id="EMdataFile">EM data file</InputLabel>
                 <Select
                   id="EMdataFile"
@@ -170,13 +380,7 @@ function PluginUploadPage() {
                   // onChange={handleDropdownChange3}
                   label="EM data file"
                   style={{ borderColor: "#525252" }}
-                  sx={{
-                    "&:hover": {
-                      "&& fieldset": {
-                        border: "3px solid gray",
-                      },
-                    },
-                  }}
+
                 >
                   <MenuItem value="1">EM File 1</MenuItem>
                   <MenuItem value="2">EM File 2</MenuItem>
@@ -186,43 +390,89 @@ function PluginUploadPage() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={5}>
-              <FormControl fullWidth required>
-                <div class="container">
-                  <div class="fileUploadInput">
-                    <label>Icon Upload(.jpg, .png, .jpeg) :</label>
-                    <button>
-                      <AttachFileIcon fontSize="small" color="primary" />
-                    </button>
-                    <input type="file" />
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required >
+                <Grid container justifyContent="flex-start" fullWidth>
+                  <label >Icon Upload (accepting formats: .jpg, .png, .jpeg)</label>
+                  <div className="fileUploadInput" style={{
+                    border: '1px solid #bbbbbb', borderRadius: '4px', display: 'flex', flexDirection: 'row', marginTop: '5px', width: '100%'
+                  }}
+                    onMouseEnter={(mouseEnterEvent) => {
+                      mouseEnterEvent.target.style.borderColor = 'black';
+                    }}
+                    onMouseLeave={(mouseLeaveEvent) => {
+                      mouseLeaveEvent.target.style.borderColor = '#bbbbbb';
+                    }}
+                  >
+                    <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
+                    <input
+                      type="file"
+                      onChange={handleFileIcon}
+                      accept=".jpg, .png, .jpeg"
+                      style={{
+                        color: selectedFileIcon ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px'
+                      }}
+
+                    />
                   </div>
-                </div>
+                </Grid>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth required>
-                <div class="container">
-                  <div class="fileUploadInput">
-                    <label>Dependency list(.txt) : </label>
-                    <button>
-                      <AttachFileIcon fontSize="small" color="primary" />
-                    </button>
-                    <input type="file" />
+                <Grid container justifyContent="flex-start" fullWidth>
+                  <label >Dependency list (accepting format: .txt)</label>
+                  <div className="fileUploadInput" style={{
+                    border: '1px solid #bbbbbb', borderRadius: '4px', display: 'flex', flexDirection: 'row', marginTop: '5px', width: '100%'
+                  }}
+                    onMouseEnter={(mouseEnterEvent) => {
+                      mouseEnterEvent.target.style.borderColor = 'black';
+                    }}
+                    onMouseLeave={(mouseLeaveEvent) => {
+                      mouseLeaveEvent.target.style.borderColor = '#bbbbbb';
+                    }}
+                  >
+                    <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
+                    <input
+                      type="file"
+                      onChange={handleFileDependency}
+                      accept=".txt"
+                      style={{
+                        color: selectedFileIcon ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px'
+                      }}
+                    />
                   </div>
-                </div>
+                </Grid>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth required>
-                <div class="container">
-                  <div class="fileUploadInput">
-                    <label>Plugin file(.py) : </label>
-                    <button>
-                      <AttachFileIcon fontSize="small" color="primary" />
-                    </button>
-                    <input type="file" />
+                <Grid container justifyContent="flex-start" fullWidth>
+                  <label >Plugin file (accepting format: .py)</label>
+                  <div className="fileUploadInput" style={{
+                    border: '1px solid #bbbbbb', borderRadius: '4px', display: 'flex', flexDirection: 'row', marginTop: '5px', width: '100%'
+                  }}
+                    onMouseEnter={(mouseEnterEvent) => {
+                      mouseEnterEvent.target.style.borderColor = 'black';
+                    }}
+                    onMouseLeave={(mouseLeaveEvent) => {
+                      mouseLeaveEvent.target.style.borderColor = '#bbbbbb';
+                    }}
+                  >
+                    <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
+                    <input
+                      type="file"
+                      onChange={handleFileDependency}
+                      accept=".py"
+                      style={{
+                        color: selectedFileIcon ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px'
+                      }}
+                    />
                   </div>
-                </div>
+                </Grid>
               </FormControl>
             </Grid>
           </Grid>
@@ -232,14 +482,11 @@ function PluginUploadPage() {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
-            style={{
-              marginTop: "30px",
-              width: "200px",
-              backgroundColor: "#00245A",
-              color: "white",
-              marginLeft: "0px",
-              marginBottom: "20px",
+            sx={{
+              mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+              '&:hover': {
+                bgcolor: 'rgba(0, 36, 90, 0.8)',
+              },
             }}
           >
             Upload

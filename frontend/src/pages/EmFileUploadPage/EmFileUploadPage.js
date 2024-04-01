@@ -1,5 +1,5 @@
 import { CssBaseline, Typography } from "@mui/material";
-import { Container } from "@mui/system";
+import { borderColor, Container, height } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./EmFileUploadPage.css";
 import Button from "@mui/material/Button";
@@ -30,6 +30,7 @@ import {
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
+import { notifyManager } from "react-query";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -85,9 +86,9 @@ function EmFileUploadPage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("arduino");
-  const [centerFreq, setCenterFreq] = useState(100);
-  const [samplingRate, setSamplingRate] = useState(100);
+  const [deviceName, setDeviceName] = useState();
+  const [centerFreq, setCenterFreq] = useState();
+  const [samplingRate, setSamplingRate] = useState();
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
@@ -317,7 +318,7 @@ function EmFileUploadPage() {
       // chunk.data = encryptedData;
       // console.log(chunk.data);
       chunk.preprocessFinished();
-     
+
     },
     simultaneousUploads: 3,
     testChunks: false,
@@ -395,11 +396,13 @@ function EmFileUploadPage() {
   const handleFileSelect = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-  
-    console.log(file);
-    setSelectedFile(file);
-    setFileName(file.name);
-    setFileSize(file.size);
+    if (file != null) {
+      console.log(file);
+      setSelectedFile(file);
+      setFileName(file.name);
+      setFileSize(file.size);
+    }
+
   };
 
   useEffect(() => {
@@ -486,8 +489,39 @@ function EmFileUploadPage() {
                 {/* Dropdown */}
                 <FormControl
                   fullWidth
-                  style={{ marginBottom: "20px" }}
+                  style={{ marginBottom: "20px", textAlign: "left" }}
                   required
+                  sx={{
+                    // "&:hover": {
+                    //   "&& fieldset": {
+                    //     border: "2px solid gray",
+                    //   },
+                    // },
+                    "& .MuiInputLabel-outlined": {
+                      color: "grey", // Initial color
+                      "&.Mui-focused": {
+                        color: "#00245A", // Color when focused
+                      },
+                    },
+                    "& .MuiOutlinedInput-root": {
+
+                      "&.Mui-focused": {
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#00245A",
+                          borderWidth: "2px",
+                        },
+                      },
+                      "& .MuiInputLabel-outlined": {
+                        color: "#00245A",
+                        fontWeight: "bold",
+                        "&.Mui-focused": {
+                          color: "grey",
+                          fontWeight: "bold",
+                        },
+                      },
+                    },
+
+                  }}
                 >
                   <InputLabel id="dropdown-label-1">Device Name</InputLabel>
                   <Select
@@ -497,13 +531,7 @@ function EmFileUploadPage() {
                     onChange={handleDropdownChange1}
                     label="Device Name"
                     style={{ borderColor: "#525252" }}
-                    sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
-                        },
-                      },
-                    }}
+
                   >
                     <MenuItem value="Arduino">Arduino</MenuItem>
                     <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
@@ -522,11 +550,35 @@ function EmFileUploadPage() {
                     variant="outlined"
                     value={centerFreq}
                     onChange={handleDropdownChange2}
-                    style={{ borderColor: "#525252" }}
+
                     sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
+                      // "&:hover": {
+                      //   "&& fieldset": {
+                      //     border: "3px solid gray",
+                      //   },
+                      // },
+                      "& .MuiInputLabel-outlined": {
+                        color: "grey", // Initial color
+                        "&.Mui-focused": {
+                          color: "#00245A", // Color when focused
+                        },
+                      },
+                      color: "#00245A",
+                      "& .MuiOutlinedInput-root": {
+
+                        "&.Mui-focused": {
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#00245A",
+                            borderWidth: "2px",
+                          },
+                        },
+                        "& .MuiInputLabel-outlined": {
+                          color: "#2e2e2e",
+                          fontWeight: "bold",
+                          "&.Mui-focused": {
+                            color: "secondary.main",
+                            fontWeight: "bold",
+                          },
                         },
                       },
                     }}
@@ -539,7 +591,7 @@ function EmFileUploadPage() {
                       inputProps: {
                         min: 0,
                         step: 0.01,
-                        style: { textAlign: "center" },
+
                       },
                     }}
                     required
@@ -548,7 +600,39 @@ function EmFileUploadPage() {
 
                 <FormControl
                   fullWidth
-                  style={{ marginBottom: "20px" }}
+                  style={{ marginBottom: "20px", textAlign: "left" }}
+
+                  sx={{
+                    // "&:hover": {
+                    //   "&& fieldset": {
+                    //     border: "2px solid gray",
+                    //   },
+                    // },
+                    "& .MuiInputLabel-outlined": {
+                      color: "grey", // Initial color
+                      "&.Mui-focused": {
+                        color: "#00245A", // Color when focused
+                      },
+                    },
+                    "& .MuiOutlinedInput-root": {
+
+                      "&.Mui-focused": {
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#00245A",
+                          borderWidth: "2px",
+                        },
+                      },
+                      "& .MuiInputLabel-outlined": {
+                        color: "#00245A",
+                        fontWeight: "bold",
+                        "&.Mui-focused": {
+                          color: "grey",
+                          fontWeight: "bold",
+                        },
+                      },
+                    },
+
+                  }}
                   required
                 >
                   <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
@@ -558,14 +642,6 @@ function EmFileUploadPage() {
                     value={samplingRate}
                     onChange={handleDropdownChange3}
                     label="Sampling Rate"
-                    style={{ borderColor: "#525252" }}
-                    sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
-                        },
-                      },
-                    }}
                   >
                     <MenuItem value="8">8 MHz</MenuItem>
                     <MenuItem value="10">10 MHz</MenuItem>
@@ -576,19 +652,40 @@ function EmFileUploadPage() {
                 </FormControl>
 
                 <FormControl
-                  fullWidth
                   required
-                  style={{ marginBottom: "20px" }}
+                  sx={{
+                    width: '100%',
+                    marginLeft: '0px',
+                    borderColor: 'red'
+                  }}
                 >
                   <div className="container">
-                    <div className="fileUploadInput">
-                      <button>
-                        <AttachFileIcon fontSize="small" color="primary" />
-                      </button>
+                    <div className="fileUploadInput" style={{
+                      border: '1px solid #bbbbbb', borderRadius: '4px', display: 'flex', flexDirection: 'row', 
+                    }}
+                    onMouseEnter={(mouseEnterEvent) => {
+                      // Change border color on hover
+                      // This function will be called when mouse enters the div
+                      mouseEnterEvent.target.style.borderColor = 'black';
+                    }}
+                    onMouseLeave={(mouseLeaveEvent) => {
+                      // Reset border color when mouse leaves the div
+                      mouseLeaveEvent.target.style.borderColor = '#bbbbbb';
+                    }}
+                    
+                    >
+
+                      <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
+
                       <input
                         type="file"
                         onChange={handleFileSelect}
                         accept=".h5, .cfile, .png, .pdf"
+                        style={{
+                          color: selectedFile ? 'black' : 'grey', height: '53px',
+                          border: 'none', left: '-20px'
+                        }}
+
                       />
                     </div>
                   </div>
@@ -598,15 +695,14 @@ function EmFileUploadPage() {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "20px",
-                    width: "200px",
-                    backgroundColor: "#00245A",
-                    color: "white",
+                  sx={{
+                    mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 36, 90, 0.8)',
+                    },
                   }}
                 >
-                  Submit
+                  Upload
                 </Button>
               </form>
             </Typography>
