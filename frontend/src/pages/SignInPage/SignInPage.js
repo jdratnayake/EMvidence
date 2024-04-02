@@ -83,8 +83,9 @@ export default function SignInPage() {
 
     let isValid = true;
 
-    if (!validateEmail(data.get("email"))) {
-      setEmailError("Invalid email address");
+    const emailValidationResult = validateEmail(data.get("email"));
+    if (emailValidationResult !== true) {
+      setEmailError(emailValidationResult);
       isValid = false;
     }
 
