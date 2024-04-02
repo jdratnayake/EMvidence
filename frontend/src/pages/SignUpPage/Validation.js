@@ -1,3 +1,5 @@
+import { API_URL } from "../../constants";
+
 const validateFirstName = (firstName) => {
   if (!firstName) {
     return "First name is required";
@@ -24,6 +26,28 @@ const validateEmail = (email) => {
     return "Invalid email address";
   }
   return null;
+};
+
+const validateEmailExistence = async (email) => {
+  try {
+    const response = await fetch(API_URL + "/auth/check-email", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        email: email,
+      },
+    });
+    const data = await response.json();
+
+    if (!data.unique) {
+      return "Email already exists";
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error checking email existence:", error);
+    return "An error occurred while checking email existence";
+  }
 };
 
 const validateRole = (role) => {
@@ -79,6 +103,7 @@ export {
   validateFirstName,
   validateLastName,
   validateEmail,
+  validateEmailExistence,
   validateRole,
   validatePassword,
   validateConfirmPassword,

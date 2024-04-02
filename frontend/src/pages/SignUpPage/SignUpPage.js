@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
 import {
   Avatar,
   Button,
@@ -22,7 +23,6 @@ import {
   InputAdornment,
   FormHelperText,
 } from "@mui/material";
-import axios from "axios";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -30,10 +30,13 @@ import {
   validateFirstName,
   validateLastName,
   validateEmail,
+  validateEmailExistence,
   validateRole,
   validatePassword,
   validateConfirmPassword,
 } from "./Validation";
+import { registerUser } from "../../services/authService";
+import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo8.png";
 
 function Copyright(props) {
@@ -68,6 +71,7 @@ function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { user, addUser } = useUser();
 
   const [firstnameError, setFirstnameError] = useState("");
   const [lastnameError, setLastnameError] = useState("");
@@ -76,7 +80,64 @@ function SignUpPage() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const handleSubmit = (event) => {
+  const {
+    mutate: register,
+    isLoading,
+    isError,
+  } = useMutation({
+    mutationFn: registerUser,
+    onSuccess: (data) => {
+      setFirstnameError("");
+      setLastnameError("");
+      setEmailError("");
+      setRoleError("");
+      setPasswordError("");
+      setConfirmPasswordError("");
+
+      if (data.hasOwnProperty("error")) {
+        if (data["error"].hasOwnProperty("first_name")) {
+          setFirstnameError(data["error"]["first_name"]);
+        } else if (data["error"].hasOwnProperty("last_name")) {
+          setLastnameError(data["error"]["last_name"]);
+        } else if (data["error"].hasOwnProperty("email")) {
+          setEmailError(data["error"]["email"]);
+        } else if (data["error"].hasOwnProperty("user_type")) {
+          setRoleError(data["error"]["user_type"]);
+        } else if (data["error"].hasOwnProperty("password")) {
+          setPasswordError(data["error"]["password"]);
+        } else if (data["error"].hasOwnProperty("confirm_password")) {
+          setConfirmPasswordError(data["error"]["confirm_password"]);
+        }
+      } else {
+        const userData = {
+          user_id: data.user.user_id,
+          user_type: data.user.user_type,
+          account_status: data.user.account_status,
+          first_name: data.user.first_name,
+          last_name: data.user.last_name,
+          email: data.user.email,
+          profile_picture: data.user.profile_picture,
+          token: data.token,
+        };
+        addUser({ userData });
+        if (userData.user_type === "admin") {
+          navigate("/admin");
+        } else if (userData.user_type === "investigator") {
+          navigate("/investigation");
+        } else if (userData.user_type === "developer") {
+          navigate("/plugin-upload-list");
+        } else {
+          navigate("/error");
+        }
+      }
+    },
+
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     setFirstnameError("");
@@ -103,6 +164,12 @@ function SignUpPage() {
     const emailStatus = validateEmail(email);
     if (emailStatus !== null) {
       setEmailError(emailStatus);
+      isValid = false;
+    }
+
+    const checkEmailStatus = await validateEmailExistence(email);
+    if (checkEmailStatus) {
+      setEmailError(checkEmailStatus);
       isValid = false;
     }
 
@@ -137,7 +204,9 @@ function SignUpPage() {
         confirm_password: confirmPassword,
       };
 
-      console.log(userData);
+      // console.log(userData);
+
+      register(userData);
     }
   };
 
