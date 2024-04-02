@@ -12,7 +12,9 @@ export const loginUser = async (userData) => {
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error(response.statusText);
+        const data = await response.json();
+
+        return data;
       } else {
         throw new Error("Login failed" + response.statusText);
       }

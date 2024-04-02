@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useMutation } from "react-query";
 import {
   Avatar,
@@ -97,15 +97,20 @@ function SignUpPage() {
       if (data.hasOwnProperty("error")) {
         if (data["error"].hasOwnProperty("first_name")) {
           setFirstnameError(data["error"]["first_name"]);
-        } else if (data["error"].hasOwnProperty("last_name")) {
+        }
+        if (data["error"].hasOwnProperty("last_name")) {
           setLastnameError(data["error"]["last_name"]);
-        } else if (data["error"].hasOwnProperty("email")) {
+        }
+        if (data["error"].hasOwnProperty("email")) {
           setEmailError(data["error"]["email"]);
-        } else if (data["error"].hasOwnProperty("user_type")) {
+        }
+        if (data["error"].hasOwnProperty("user_type")) {
           setRoleError(data["error"]["user_type"]);
-        } else if (data["error"].hasOwnProperty("password")) {
+        }
+        if (data["error"].hasOwnProperty("password")) {
           setPasswordError(data["error"]["password"]);
-        } else if (data["error"].hasOwnProperty("confirm_password")) {
+        }
+        if (data["error"].hasOwnProperty("confirm_password")) {
           setConfirmPasswordError(data["error"]["confirm_password"]);
         }
       } else {
@@ -607,7 +612,8 @@ function SignUpPage() {
                 <Grid container justifyContent="flex-end">
                   <Grid item>
                     <Link
-                      href="#"
+                      component={RouterLink}
+                      to="/login"
                       variant="body2"
                       color={"#00245A"}
                       sx={{

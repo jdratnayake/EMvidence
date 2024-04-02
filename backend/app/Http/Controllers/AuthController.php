@@ -150,7 +150,7 @@ class AuthController extends Controller
             ], 200);
         } else {
             // If login fails, return error message
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return response()->json(['error' => 'Invalid email or password'], 401);
         }
 
     }
