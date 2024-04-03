@@ -54,8 +54,14 @@ const router = createBrowserRouter(
         path="analysis"
         element={<InvestigatorTemplate children={<AnalysisPage />} />}
       />
-      <Route path="file-list" element={<EmFileListPage />} />
-      <Route path="file-upload" element={<EmFileUploadPage />} />
+      <Route
+        path="file-list"
+        element={<InvestigatorTemplate children={<EmFileListPage />} />}
+      />
+      <Route
+        path="file-upload"
+        element={<InvestigatorTemplate children={<EmFileUploadPage />} />}
+      />
       <Route path="investigation" element={<InvestigationPage />} />
       <Route
         path="profile"
@@ -71,7 +77,10 @@ const router = createBrowserRouter(
         path="plugin-upload-list"
         element={<DeveloperTemplate children={<PluginUploadListPage />} />}
       />
-      <Route path="plugin-upload" element={<PluginUploadPage />} />
+      <Route
+        path="plugin-upload"
+        element={<DeveloperTemplate children={<PluginUploadPage />} />}
+      />
 
       {/* Modification Required UIs If Time Permits */}
       <Route path="analysis1" element={<AnalysisPage1 />} />

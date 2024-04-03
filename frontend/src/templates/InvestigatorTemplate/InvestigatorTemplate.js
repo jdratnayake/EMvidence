@@ -9,8 +9,8 @@ import { Box } from "@mui/system";
 
 function InvestigatorTemplate({ children = "" }) {
   return (
-    <span className="investigator-template">
-      <Box sx={{ backgroundColor: "#EAECF0", paddingBottom: "0.5%" }}>
+    <span className="investigator-template" >
+      <Box sx={{ backgroundColor: "#E8E8E8", paddingBottom: "0.5%" }}>
         <NavBarInvestigator page={"analysis"} />
         <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
           {children}
