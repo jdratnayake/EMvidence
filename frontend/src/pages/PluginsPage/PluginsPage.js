@@ -169,9 +169,9 @@ function PluginsPage() {
             value={searchText}
             onChange={handleSearch}
             variant="outlined"
-            style={{ width: "600px", marginTop: "40px" }}
+            style={{ width: "600px", marginTop: "40px", backgroundColor: "white" }}
             InputProps={{
-              endAdornment: <SearchIcon />,
+              endAdornment: <SearchIcon sx={{fontSize: 30}}/>,
             }}
           />
         </Grid>

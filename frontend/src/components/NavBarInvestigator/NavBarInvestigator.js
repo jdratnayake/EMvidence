@@ -34,7 +34,7 @@ function NavBarInvestigator(pageName) {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       elevation={1}
       sx={{
         backgroundColor: "#FFFFFF",

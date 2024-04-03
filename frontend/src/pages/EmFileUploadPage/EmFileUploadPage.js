@@ -8,7 +8,8 @@ import CryptoJS from "crypto-js";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Resumable from "resumablejs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
 import Alert from "@mui/material/Alert";
@@ -32,23 +33,23 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { notifyManager } from "react-query";
 
+
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 14,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor:
-      theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
+    backgroundColor: "white",
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+    backgroundColor: "#00245A",
   },
 }));
 
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
+      <Box sx={{ width: "100%", mr: 1 , }}>
         <BorderLinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
@@ -73,6 +74,7 @@ function EmFileUploadPage() {
   const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
 
   const navigate = useNavigate();
+ // const history = useHistory();
   const [progress, setProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(0);
   const [isFileAdded, setIsFileAdded] = useState(false);
@@ -86,9 +88,9 @@ function EmFileUploadPage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState();
-  const [centerFreq, setCenterFreq] = useState();
-  const [samplingRate, setSamplingRate] = useState();
+  const [deviceName, setDeviceName] = useState("arduino");
+  const [centerFreq, setCenterFreq] = useState(10);
+  const [samplingRate, setSamplingRate] = useState(20);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
@@ -461,339 +463,302 @@ function EmFileUploadPage() {
   //       }
   //     }
   //   };
+  const sxStyle = {
+    // "&:hover": {
+    //   "&& fieldset": {
+    //     border: "2px solid gray",
+    //   },
+    // },
+    borderRadius: "4px",
+    backgroundColor : "white",
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#00245A",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "grey",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
+
+  const containerStyle = {
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "8px",
+    marginTop: "80px",
+  };
 
   return (
-    <>
-      <CssBaseline />
-      <NavBar />
 
-      <div className="maindiv" style={{ marginTop: "50px" }}>
-        {!isSubmitted && (
-          <Container maxWidth="sm" id="form">
-            <Typography
-              variant="h4"
-              color="textPrimary"
-              align="center"
-              gutterBottom
-            >
-              Upload File
-            </Typography>
-            <Typography
-              variant="h4"
-              color="textPrimary"
-              align="center"
-              marginTop={7}
-              gutterBottom
-            >
-              <form onSubmit={handleSubmit}>
-                {/* Dropdown */}
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px", textAlign: "left" }}
-                  required
+    <div className="maindiv" >
+
+      {!isSubmitted && (
+        <Container maxWidth="sm" id="form" style={containerStyle}>
+          <Typography
+            variant="h4"
+            color="textPrimary"
+            align="center"
+            gutterBottom
+            sx={{p:3}}
+          >
+            Upload File
+          </Typography>
+          <Typography
+            variant="h4"
+            color="textPrimary"
+            align="center"
+            marginTop={7}
+            gutterBottom
+          >
+            <form onSubmit={handleSubmit}>
+              {/* Dropdown */}
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", textAlign: "left" }}
+                required
+                sx={{
+                  ...sxStyle,
+
+                }}
+              >
+                <InputLabel id="dropdown-label-1">Device Name</InputLabel>
+                <Select
+                  labelId="dropdown-label-1"
+                  id="dropdown-1"
+                  value={deviceName}
+                  onChange={handleDropdownChange1}
+                  label="Device Name"
+                  style={{ borderColor: "#525252" }}
+
+                >
+                  <MenuItem value="Arduino">Arduino</MenuItem>
+                  <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px" }}
+                required
+              >
+                <TextField
+                  id="text-1"
+                  type="number"
+                  label="Center Frequency"
+                  variant="outlined"
+                  value={centerFreq}
+                  onChange={handleDropdownChange2}
+
                   sx={{
-                    // "&:hover": {
-                    //   "&& fieldset": {
-                    //     border: "2px solid gray",
-                    //   },
-                    // },
-                    "& .MuiInputLabel-outlined": {
-                      color: "grey", // Initial color
-                      "&.Mui-focused": {
-                        color: "#00245A", // Color when focused
-                      },
-                    },
-                    "& .MuiOutlinedInput-root": {
-
-                      "&.Mui-focused": {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#00245A",
-                          borderWidth: "2px",
-                        },
-                      },
-                      "& .MuiInputLabel-outlined": {
-                        color: "#00245A",
-                        fontWeight: "bold",
-                        "&.Mui-focused": {
-                          color: "grey",
-                          fontWeight: "bold",
-                        },
-                      },
-                    },
-
+                    ...sxStyle,
                   }}
-                >
-                  <InputLabel id="dropdown-label-1">Device Name</InputLabel>
-                  <Select
-                    labelId="dropdown-label-1"
-                    id="dropdown-1"
-                    value={deviceName}
-                    onChange={handleDropdownChange1}
-                    label="Device Name"
-                    style={{ borderColor: "#525252" }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">Hz</InputAdornment>
+                    ),
+                    inputMode: "numeric",
+                    pattern: "/^-?d+(?:.d+)?$/g",
+                    inputProps: {
+                      min: 0,
+                      step: 0.01,
 
-                  >
-                    <MenuItem value="Arduino">Arduino</MenuItem>
-                    <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px" }}
-                  required
-                >
-                  <TextField
-                    id="text-1"
-                    type="number"
-                    label="Center Frequency"
-                    variant="outlined"
-                    value={centerFreq}
-                    onChange={handleDropdownChange2}
-
-                    sx={{
-                      // "&:hover": {
-                      //   "&& fieldset": {
-                      //     border: "3px solid gray",
-                      //   },
-                      // },
-                      "& .MuiInputLabel-outlined": {
-                        color: "grey", // Initial color
-                        "&.Mui-focused": {
-                          color: "#00245A", // Color when focused
-                        },
-                      },
-                      color: "#00245A",
-                      "& .MuiOutlinedInput-root": {
-
-                        "&.Mui-focused": {
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#00245A",
-                            borderWidth: "2px",
-                          },
-                        },
-                        "& .MuiInputLabel-outlined": {
-                          color: "#2e2e2e",
-                          fontWeight: "bold",
-                          "&.Mui-focused": {
-                            color: "secondary.main",
-                            fontWeight: "bold",
-                          },
-                        },
-                      },
-                    }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">Hz</InputAdornment>
-                      ),
-                      inputMode: "numeric",
-                      pattern: "/^-?d+(?:.d+)?$/g",
-                      inputProps: {
-                        min: 0,
-                        step: 0.01,
-
-                      },
-                    }}
-                    required
-                  />
-                </FormControl>
-
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px", textAlign: "left" }}
-
-                  sx={{
-                    // "&:hover": {
-                    //   "&& fieldset": {
-                    //     border: "2px solid gray",
-                    //   },
-                    // },
-                    "& .MuiInputLabel-outlined": {
-                      color: "grey", // Initial color
-                      "&.Mui-focused": {
-                        color: "#00245A", // Color when focused
-                      },
                     },
-                    "& .MuiOutlinedInput-root": {
-
-                      "&.Mui-focused": {
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#00245A",
-                          borderWidth: "2px",
-                        },
-                      },
-                      "& .MuiInputLabel-outlined": {
-                        color: "#00245A",
-                        fontWeight: "bold",
-                        "&.Mui-focused": {
-                          color: "grey",
-                          fontWeight: "bold",
-                        },
-                      },
-                    },
-
                   }}
                   required
+                />
+              </FormControl>
+
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", textAlign: "left" }}
+
+                sx={{
+                 ...sxStyle,
+                }}
+                required
+              >
+                <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
+                <Select
+                  labelId="dropdown-label-2"
+                  id="dropdown-2"
+                  value={samplingRate}
+                  onChange={handleDropdownChange3}
+                  label="Sampling Rate"
                 >
-                  <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
-                  <Select
-                    labelId="dropdown-label-2"
-                    id="dropdown-2"
-                    value={samplingRate}
-                    onChange={handleDropdownChange3}
-                    label="Sampling Rate"
-                  >
-                    <MenuItem value="8">8 MHz</MenuItem>
-                    <MenuItem value="10">10 MHz</MenuItem>
-                    <MenuItem value="12.5">12.5 MHz</MenuItem>
-                    <MenuItem value="16">16 MHz</MenuItem>
-                    <MenuItem value="20">20 MHz</MenuItem>
-                  </Select>
-                </FormControl>
+                  <MenuItem value="8">8 MHz</MenuItem>
+                  <MenuItem value="10">10 MHz</MenuItem>
+                  <MenuItem value="12.5">12.5 MHz</MenuItem>
+                  <MenuItem value="16">16 MHz</MenuItem>
+                  <MenuItem value="20">20 MHz</MenuItem>
+                </Select>
+              </FormControl>
 
-                <FormControl
-                  required
+              <FormControl
+                required
+                sx={{
+                  width: '100%',
+                  marginLeft: '0px',
+                  borderColor: 'red'
+                }}
+
+              >
+                <Box
                   sx={{
-                    width: '100%',
-                    marginLeft: '0px',
-                    borderColor: 'red'
-                  }}
-                >
-                  <div className="container">
-                    <div className="fileUploadInput" style={{
-                      border: '1px solid #bbbbbb', borderRadius: '4px', display: 'flex', flexDirection: 'row', 
-                    }}
-                    onMouseEnter={(mouseEnterEvent) => {
-                      // Change border color on hover
-                      // This function will be called when mouse enters the div
-                      mouseEnterEvent.target.style.borderColor = 'black';
-                    }}
-                    onMouseLeave={(mouseLeaveEvent) => {
-                      // Reset border color when mouse leaves the div
-                      mouseLeaveEvent.target.style.borderColor = '#bbbbbb';
-                    }}
-                    
-                    >
-
-                      <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
-
-                      <input
-                        type="file"
-                        onChange={handleFileSelect}
-                        accept=".h5, .cfile, .png, .pdf"
-                        style={{
-                          color: selectedFile ? 'black' : 'grey', height: '53px',
-                          border: 'none', left: '-20px'
-                        }}
-
-                      />
-                    </div>
-                  </div>
-                </FormControl>
-
-                {/* Submit button */}
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+                    backgroundColor: "white",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "left",
+                    justifyContent: "left",
+                    marginLeft: 0,
+                    border: '1px solid #bbbbbb',
+                    borderRadius: '4px',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 36, 90, 0.8)',
+                      borderColor: 'black', // Border color on hover
                     },
                   }}
+
                 >
-                  Upload
-                </Button>
-              </form>
-            </Typography>
-          </Container>
-        )}
-        {isSubmitted && !isSendToDatabase && (
-          <Container maxWidth="sm" id="showProgress">
-            <Stack
-              spacing={2}
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {compressedFile ? (
-                <div>
-                  <Typography variant="h3" color="textPrimary" align="center">
-                    Uploading
-                  </Typography>
-                </div>
-              ) : (
-                <div>
-                  <Typography variant="h3" color="textPrimary" align="center">
-                    Preparing
-                  </Typography>
-                </div>
-              )}
-              <div className="bouncing-loader" style={{ marginTop: "40px" }}>
-                <div></div>
-                <div></div>
-                <div></div>
+                  <div className="fileUploadInput" style={{ display: 'flex', flexDirection: 'row', }} >
+
+                    <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
+
+                    <input
+                      type="file"
+                      required
+                      onChange={handleFileSelect}
+                      accept=".h5, .cfile, .png, .pdf"
+                      style={{
+                        color: selectedFile ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px'
+                      }}
+
+                    />
+                  </div>
+
+
+                </Box>
+
+              </FormControl>
+
+              {/* Submit button */}
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+                  '&:hover': {
+                    bgcolor: 'rgba(0, 36, 90, 0.8)',
+                  },
+                }}
+              >
+                Upload
+              </Button>
+            </form>
+          </Typography>
+        </Container>
+      )}
+      {isSubmitted && !isSendToDatabase && (
+        <Container maxWidth="sm" id="showProgress" >
+          <Stack
+            spacing={2}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            {compressedFile ? (
+              <div>
+                <Typography variant="h3" color="textPrimary" align="center">
+                  Uploading
+                </Typography>
               </div>
-            </Stack>
-
-            <div>
-              <Typography variant="h6" color="textSecondary" align="center">
-                Please wait. This will take few minitues.
-              </Typography>
+            ) : (
+              <div>
+                <Typography variant="h3" color="textPrimary" align="center">
+                  Preparing
+                </Typography>
+              </div>
+            )}
+            <div className="bouncing-loader" style={{ marginTop: "40px" }}>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
+          </Stack>
 
-            <Box sx={{ width: "100%", marginTop: "15px" }}>
-              {compressedFile && <LinearProgressWithLabel value={progress} />}
+          <div>
+            <Typography variant="h6" color="textSecondary" align="center">
+              Please wait. This will take few minitues.
+            </Typography>
+          </div>
 
-              {!hash && !compressedFile && (
-                <div>
-                  <Stack
-                    spacing={1}
-                    direction="row"
-                    justifyContent="left"
-                    alignItems="center"
-                  >
-                    <Typography variant="h6" color="textSecondary" align="left">
-                      Calculating file hash
-                    </Typography>
-                    <Box sx={{ display: "flex", size: "10px" }}>
-                      <CircularProgress size={16} />
-                    </Box>
-                  </Stack>
-                  <LinearProgressWithLabel value={hasingProgress} />
-                </div>
-              )}
+          <Box sx={{ width: "100%", marginTop: 10 , mb: hash && compressedFile ? 40 :36}}>
+            {compressedFile && <LinearProgressWithLabel value={progress} />}
 
-              {hash && !compressedFile && (
-                <div>
-                  <Stack
-                    spacing={1}
-                    direction="row"
-                    justifyContent="left"
-                    alignItems="center"
-                  >
-                    <Typography variant="h6" color="textSecondary" align="left">
-                      Compressing{" "}
-                    </Typography>
-                    <Box sx={{ display: "flex", size: "10px" }}>
-                      <CircularProgress size={16} />
-                    </Box>
-                  </Stack>
-                  <LinearProgressWithLabel value={compressionProgress} />
-                </div>
-              )}
-            </Box>
-          </Container>
-        )}
-        {isSendToDatabase && (
-          <Container maxWidth="sm" id="showSuccess">
-            <Alert>
-              <AlertTitle>File successfully uploaded</AlertTitle>
-            </Alert>
-          </Container>
-        )}
-      </div>
-    </>
+            {!hash && !compressedFile && (
+              <div>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" color="textSecondary" align="left">
+                    Calculating file hash
+                  </Typography>
+                  {/* <Box sx={{ display: "flex", size: "10px" }}>
+                    <CircularProgress size={16} />
+                  </Box> */}
+                </Stack>
+                <LinearProgressWithLabel value={hasingProgress} />
+              </div>
+            )}
+
+            {hash && !compressedFile && (
+              <div>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" color="textSecondary" align="left">
+                    Compressing{" "}
+                  </Typography>
+                  {/* <Box sx={{ display: "flex", size: "10px" }}>
+                    <CircularProgress size={16} />
+                  </Box> */}
+                </Stack>
+                <LinearProgressWithLabel value={compressionProgress} />
+              </div>
+            )}
+          </Box>
+        </Container>
+      )}
+      {isSendToDatabase && (
+        <Container maxWidth="sm" id="showSuccess" sx={{mb: 58}}>
+          <Alert>
+            <AlertTitle>File successfully uploaded</AlertTitle>
+          </Alert>
+        </Container>
+      )}
+    </div>
+
   );
 }
 
