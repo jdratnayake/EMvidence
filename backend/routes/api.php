@@ -35,6 +35,7 @@ Route::prefix("v1/plugin")->group(function (){
 Route::prefix("v1/auth")->group(function (){
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/check-email', [AuthController::class, 'checkEmail']);
 });
 
 // Route::prefix("analysis-plugin")->group(function (){
