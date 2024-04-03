@@ -12,7 +12,7 @@ function AdminTemplate({ children = "" }) {
     <span className="admin-template">
       <Box sx={{ backgroundColor: "#EAECF0", paddingBottom: "0.5%" }}>
         <NavBarAdmin />
-        <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
+        <Container maxWidth="lg" sx={{ marginTop: "10px" }}>
           {children}
         </Container>
         <Copyright />
