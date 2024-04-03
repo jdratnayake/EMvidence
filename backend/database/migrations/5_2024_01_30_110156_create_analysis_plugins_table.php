@@ -32,12 +32,14 @@ return new class extends Migration
             $table->integer('number_of_usage_times')->nullable(false)->default(0);
             $table->timestamp('updated_at')->default(now())->nullable(false);
             $table->foreignId('user_id');
+            $table->foreignId('device_id');
             $table->foreignId('compatibility_check_admin_id')->nullable(true);
             $table->foreignId('file_validation_verified_admin_id')->nullable(true);
         });
 
-        Schema::table('analysis_plugins', function($table) {
+        Schema::table('analysis_plugins', function ($table) {
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('device_id')->references('device_id')->on('devices')->onDelete('cascade');
             $table->foreign('compatibility_check_admin_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('file_validation_verified_admin_id')->references('user_id')->on('users')->onDelete('cascade');
         });

@@ -14,7 +14,6 @@ function execute_python_script($path, ...$variables)
     try {
         $process->mustRun();
         return json_decode($process->getOutput());
-
     } catch (ProcessFailedException $exception) {
         return $exception->getMessage();
     }
@@ -39,14 +38,27 @@ class PluginController extends Controller
 
         // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
 
-        $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath, 
-        $downSamplingIndex, $fftSizeIndex,$overlapPercentageIndex, $sampleSelectionIndex);
+        $output = execute_python_script(
+            $preprocessingPluginPath,
+            $emRawFilePath,
+            $emPreprocessedDirectoryPath,
+            $downSamplingIndex,
+            $fftSizeIndex,
+            $overlapPercentageIndex,
+            $sampleSelectionIndex
+        );
 
         return response()->json(["output" => $output]);
     }
 
     public function executeAnalysisPlugin(Request $request)
     {
+        // UPDATE
+        // $emRawFileName = raw file name id
+        // $analysisPluginName = analysis plugin id
+        // $analysisPluginMlModelName = from analysis plugin id we can find this name
+        // $emPreprocessingFileName = from raw file name id we can find this
+
         // Header parameters
         $emRawFileName = $request->header("em_raw_file_name");
         $analysisPluginName = $request->header("analysis_plugin_name");

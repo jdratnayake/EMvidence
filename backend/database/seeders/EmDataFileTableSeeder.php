@@ -24,13 +24,13 @@ class EmDataFileTableSeeder extends Seeder
                 'em_raw_cfile_file_size' => 5000,
                 'em_raw_h5_file_size' => 5000,
                 'em_raw_h5_hash' => Str::random(32),
-                'device_name' => 'Iphone 4s',
                 'center_frequency' => 50,
                 'sampling_rate' => 500,
                 'file_upload_timestamp' => now(),
                 'preprocessing_file_creation_timestamp' => now(),
                 'updated_at' => now(),
                 'user_id' => 1,
+                'device_id' => 4,
             ],
         ];
 
