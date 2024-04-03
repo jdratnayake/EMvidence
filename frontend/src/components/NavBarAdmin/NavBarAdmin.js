@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -18,6 +18,7 @@ import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
 const pages = ["Dashboard", "Users", "Plugins"];
+const pageLinks = ["/admin", "/user-list", "/plugin-list"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarAdmin(pageName) {
@@ -127,7 +128,7 @@ function NavBarAdmin(pageName) {
               display: { xs: "none", md: "flex", justifyContent: "center" },
             }}
           >
-            {pages.map((page) => (
+            {pages.map((page, i) => (
               <Button
                 key={page}
                 onClick={() => setAnchorElNav(null)}
@@ -142,6 +143,8 @@ function NavBarAdmin(pageName) {
                       ? "2px solid black"
                       : "none",
                 }}
+                component={Link}
+                to={pageLinks[i]}
               >
                 {page}
               </Button>
