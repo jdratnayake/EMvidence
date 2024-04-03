@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\AnalysisPlugin;
 use App\Models\User;
+use App\Models\Device;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,11 +14,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class AnalysisPluginFactory extends Factory
 {
     protected $model = AnalysisPlugin::class;
-    
+
     public function definition(): array
     {
         $existingUserIds = User::where('user_type', 'developer')->pluck('user_id')->toArray();
         $existingAdminIds = User::where('user_type', 'admin')->pluck('user_id')->toArray();
+        $existingDeviceIds = Device::pluck('device_id')->toArray();
 
         $plugin_filename = '';
         $plugin_extension = '.py';
@@ -55,6 +57,7 @@ class AnalysisPluginFactory extends Factory
             'number_of_usage_times' => $this->faker->numberBetween(0, 100),
             'updated_at' => now(),
             'user_id' => $this->faker->randomElement($existingUserIds),
+            'device_id' => $this->faker->randomElement($existingDeviceIds),
             'compatibility_check_admin_id' => $this->faker->randomElement($existingAdminIds),
             'file_validation_verified_admin_id' => $this->faker->randomElement($existingAdminIds),
         ];

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use App\Models\AnalysisPlugin;
+use App\Models\EmDataFile;
 
 function execute_python_script($path, ...$variables)
 {
@@ -14,7 +16,6 @@ function execute_python_script($path, ...$variables)
     try {
         $process->mustRun();
         return json_decode($process->getOutput());
-
     } catch (ProcessFailedException $exception) {
         return $exception->getMessage();
     }
@@ -39,21 +40,32 @@ class PluginController extends Controller
 
         // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
 
-        $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath, 
-        $downSamplingIndex, $fftSizeIndex,$overlapPercentageIndex, $sampleSelectionIndex);
+        $output = execute_python_script(
+            $preprocessingPluginPath,
+            $emRawFilePath,
+            $emPreprocessedDirectoryPath,
+            $downSamplingIndex,
+            $fftSizeIndex,
+            $overlapPercentageIndex,
+            $sampleSelectionIndex
+        );
 
         return response()->json(["output" => $output]);
     }
 
     public function executeAnalysisPlugin(Request $request)
     {
-        // Header parameters
-        $emRawFileName = $request->header("em_raw_file_name");
-        $analysisPluginName = $request->header("analysis_plugin_name");
-        $analysisPluginMlModelName = $request->header("analysis_plugin_ml_model_name");
+        $emRawFileID = $request->header("em_raw_file_id");
+        $analysisPluginID = $request->header("analysis_plugin_id");
+
+        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID);
+        $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID);
+
+        $emPreprocessingFileName = $emRawFileRecord->value('em_preprocess_file_name');
+        $analysisPluginName = $analysisPluginRecord->value('plugin_filename');
+        $analysisPluginMlModelName = $analysisPluginRecord->value('machine_learning_model_name');
 
         // Set em preprocessing path
-        $emPreprocessingFileName = explode(".", $emRawFileName)[0] . ".npy";
         $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
 
         // Set path variables

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Device;
 use App\Models\EmDataFile;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,6 +18,7 @@ class EmDataFileFactory extends Factory
     public function definition(): array
     {
         $existingUserIds = User::whereIn('user_type', ['investigator', 'developer'])->pluck('user_id')->toArray();
+        $existingDeviceIds = Device::pluck('device_id')->toArray();
 
         $em_raw_file_name = '';
         $em_raw_file_extension = '.h5';
@@ -49,7 +51,6 @@ class EmDataFileFactory extends Factory
             'em_raw_cfile_file_size' => $this->faker->numberBetween(1000, 10000),
             'em_raw_h5_file_size' => $this->faker->numberBetween(1000, 10000),
             'em_raw_h5_hash' => $this->faker->sha256,
-            'device_name' => $this->faker->word,
             'center_frequency' => $this->faker->randomFloat(2, 1, 100),
             'sampling_rate' => $this->faker->randomFloat(2, 1000, 10000),
             // 'file_upload_timestamp' => $this->faker->optional()->dateTimeThisYear(),
@@ -58,6 +59,7 @@ class EmDataFileFactory extends Factory
             'preprocessing_file_creation_timestamp' => $this->faker->dateTimeThisYear(),
             'updated_at' => now(),
             'user_id' => $this->faker->randomElement($existingUserIds),
+            'device_id' => $this->faker->randomElement($existingDeviceIds),
         ];
     }
 }

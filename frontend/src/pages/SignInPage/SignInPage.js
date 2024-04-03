@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useMutation } from "react-query";
 import {
   Avatar,
@@ -44,33 +44,35 @@ export default function SignInPage() {
       setEmailError("");
       setPasswordError("");
 
-      const userData = {
-        user_id: data.user.user_id,
-        user_type: data.user.user_type,
-        account_status: data.user.account_status,
-        first_name: data.user.first_name,
-        last_name: data.user.last_name,
-        email: data.user.email,
-        profile_picture: data.user.profile_picture,
-        token: data.token,
-      };
-
-      addUser({ userData });
-
-      if (userData.user_type === "admin") {
-        navigate("/admin");
-      } else if (userData.user_type === "investigator") {
-        navigate("/investigation");
-      } else if (userData.user_type === "developer") {
-        navigate("/plugin-upload-list");
+      if (data.hasOwnProperty("error")) {
+        setPasswordError(data["error"]);
       } else {
-        navigate("/error");
+        const userData = {
+          user_id: data.user.user_id,
+          user_type: data.user.user_type,
+          account_status: data.user.account_status,
+          first_name: data.user.first_name,
+          last_name: data.user.last_name,
+          email: data.user.email,
+          profile_picture: data.user.profile_picture,
+          token: data.token,
+        };
+
+        addUser({ userData });
+
+        if (userData.user_type === "admin") {
+          navigate("/admin");
+        } else if (userData.user_type === "investigator") {
+          navigate("/investigation");
+        } else if (userData.user_type === "developer") {
+          navigate("/plugin-upload-list");
+        } else {
+          navigate("/error");
+        }
       }
     },
     onError: (error) => {
-      if (error.message === "Unauthorized") {
-        setPasswordError("Invalid email or password");
-      }
+      console.log(error);
     },
   });
 
@@ -83,8 +85,9 @@ export default function SignInPage() {
 
     let isValid = true;
 
-    if (!validateEmail(data.get("email"))) {
-      setEmailError("Invalid email address");
+    const emailValidationResult = validateEmail(data.get("email"));
+    if (emailValidationResult !== true) {
+      setEmailError(emailValidationResult);
       isValid = false;
     }
 
@@ -236,7 +239,8 @@ export default function SignInPage() {
                     </Grid>
                     <Grid item>
                       <Link
-                        href="#"
+                        component={RouterLink}
+                        to="/register"
                         variant="body2"
                         color={"#00245A"}
                         sx={{
