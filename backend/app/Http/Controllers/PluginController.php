@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use App\Models\AnalysisPlugin;
+use App\Models\EmDataFile;
 
 function execute_python_script($path, ...$variables)
 {
@@ -53,19 +55,17 @@ class PluginController extends Controller
 
     public function executeAnalysisPlugin(Request $request)
     {
-        // UPDATE
-        // $emRawFileName = raw file name id
-        // $analysisPluginName = analysis plugin id
-        // $analysisPluginMlModelName = from analysis plugin id we can find this name
-        // $emPreprocessingFileName = from raw file name id we can find this
+        $emRawFileID = $request->header("em_raw_file_id");
+        $analysisPluginID = $request->header("analysis_plugin_id");
 
-        // Header parameters
-        $emRawFileName = $request->header("em_raw_file_name");
-        $analysisPluginName = $request->header("analysis_plugin_name");
-        $analysisPluginMlModelName = $request->header("analysis_plugin_ml_model_name");
+        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID);
+        $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID);
+
+        $emPreprocessingFileName = $emRawFileRecord->value('em_preprocess_file_name');
+        $analysisPluginName = $analysisPluginRecord->value('plugin_filename');
+        $analysisPluginMlModelName = $analysisPluginRecord->value('machine_learning_model_name');
 
         // Set em preprocessing path
-        $emPreprocessingFileName = explode(".", $emRawFileName)[0] . ".npy";
         $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
 
         // Set path variables
