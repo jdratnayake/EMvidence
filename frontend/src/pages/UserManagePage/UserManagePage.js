@@ -44,7 +44,28 @@ function UserManagePage() {
   const { user } = useUser();
 
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
+    const searchTerm = event.target.value;
+    setSearchText(searchTerm);
+
+    // console.log(searchTerm);
+    if (!searchTerm) {
+      queryClient.prefetchQuery(
+        [queryKeys["getInvestigatorDeveloperDetails"]],
+        () => getInvestigatorDeveloperDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((user) => {
+        const fullName = `${user.first_name} ${user.last_name}`;
+        return fullName.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(
+        queryKeys["getInvestigatorDeveloperDetails"],
+        newData
+      );
+    }
   };
 
   const handleBanStatusChange = async () => {
