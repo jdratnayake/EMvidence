@@ -39,7 +39,10 @@ const router = createBrowserRouter(
       <Route path="plugin" element={<PluginPage />} />
 
       {/* Admin */}
-      <Route path="admin" element={<AdminPage />} />
+      <Route 
+      path="admin" 
+      element={<AdminTemplate children={<AdminPage />} />}
+      />
       <Route
         path="user-list"
         element={<AdminTemplate children={<UserManagePage />} />}
