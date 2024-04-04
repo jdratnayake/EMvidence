@@ -214,6 +214,37 @@ function SignUpPage() {
       register(userData);
     }
   };
+  const sxStyle ={
+    // "&:hover": {
+    //   "&& fieldset": {
+    //     border: "2px solid gray",
+    //   },
+    // },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+          color: "#00245A", // Color when focused
+      },
+  },
+    color:"#00245A",
+    "& .MuiOutlinedInput-root": {
+     
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -283,34 +314,7 @@ function SignUpPage() {
                       error={firstnameError !== ""}
                       helperText={firstnameError}
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        color: "#00245A",
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#2e2e2e",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "secondary.main",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                     />
                   </Grid>
@@ -324,34 +328,7 @@ function SignUpPage() {
                       error={lastnameError !== ""}
                       helperText={lastnameError}
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        color: "#00245A",
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#2e2e2e",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "secondary.main",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                       onChange={(event) => setLastname(event.target.value)}
                     />
@@ -366,34 +343,7 @@ function SignUpPage() {
                       error={emailError !== ""}
                       helperText={emailError}
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        color: "#00245A",
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#2e2e2e",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "secondary.main",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                       onChange={(event) => setEmail(event.target.value)}
                     />
@@ -402,33 +352,7 @@ function SignUpPage() {
                     <FormControl
                       fullWidth
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#00245A",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "grey",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                     >
                       <InputLabel id="demo-simple-select-label">
@@ -455,33 +379,7 @@ function SignUpPage() {
                       fullWidth
                       variant="outlined"
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#00245A",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "grey",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                     >
                       <InputLabel htmlFor="outlined-adornment-password">
@@ -520,33 +418,7 @@ function SignUpPage() {
                       fullWidth
                       variant="outlined"
                       sx={{
-                        // "&:hover": {
-                        //   "&& fieldset": {
-                        //     border: "2px solid gray",
-                        //   },
-                        // },
-                        "& .MuiInputLabel-outlined": {
-                          color: "grey", // Initial color
-                          "&.Mui-focused": {
-                            color: "#00245A", // Color when focused
-                          },
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "&.Mui-focused": {
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#00245A",
-                              borderWidth: "2px",
-                            },
-                          },
-                          "& .MuiInputLabel-outlined": {
-                            color: "#00245A",
-                            fontWeight: "bold",
-                            "&.Mui-focused": {
-                              color: "grey",
-                              fontWeight: "bold",
-                            },
-                          },
-                        },
+                        ...sxStyle
                       }}
                     >
                       <InputLabel htmlFor="outlined-adornment-password">
