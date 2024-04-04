@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Container, styled } from "@mui/system";
+import { borderRadius, Box, Container, styled } from "@mui/system";
 import {
   Button,
   Chip,
@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -103,6 +104,11 @@ const TableCellBlue = styled(TableCell)(() => ({
 function PluginManagePage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -114,9 +120,9 @@ function PluginManagePage() {
   };
 
   const rows = [
-    { plugin: "Firmware Version Detection", status: "Inactive", actions: "1" },
-    { plugin: "Firmware Version Detection", status: "Active", actions: "2" },
-    { plugin: "Firmware Version Detection", status: "Active", actions: "3" },
+    { id: 1, plugin: "Firmware Version Detection", status: "Inactive", actions: "1" },
+    { id: 2, plugin: "Firmware Version Detection", status: "Active", actions: "2" },
+    { id: 3, plugin: "Firmware Version Detection", status: "Active", actions: "3" },
   ];
 
   function getStatusByActions(actionsValue) {
@@ -130,33 +136,46 @@ function PluginManagePage() {
 
   function getActions(value) {
     return (
-      <TableCell>
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#667085", cursor: "pointer" }}
-            gutterBottom
+      <TableCell align="center">
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+          <Button
+            variant="outlined"
+            sx={{
+              color: "#00245A", cursor: "pointer", borderColor: "rgba(0, 36, 90, 0.4)",
+              '&:hover': {
+                borderColor: "#00245A", // Change to the desired hover color
+              },
+            }}
+            onClick={() => { }}
           >
+            {/* <VisibilityIcon sx={{ ml: -1, mr: 1 }} /> */}
             Test
-          </Typography>
+          </Button>
           <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
 
           {getStatusByActions(value) === "Active" ? (
-            <Typography
-              variant="body2"
-              sx={{ color: "#F90000", cursor: "pointer" }}
-              gutterBottom
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => { }}
             >
+              {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
               Deactivate
-            </Typography>
+            </Button>
           ) : (
-            <Typography
-              variant="body2"
-              sx={{ color: "#00245A", cursor: "pointer" }}
-              gutterBottom
+            <Button
+              variant="outlined"
+              sx={{
+                color: "green", cursor: "pointer", borderColor: "rgba(0, 128, 0, 0.4)", pl: 3, pr: 3,
+                '&:hover': {
+                  borderColor: "green",
+                },
+              }}
+              onClick={() => { }}
             >
+              {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
               Activate
-            </Typography>
+            </Button>
           )}
         </Box>
       </TableCell>
@@ -166,12 +185,11 @@ function PluginManagePage() {
   function getStatus(value) {
     if (value === "Active") {
       return (
-        <TableCell>
+        <TableCell align="">
           <Chip
-            sx={{ background: "#ECFDF3", color: "#037847", mt: "10px" }}
+            sx={{ background: "#ECFDF3", color: "#037847", mt: "10px", ml: "4px" }}
             label={
               <>
-                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
                 {value}
               </>
             }
@@ -182,10 +200,9 @@ function PluginManagePage() {
       return (
         <TableCell>
           <Chip
-            sx={{ background: "#F2F4F7", color: "#364254", mt: "10px" }}
+            sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
             label={
               <>
-                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
                 {value}
               </>
             }
@@ -194,43 +211,86 @@ function PluginManagePage() {
       );
     }
   }
+  const sxStyle = {
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    color: "#00245A",
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
 
   return (
     <>
       <ContainerBox>
         <HeadingBox>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" gutterBottom sx={{mb:-1}}>
             Plugins
           </Typography>
         </HeadingBox>
+        <Grid container alignItems="center" justifyContent="center" sx={{ mb: 4 }}>
+          <TextField
+            id="search"
+            label={searchText === "" ? "Search" : ""}
+            sx={{ ...sxStyle }}
+            InputLabelProps={{
+              shrink: false,
+            }}
+            value={searchText}
+            onChange={handleSearch}
+            variant="outlined"
+            style={{ width: "500px", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+            InputProps={{
+              endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+            }}
+          />
+        </Grid>
         <ContentBox>
-          <SearchBox>
-            <SearchField
-              id="outlined-basic"
-              variant="outlined"
-              placeholder="Search User"
-            />
-            <SearchButton variant="contained">
-              <SearchIcon />
-            </SearchButton>
-          </SearchBox>
           <TableBox>
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
               <TableContainer sx={{ maxHeight: "440" }}>
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
-                    <TableHeadRow>
-                      {columns.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          style={{ minWidth: column.minWidth }}
-                        >
-                          {column.label}{" "}
-                          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-                          <ArrowDownwardIcon />
-                        </TableCell>
-                      ))}
-                    </TableHeadRow>
+
+                    <TableCell >
+                      <Typography variant="h6" color="textPrimary" >
+                        Plugin Name
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="">
+                      <Typography variant="h6" color="textPrimary" >
+                        Status
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography variant="h6" color="textPrimary" >
+                        Action
+                      </Typography>
+                    </TableCell>
+
                   </TableHead>
                   <TableBody>
                     {rows
@@ -254,9 +314,9 @@ function PluginManagePage() {
                               ) : column.id === "actions" ? (
                                 getActions(value)
                               ) : (
-                                <TableCellBlue key={column.id}>
+                                <TableCell key={column.id}>
                                   {value}
-                                </TableCellBlue>
+                                </TableCell>
                               );
                             })}
                           </TableRow>
