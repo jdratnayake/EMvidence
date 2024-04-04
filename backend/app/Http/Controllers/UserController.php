@@ -11,7 +11,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::whereIn('user_type', ['investigator', 'developer'])
-            ->select('user_id', 'user_type', 'first_name', 'last_name', 'email', 'phone_number', 'profile_picture')
+            ->select('user_id', 'user_type', 'ban_status', 'first_name', 'last_name', 'email', 'phone_number', 'profile_picture')
             ->get();
 
         $responseData = [
