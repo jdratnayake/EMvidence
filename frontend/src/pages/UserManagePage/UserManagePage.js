@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import {
   Button,
   Chip,
@@ -38,6 +38,7 @@ function UserManagePage() {
   const [deactivateUserId, setDeactivateUserId] = useState(null);
   const [activateUserId, setActivateUserId] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const queryClient = useQueryClient();
   const { user } = useUser();
 
   const handleSearch = (event) => {
@@ -81,7 +82,18 @@ function UserManagePage() {
   const { data, error, isLoading } = useQuery({
     queryKey: [queryKeys["getInvestigatorDeveloperDetails"]],
     queryFn: () => getInvestigatorDeveloperDetails(user),
+    enabled: false,
   });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery(
+        [queryKeys["getInvestigatorDeveloperDetails"]],
+        () => getInvestigatorDeveloperDetails(user)
+      );
+    }
+  }, [user]);
 
   return (
     <>
@@ -158,10 +170,8 @@ function UserManagePage() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {console.log("Hi")}
-                    {console.log(data)}
                     {data?.map((user) => (
-                      <TableRow hover={true}>
+                      <TableRow hover={true} key={user.user_id}>
                         <TableCell>
                           {getFullName(user.first_name, user.last_name)}
                         </TableCell>
