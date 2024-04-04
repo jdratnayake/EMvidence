@@ -21,6 +21,29 @@ class UserController extends Controller
         return response()->json($responseData);
     }
 
+    public function changeBanStatus(Request $request)
+    {
+        $userId = $request->user_id;
+        $newBanStatus = $request->ban_status;
+
+        try {
+            $user = User::find($userId);
+
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            // Update the ban_status
+            $user->ban_status = $newBanStatus;
+            $user->save();
+
+            return response()->json(['success' => 'Ban status updated successfully'], 200);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(['error' => 'Failed to update ban status'], 500);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */

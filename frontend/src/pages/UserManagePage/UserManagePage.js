@@ -27,16 +27,18 @@ import {
   ContentBox,
   TableBox,
 } from "./StyleComponents";
-import { queryKeys } from "../../constants";
+import { API_URL, queryKeys } from "../../constants";
 import { getInvestigatorDeveloperDetails } from "../../services/userService";
 import { useUser } from "../../contexts/UserContext";
 import { getFullName, capitalizeWords } from "../../helper";
 
 function UserManagePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
-  const [deactivateUserId, setDeactivateUserId] = useState(null);
-  const [activateUserId, setActivateUserId] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(0);
+  // false => activate
+  // true => deactivate
+  const [banStatus, setBanStatus] = useState(null);
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
   const [searchText, setSearchText] = useState("");
   const queryClient = useQueryClient();
   const { user } = useUser();
@@ -44,18 +46,43 @@ function UserManagePage() {
   const handleSearch = (event) => {
     setSearchText(event.target.value);
   };
-  const handleClose = () => setIsModalOpen(false);
-  const handleActivateClose = () => setIsActivateModalOpen(false);
 
-  const handleClicked = (userId) => {
-    setDeactivateUserId(userId);
-    setIsModalOpen(true);
-    console.log(userId);
-  };
+  const handleBanStatusChange = async () => {
+    const userData = { user_id: selectedUserId, ban_status: banStatus };
 
-  const handleActivateClicked = (userId) => {
-    setActivateUserId(userId);
-    setIsActivateModalOpen(true);
+    const response = await fetch(API_URL + "/user/ban-status-change", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+      },
+      body: JSON.stringify(userData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.hasOwnProperty("success")) {
+      const newData = data.map((user) => {
+        // Check if the user_id matches the specified userId
+        if (user.user_id === selectedUserId) {
+          // If match found, return a new user object with updated ban_status
+          return { ...user, ban_status: banStatus };
+        } else {
+          // If no match found, return the original user object
+          return user;
+        }
+      });
+
+      queryClient.setQueryData(
+        queryKeys["getInvestigatorDeveloperDetails"],
+        newData
+      );
+
+      setActivateModalStatus(false);
+      setDeactivateModalStatus(false);
+    } else {
+      console.log("Error");
+    }
   };
 
   // false => active account
@@ -98,14 +125,16 @@ function UserManagePage() {
   return (
     <>
       <DeactivateModal
-        open={isModalOpen}
-        userId={deactivateUserId}
-        onClose={handleClose}
+        open={deactivateModalStatus}
+        name="Test name"
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={handleBanStatusChange}
       />
       <ActivateModal
-        open={isActivateModalOpen}
-        userId={activateUserId}
-        onClose={handleActivateClose}
+        open={activateModalStatus}
+        name="Test name"
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={handleBanStatusChange}
       />
       <ContainerBox>
         <HeadingBox>
@@ -191,21 +220,6 @@ function UserManagePage() {
                               alignItems: "center",
                             }}
                           >
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: "#00245A",
-                                cursor: "pointer",
-                                borderColor: "rgba(0, 36, 90, 0.4)",
-                                "&:hover": {
-                                  borderColor: "#00245A",
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              <ModeEditIcon sx={{ ml: -1, mr: 1 }} />
-                              Edit
-                            </Button>
                             <span style={{ marginLeft: "10px" }}>
                               {"\u00A0"}
                             </span>
@@ -228,16 +242,46 @@ function UserManagePage() {
                               {"\u00A0"}
                             </span>
 
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              onClick={() => {
-                                handleClicked(3);
-                              }}
-                            >
-                              {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
-                              Deactivate
-                            </Button>
+                            {user.ban_status === "false" ? (
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={() => {
+                                  setSelectedUserId(user.user_id);
+                                  setDeactivateModalStatus(true);
+                                  setBanStatus("true");
+                                }}
+                              >
+                                Deactivate
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outlined"
+                                sx={{
+                                  color: "green",
+
+                                  cursor: "pointer",
+
+                                  borderColor: "rgba(0, 128, 0, 0.4)",
+
+                                  pl: 3,
+
+                                  pr: 3,
+
+                                  "&:hover": {
+                                    borderColor: "green",
+                                  },
+                                }}
+                                onClick={() => {
+                                  setSelectedUserId(user.user_id);
+                                  setActivateModalStatus(true);
+                                  setBanStatus("false");
+                                }}
+                              >
+                                {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
+                                Activate
+                              </Button>
+                            )}
                           </Box>
                         </TableCell>
                       </TableRow>
