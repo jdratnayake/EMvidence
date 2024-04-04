@@ -41,7 +41,7 @@ Route::prefix("v1/auth")->group(function () {
 });
 
 Route::prefix("v1/user")->group(function () {
-    Route::get('/', [UserController::class, 'index']);
+    Route::get('/', [UserController::class, 'index'])->middleware('jwt');
 });
 
 // Route::prefix("analysis-plugin")->group(function (){
