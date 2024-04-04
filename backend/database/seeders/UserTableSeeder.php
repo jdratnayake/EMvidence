@@ -19,6 +19,7 @@ class UserTableSeeder extends Seeder
             [
                 'user_type' => 'investigator',
                 'account_status' => 'verified',
+                'ban_status' => 'false',
                 'first_name' => 'Keaton',
                 'last_name' => 'Dickens',
                 'email' => 'investigator@example.com',
@@ -32,6 +33,7 @@ class UserTableSeeder extends Seeder
             [
                 'user_type' => 'admin',
                 'account_status' => 'verified',
+                'ban_status' => 'false',
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'admin@example.com',
@@ -45,6 +47,7 @@ class UserTableSeeder extends Seeder
             [
                 'user_type' => 'developer',
                 'account_status' => 'verified',
+                'ban_status' => 'false',
                 'first_name' => 'Isac',
                 'last_name' => 'Nader',
                 'email' => 'developer@example.com',
