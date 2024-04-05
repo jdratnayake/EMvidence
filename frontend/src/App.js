@@ -36,12 +36,16 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-      <Route path="plugin" element={<PluginPage />} />
+
+      <Route
+        path="plugin"
+        element={<InvestigatorTemplate children={<PluginPage />} />}
+      />
 
       {/* Admin */}
-      <Route 
-      path="admin" 
-      element={<AdminTemplate children={<AdminPage />} />}
+      <Route
+        path="admin"
+        element={<AdminTemplate children={<AdminPage />} />}
       />
       <Route
         path="user-list"
@@ -65,7 +69,10 @@ const router = createBrowserRouter(
         path="file-upload"
         element={<InvestigatorTemplate children={<EmFileUploadPage />} />}
       />
-      <Route path="investigation" element={<InvestigationPage />} />
+      <Route
+        path="investigation"
+        element={<InvestigatorTemplate children={<InvestigationPage />} />}
+      />
       <Route
         path="profile"
         element={<InvestigatorTemplate children={<ProfilePage />} />}

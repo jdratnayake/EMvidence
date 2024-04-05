@@ -4,115 +4,416 @@ import React, { useState, useEffect } from "react";
 import "./PluginUploadListPage.css";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
-import CryptoJS from "crypto-js";
-import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
-import Resumable from "resumablejs";
-import { useNavigate } from "react-router-dom";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { Grid, Card, CardContent, Chip } from "@mui/material";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import Divider from "@mui/material/Divider";
+import CardActions from "@mui/material/CardActions";
+import logo from "../PluginsPage/p4.png";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Stack from "@mui/material/Stack";
-import CircularProgress from "@mui/material/CircularProgress";
-import pako from "pako";
-import { OutlinedInput } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Tooltip from '@mui/material/Tooltip';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Input,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
-import Grid from "@mui/material/Grid";
 import { List } from "@mui/material";
 
 function PluginUploadListPage() {
-  const containerStyle = {
-    backgroundColor: "white", // Set your desired color here
-    // You can also add other styles as needed
-    padding: "20px",
-    borderRadius: "8px",
-    marginTop: "10px",
+
+
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
   };
   const navigate = useNavigate();
   const navigateToPluginUploadPage2 = () => {
     navigate("/plugin-upload");
   };
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const sxStyle = {
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    color: "#00245A",
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
+
   return (
     <>
-      <Grid container spacing={0}>
-        <Grid xs={8} sm={9} md={10}>
-          <Typography
-            variant="h4"
-            color="textPrimary"
-            align="left"
-            marginBottom={3}
-            marginLeft={2}
-          >
-            Guildlines
-          </Typography>
-        </Grid>
-        <Grid xs={1}>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{
-              width: "180px",
-              backgroundColor: "#00245A",
-              color: "white",
-            }}
-            onClick={navigateToPluginUploadPage2}
-          >
-            Upload Plugin
-          </Button>
-        </Grid>
-      </Grid>
-      <Typography variant="h6" color="textSecondary" align="left">
-        <ul>
-          <li>The plugins should be in the .py format.</li>
-          <li>Input for the plugin: Array of signals.</li>
-          <li>Output for the plugin: insight type with the accuracy.</li>
-          <li>Example for the output: xxxxxxx</li>
-          <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-          <li>
-            Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </li>
-          <li>
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam,
-            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat
-          </li>
-          <li>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur.
-          </li>
-          <li>
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-            officia deserunt mollit anim id est laborum.
-          </li>
-        </ul>
-      </Typography>
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        style={{
-          marginTop: "20px",
-          width: "200px",
-          backgroundColor: "#00245A",
-          color: "white",
-          marginLeft: "20px",
-        }}
-      >
-        Download Template
-      </Button>
+      <Container >
+        <Typography
+          variant="h4"
+          color="textPrimary"
+          align="center"
+          gutterBottom
+
+        >
+          Plugins
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+          <Grid container alignItems="left" justifyContent="left" >
+            <Grid item xs={12} md={12}>
+              <TextField
+                id="search"
+                label={searchText === "" ? "Search" : ""}
+                sx={{ ...sxStyle }}
+                InputLabelProps={{
+                  shrink: false,
+                }}
+                value={searchText}
+                onChange={handleSearch}
+                variant="outlined"
+                style={{ width: "80%", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+                InputProps={{
+                  endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Box sx={{ mt: "42px" }}>
+            <Tooltip title={lessThanMd ? "Upload Plugin" : null}>
+              <Button
+                variant="contained"
+                onClick={navigateToPluginUploadPage2}
+                sx={{
+                  pl: 4,
+                  pr: 4,
+                  height: 50,
+                  width: lessThanMd ? "50px" : "175px",
+                  bgcolor: "#00245A",
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: "rgba(0, 36, 90, 0.8)",
+                  },
+                }}
+              >
+                {lessThanMd ? <CloudUploadIcon /> : 'Upload Plugin'}
+              </Button>
+            </Tooltip>
+
+          </Box>
+        </Box>
+        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+          <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+            <TableBody>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h6" color="textPrimary" >
+                    Plugin Name
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h6" color="textPrimary" >
+                    Size
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h6" color="textPrimary" >
+                    Created Date
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row" align="center">
+                  <Typography variant="h6" color="textPrimary" >
+                    Status
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography variant="h6" color="textPrimary" >
+                    Action
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    plugin 1
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    10 MB
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    2024-04-03 20:56:53
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row" align="center">
+                  <Chip
+                    sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                    label={"failed"}
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      '& > Button': {
+                        marginRight: 2, // Adjust the value as needed
+                      }
+                    }}
+                  >
+                    <Tooltip title={lessThanMd ? "View" : null}>
+                      <Button
+                        variant="outlined"
+                        style={{ color: "#00245A", }}
+                        sx={{
+                          borderColor: "rgba(0, 36, 90, 0.4)",
+                          '&:hover': {
+                            borderColor: "#00245A", // Change to the desired hover color
+                          },
+                        }}
+                        onClick={() => { }}
+                      >
+                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+
+                      </Button>
+                    </Tooltip>
+
+                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          const confirmBox = window.confirm(
+                            "Do you want to delete this plugin?"
+                          );
+                          if (confirmBox === true) {
+
+                          }
+                        }}
+                      >
+                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    plugin 2
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    20 MB
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    2024-04-03 20:56:53
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row" align="center">
+                  <Chip
+                    sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
+                    label={"Active"}
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      '& > Button': {
+                        marginRight: 2, // Adjust the value as needed
+                      }
+                    }}
+                  >
+                    <Tooltip title={lessThanMd ? "View" : null}>
+                      <Button
+                        variant="outlined"
+                        style={{ color: "#00245A", }}
+                        sx={{
+                          borderColor: "rgba(0, 36, 90, 0.4)",
+                          '&:hover': {
+                            borderColor: "#00245A", // Change to the desired hover color
+                          },
+                        }}
+                        onClick={() => { }}
+                      >
+                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+
+                      </Button>
+                    </Tooltip>
+
+                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          const confirmBox = window.confirm(
+                            "Do you want to delete this plugin?"
+                          );
+                          if (confirmBox === true) {
+
+                          }
+                        }}
+                      >
+                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    plugin 3
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    30 MB
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <Typography variant="h7" color="textPrimary" >
+                    2024-04-03 20:56:53
+                  </Typography>
+                </TableCell>
+                <TableCell component="th" scope="row" align="center">
+                  <Typography variant="h7" color="textPrimary" >
+                    <Chip
+                      sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                      label={"pending"}
+                    />
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      '& > Button': {
+                        marginRight: 2, // Adjust the value as needed
+                      }
+                    }}
+                  >
+                    <Tooltip title={lessThanMd ? "View" : null}>
+                      <Button
+                        variant="outlined"
+                        style={{ color: "#00245A", }}
+                        sx={{
+                          borderColor: "rgba(0, 36, 90, 0.4)",
+                          '&:hover': {
+                            borderColor: "#00245A", // Change to the desired hover color
+                          },
+                        }}
+                        onClick={() => { }}
+                      >
+                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+
+                      </Button>
+                    </Tooltip>
+
+                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => {
+                          const confirmBox = window.confirm(
+                            "Do you want to delete this plugin?"
+                          );
+                          if (confirmBox === true) {
+
+                          }
+                        }}
+                      >
+                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </TableCell>
+              </TableRow>
+
+            </TableBody>
+            <TableFooter>
+
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </Container>
     </>
   );
 }

@@ -12,7 +12,7 @@ function InvestigatorTemplate({ children = "" }) {
     <span className="investigator-template" >
       <Box sx={{ backgroundColor: "#E8E8E8", paddingBottom: "0.5%" }}>
         <NavBarInvestigator page={"analysis"} />
-        <Container maxWidth="lg" sx={{ marginTop: "50px" }}>
+        <Container maxWidth="lg" sx={{ marginTop: "50px", minHeight: '90vh'  }}>
           {children}
         </Container>
         <Copyright />
