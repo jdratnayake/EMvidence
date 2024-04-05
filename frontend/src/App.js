@@ -9,6 +9,7 @@ import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
 import DeveloperTemplate from "./templates/DeveloperTemplate/DeveloperTemplate";
 import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorTemplate";
 
+
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
@@ -22,6 +23,7 @@ import PluginUploadListPage from "./pages/PluginUploadListPage/PluginUploadListP
 import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
 import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
+import PluginVerifyPage from "./pages/PluginVerifyPage/PluginVerifyPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
@@ -55,7 +57,10 @@ const router = createBrowserRouter(
         path="plugin-list"
         element={<AdminTemplate children={<PluginManagePage />} />}
       />
-
+      <Route
+        path="plugin-verify"
+        element={<AdminTemplate children={<PluginVerifyPage />} />}
+      />
       {/* Investigator */}
       <Route
         path="analysis"
