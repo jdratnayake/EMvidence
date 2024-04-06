@@ -1,10 +1,19 @@
 const validateEmail = (email) => {
-  // Basic email validation
+  if (!email) {
+    return "Email is required";
+  }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  if (!emailRegex.test(email)) {
+    return "Invalid email address";
+  }
+  return true;
 };
 
 const validatePassword = (password) => {
+  if (!password) {
+    return "Password is required";
+  }
   if (password.length < 6) {
     return "Password should be at least 6 characters long";
   }

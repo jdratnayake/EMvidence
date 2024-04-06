@@ -1,19 +1,19 @@
 # Docker - START
 
 // To remove all stopped containers
-docker container prune
+docker container prune --force
 
 // To remove dangling images
-docker image prune
+docker image prune --force
 
 // To remove all unused images
-docker image prune -a
+docker image prune -a --force
 
 // To remove all unused volumes
-docker volume prune
+docker volume prune --force
 
 // To remove all unused networks
-docker network prune
+docker network prune --force
 
 // To clear Docker-related data
 docker system prune -a --volumes --force

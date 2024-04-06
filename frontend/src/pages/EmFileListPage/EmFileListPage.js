@@ -3,7 +3,8 @@ import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./EmFileListPage.css";
 import PropTypes from "prop-types";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -20,10 +21,10 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
-import { Grid, Card, CardContent } from "@mui/material";
+import { Grid, Card, CardContent, Chip } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import Divider from "@mui/material/Divider";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -34,11 +35,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const baseURL1 = "http://127.0.0.1:8000/api/em_data_records";
 const baseURL2 = "http://127.0.0.1:8000/api/delete_file";
+
+
 function TablePaginationActions(props) {
   const theme = useTheme();
+
   const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event) => {
@@ -107,7 +114,13 @@ TablePaginationActions.propTypes = {
 };
 
 function EmFileListPage() {
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+  const lessThanLg = useMediaQuery(theme.breakpoints.down("lg"));
   const [data, setData] = useState([]);
+  const location = useLocation();
+  console.log(location);
 
   useEffect(() => {
     fetch(baseURL1)
@@ -234,10 +247,6 @@ function EmFileListPage() {
       });
   }
 
-  const customStyles = {
-    backgroundColor: "#00245A",
-    color: "white",
-  };
 
   function bytesToSize(bytes) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -249,10 +258,29 @@ function EmFileListPage() {
     return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + " " + sizes[i];
   }
 
+  const notify = () => toast("File upload successfully");
+  // useEffect(() => {
+  //   if (location.state.send == 1) {
+  //     notify();
+  //   }
+  // }, [location.state.send]);
+
+
+
   return (
     <>
-      <CssBaseline />
-      <NavBar />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover />
+      {/* <button onClick={notify}>click</button> */}
       <div>
         <Dialog
           open={open}
@@ -265,21 +293,30 @@ function EmFileListPage() {
         </Dialog>
       </div>
 
-      <div className="maindiv" style={{ marginTop: "50px" }}>
-        <Container>
+      <div className="maindiv">
+        <Container >
           <Typography
             variant="h4"
             color="textPrimary"
             align="center"
             gutterBottom
+
           >
             File Manage
           </Typography>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} display="flex" justifyContent="flex-end">
             <Button
               variant="contained"
               onClick={navigateToUploadForm}
-              style={customStyles}
+              sx={{
+                pl: 4,
+                pr: 4,
+                bgcolor: "#00245A",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "rgba(0, 36, 90, 0.8)",
+                },
+              }}
             >
               upload
             </Button>
@@ -305,41 +342,36 @@ function EmFileListPage() {
               <TableBody>
                 <TableRow>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" marginLeft={8}>
+                    <Typography variant="h6" color="textPrimary" >
                       File Name
                     </Typography>
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" align="center">
+                    <Typography variant="h6" color="textPrimary" >
                       Size
                     </Typography>
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" align="center">
+                    <Typography variant="h6" color="textPrimary" >
                       Created Date
                     </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row">
-                    <Typography variant="h6" color="textPrimary" align="center">
+                  <TableCell component="th" scope="row" align="center">
+                    <Typography variant="h6" color="textPrimary" >
                       Status
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="h6" color="textPrimary" align="center">
+                  <TableCell align="center">
+                    <Typography variant="h6" color="textPrimary" >
                       Action
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6" color="textPrimary" align="center">
-                      More Details
                     </Typography>
                   </TableCell>
                 </TableRow>
                 {(rowsPerPage > 0
                   ? data.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
                   : data
                 ).map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
@@ -347,58 +379,82 @@ function EmFileListPage() {
                       <Stack direction="row" spacing={2}>
                         <InsertDriveFileIcon
                           fontSize="medium"
-                          color="primary"
+                          sx={{ color: "#00245A" }}
                         />
                         <Typography variant="h7">
                           {data.em_raw_file_visible_name}
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell >
                       {bytesToSize(data.em_raw_cfile_file_size)}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell >
                       {data.file_upload_timestamp}
                     </TableCell>
                     {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
-                    <TableCell align="center">
+                    <TableCell align="center" >
                       {data.em_raw_upload_status === "processing" && (
-                        <Typography style={{ color: "orange" }}>
-                          processing
-                        </Typography>
+                        <Chip
+                          sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                          label={"processing"}
+                        />
                       )}
                       {data.em_raw_upload_status === "processed" && (
-                        <Typography style={{ color: "green" }}>
-                          processed
-                        </Typography>
+                        <Chip
+                        sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
+                        label={"processed"}
+                      />
                       )}
-                      {data.em_raw_upload_status === "faild" && (
-                        <Typography style={{ color: "red" }}>faild</Typography>
+                      {(data.em_raw_upload_status === "failed" || data.em_raw_upload_status === "faild") && (
+                        <Chip
+                        sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                        label={"failed"}
+                      />
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you really want to delete this file?"
-                          );
-                          if (confirmBox === true) {
-                            deleteRecord(data.em_raw_file_id);
+                      <Box
+
+                        //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "center",
+                          '& > Button': {
+                            marginRight: 2, // Adjust the value as needed
                           }
                         }}
                       >
-                        Delete
-                      </Button>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        aria-label="MoreVertIcon"
-                        onClick={() => handleClickOpen(data)}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => {
+                            const confirmBox = window.confirm(
+                              "Do you really want to delete this file?"
+                            );
+                            if (confirmBox === true) {
+                              deleteRecord(data.em_raw_file_id);
+                            }
+                          }}
+                        >
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                          Delete
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          style={{ color: "#00245A", }}
+                          sx={{
+                            borderColor: "rgba(0, 36, 90, 0.4)",
+                            '&:hover': {
+                              borderColor: "#00245A", // Change to the desired hover color
+                            },
+                          }}
+                          onClick={() => handleClickOpen(data)}
+                        >
+                          More Details
+                        </Button>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -409,24 +465,22 @@ function EmFileListPage() {
                 )}
               </TableBody>
               <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[10]}
-                    colSpan={3}
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                      native: true,
-                    }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  colSpan={0}
+                  count={data.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: {
+                      "aria-label": "rows per page",
+                    },
+                    native: true,
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                 
+                />
               </TableFooter>
             </Table>
           </TableContainer>

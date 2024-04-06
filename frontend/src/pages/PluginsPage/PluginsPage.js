@@ -23,11 +23,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 function PluginsPage() {
   const containerStyle = {
-    backgroundColor: "white", // Set your desired color here
-    // You can also add other styles as needed
-    padding: "20px",
+    // backgroundColor: "white", 
+    padding: "0px",
     borderRadius: "8px",
-    marginTop: "10px",
+    marginTop: "0px",
   };
   const [searchText, setSearchText] = useState("");
 
@@ -109,10 +108,6 @@ function PluginsPage() {
         >
           Apple iphone X
         </Typography>
-
-        <Typography color="text.secondary" marginTop={2} align="center">
-          1.5k
-        </Typography>
         <Typography color="text.secondary" marginTop={2} align="center">
           Maintained by Sherlock Holmes
         </Typography>
@@ -123,19 +118,45 @@ function PluginsPage() {
           customization.
         </Typography>
       </CardContent>
-      <CardActions>
-        <Grid container alignItems="center" justifyContent="center">
-          <Button size="medium">use</Button>
-        </Grid>
-      </CardActions>
     </React.Fragment>
   );
 
+  const sxStyle = {
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    color: "#00245A",
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
+
+
   return (
-    <>
-      <CssBaseline />
-      <NavBar />
-      <div>
+   <>
+      <div className="popup">
         <Dialog
           open={open}
           onClose={handleClose}
@@ -154,7 +175,7 @@ function PluginsPage() {
           variant="h4"
           color="textPrimary"
           align="center"
-          marginTop={3}
+          marginTop={0}
         >
           EM Plugins
         </Typography>
@@ -169,9 +190,10 @@ function PluginsPage() {
             value={searchText}
             onChange={handleSearch}
             variant="outlined"
-            style={{ width: "600px", marginTop: "40px" }}
+            sx={{ ...sxStyle }}
+            style={{ width: "600px", marginTop: "40px", backgroundColor: "white" }}
             InputProps={{
-              endAdornment: <SearchIcon />,
+              endAdornment: <SearchIcon sx={{fontSize: 30}}/>,
             }}
           />
         </Grid>
@@ -180,9 +202,10 @@ function PluginsPage() {
           spacing={0}
           alignItems="center"
           justifyContent="center"
+          sx={{backgroundColor: "white", pt: 5, pb: 5, borderRadius: "10px"}}
           marginTop={4}
         >
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -199,7 +222,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -216,7 +239,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -233,7 +256,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -250,7 +273,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -267,7 +290,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -284,7 +307,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -301,7 +324,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -318,7 +341,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -335,7 +358,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,
@@ -352,7 +375,7 @@ function PluginsPage() {
               </Card>
             </Box>
           </Grid>
-          <Grid xs={5} sm={5} md={2} marginTop={8} m={2}>
+          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
             <Box
               sx={{
                 minWidth: 200,

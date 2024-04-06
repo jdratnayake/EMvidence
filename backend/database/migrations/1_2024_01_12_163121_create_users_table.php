@@ -20,6 +20,9 @@ return new class extends Migration
             // unverified
             // verified
             $table->string('account_status', 16)->nullable(false)->default('unverified');
+            // false => active
+            // true => inactive
+            $table->string('ban_status', 16)->nullable(false)->default('false');
             $table->string('first_name', 64)->nullable(false);
             $table->string('last_name', 64)->nullable(false);
             $table->string('email', 128)->unique();

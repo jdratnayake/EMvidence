@@ -9,11 +9,10 @@ import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
 import DeveloperTemplate from "./templates/DeveloperTemplate/DeveloperTemplate";
 import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorTemplate";
 
+
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
-import DeveloperPage from "./pages/DeveloperPage/DeveloperPage";
-import InvestigatorPage from "./pages/InvestigatorPage/InvestigatorPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import SignInPage from "./pages/SignInPage/SignInPage";
 import AnalysisPage from "./pages/AnalysisPage/AnalysisPage";
@@ -24,6 +23,7 @@ import PluginUploadListPage from "./pages/PluginUploadListPage/PluginUploadListP
 import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
 import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
+import PluginVerifyPage from "./pages/PluginVerifyPage/PluginVerifyPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
@@ -38,10 +38,17 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-      <Route path="plugin" element={<PluginPage />} />
+
+      <Route
+        path="plugin"
+        element={<InvestigatorTemplate children={<PluginPage />} />}
+      />
 
       {/* Admin */}
-      <Route path="admin" element={<AdminPage />} />
+      <Route
+        path="admin"
+        element={<AdminTemplate children={<AdminPage />} />}
+      />
       <Route
         path="user-list"
         element={<AdminTemplate children={<UserManagePage />} />}
@@ -50,32 +57,45 @@ const router = createBrowserRouter(
         path="plugin-list"
         element={<AdminTemplate children={<PluginManagePage />} />}
       />
-
+      <Route
+        path="plugin-verify"
+        element={<AdminTemplate children={<PluginVerifyPage />} />}
+      />
       {/* Investigator */}
-      <Route path="investigator" element={<InvestigatorPage />} />
       <Route
         path="analysis"
         element={<InvestigatorTemplate children={<AnalysisPage />} />}
       />
-      <Route path="file-list" element={<EmFileListPage />} />
-      <Route path="file-upload" element={<EmFileUploadPage />} />
-      <Route path="investigation" element={<InvestigationPage />} />
+      <Route
+        path="file-list"
+        element={<InvestigatorTemplate children={<EmFileListPage />} />}
+      />
+      <Route
+        path="file-upload"
+        element={<InvestigatorTemplate children={<EmFileUploadPage />} />}
+      />
+      <Route
+        path="investigation"
+        element={<InvestigatorTemplate children={<InvestigationPage />} />}
+      />
       <Route
         path="profile"
         element={<InvestigatorTemplate children={<ProfilePage />} />}
       />
-      <Route 
+      <Route
         path="edit-profile"
         element={<InvestigatorTemplate children={<EditProfilePage />} />}
       />
 
       {/* Developer */}
-      <Route path="developer" element={<DeveloperPage />} />
       <Route
         path="plugin-upload-list"
         element={<DeveloperTemplate children={<PluginUploadListPage />} />}
       />
-      <Route path="plugin-upload" element={<PluginUploadPage />} />
+      <Route
+        path="plugin-upload"
+        element={<DeveloperTemplate children={<PluginUploadPage />} />}
+      />
 
       {/* Modification Required UIs If Time Permits */}
       <Route path="analysis1" element={<AnalysisPage1 />} />
