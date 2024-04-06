@@ -88,9 +88,9 @@ function EmFileUploadPage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("arduino");
-  const [centerFreq, setCenterFreq] = useState(10);
-  const [samplingRate, setSamplingRate] = useState(20);
+  const [deviceName, setDeviceName] = useState("");
+  const [centerFreq, setCenterFreq] = useState(null);
+  const [samplingRate, setSamplingRate] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
