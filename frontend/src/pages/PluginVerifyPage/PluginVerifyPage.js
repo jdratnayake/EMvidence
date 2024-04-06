@@ -1,7 +1,6 @@
 import { CssBaseline, Typography } from "@mui/material";
 import { Container, width } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./PluginUploadListPage.css";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -41,6 +40,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Tooltip from '@mui/material/Tooltip';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import RuleIcon from '@mui/icons-material/Rule';
 import {
   FormControl,
   InputLabel,
@@ -55,7 +56,9 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { List } from "@mui/material";
 
-function PluginUploadListPage() {
+import "./PluginVerifyPage.css"
+
+function PluginVerifyPage() {
 
 
   const [searchText, setSearchText] = useState("");
@@ -64,8 +67,8 @@ function PluginUploadListPage() {
     setSearchText(event.target.value);
   };
   const navigate = useNavigate();
-  const navigateToPluginUploadPage2 = () => {
-    navigate("/plugin-upload");
+  const navigateToPluginList = () => {
+    navigate("/plugin-list");
   };
   const theme = useTheme();
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
@@ -113,7 +116,7 @@ function PluginUploadListPage() {
           gutterBottom
 
         >
-          Plugins
+          Verify Plugins
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
           <Grid container alignItems="left" justifyContent="left" >
@@ -136,15 +139,15 @@ function PluginUploadListPage() {
             </Grid>
           </Grid>
           <Box sx={{ mt: "42px" }}>
-            <Tooltip title={lessThanMd ? "Upload Plugin" : null}>
+            <Tooltip title={lessThanMd ? "All Plugin" : null}>
               <Button
                 variant="contained"
-                onClick={navigateToPluginUploadPage2}
+                onClick={navigateToPluginList}
                 sx={{
                   pl: 4,
                   pr: 4,
                   height: 50,
-                  width: lessThanMd ? "50px" : "175px",
+                  width: lessThanMd ? "50px" : "170px",
                   bgcolor: "#00245A",
                   color: "white",
                   "&:hover": {
@@ -152,7 +155,7 @@ function PluginUploadListPage() {
                   },
                 }}
               >
-                {lessThanMd ? <CloudUploadIcon /> : 'Upload Plugin'}
+                {lessThanMd ? <OpenInNewIcon /> : 'All Plugins'}
               </Button>
             </Tooltip>
 
@@ -169,17 +172,7 @@ function PluginUploadListPage() {
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <Typography variant="h6" color="textPrimary" >
-                    Size
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
                     Created Date
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h6" color="textPrimary" >
-                    Status
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
@@ -188,28 +181,19 @@ function PluginUploadListPage() {
                   </Typography>
                 </TableCell>
               </TableRow>
-              <TableRow>
+              <TableRow hover>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
                     plugin 1
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    10 MB
-                  </Typography>
-                </TableCell>
+                
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-                    label={"failed"}
-                  />
-                </TableCell>
+
                 <TableCell align="center">
                   <Box
                     sx={{
@@ -239,28 +223,27 @@ function PluginUploadListPage() {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
                       <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-
-                          }
-                        }}
+                       variant="outlined"
+                       style={{ color: "#00245A", }}
+                       sx={{
+                         borderColor: "rgba(0, 36, 90, 0.4)",
+                         '&:hover': {
+                           borderColor: "#00245A", // Change to the desired hover color
+                         },
+                       }}
+                       onClick={() => { }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <RuleIcon /> : 'Verify'}
 
                       </Button>
                     </Tooltip>
                   </Box>
                 </TableCell>
               </TableRow>
-              <TableRow>
+              <TableRow hover>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
                     plugin 2
@@ -268,20 +251,10 @@ function PluginUploadListPage() {
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
-                    20 MB
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
-                    label={"Active"}
-                  />
-                </TableCell>
+                
                 <TableCell align="center">
                   <Box
                     sx={{
@@ -311,28 +284,27 @@ function PluginUploadListPage() {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
                       <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-
-                          }
-                        }}
+                       variant="outlined"
+                       style={{ color: "#00245A", }}
+                       sx={{
+                         borderColor: "rgba(0, 36, 90, 0.4)",
+                         '&:hover': {
+                           borderColor: "#00245A", // Change to the desired hover color
+                         },
+                       }}
+                       onClick={() => { }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <RuleIcon /> : 'Verify'}
 
                       </Button>
                     </Tooltip>
                   </Box>
                 </TableCell>
               </TableRow>
-              <TableRow>
+              <TableRow hover>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
                     plugin 3
@@ -340,20 +312,7 @@ function PluginUploadListPage() {
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary" >
-                    30 MB
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
                     2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h7" color="textPrimary" >
-                    <Chip
-                      sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
-                      label={"pending"}
-                    />
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
@@ -385,21 +344,20 @@ function PluginUploadListPage() {
                       </Button>
                     </Tooltip>
 
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
+                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
                       <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-
-                          }
-                        }}
+                       variant="outlined"
+                       style={{ color: "#00245A", }}
+                       sx={{
+                         borderColor: "rgba(0, 36, 90, 0.4)",
+                         '&:hover': {
+                           borderColor: "#00245A", // Change to the desired hover color
+                         },
+                       }}
+                       onClick={() => { }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
+                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
+                        {lessThanMd ? <RuleIcon /> : 'Verify'}
 
                       </Button>
                     </Tooltip>
@@ -418,4 +376,4 @@ function PluginUploadListPage() {
   );
 }
 
-export default PluginUploadListPage;
+export default PluginVerifyPage;

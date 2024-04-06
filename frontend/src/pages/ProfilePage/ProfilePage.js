@@ -21,9 +21,10 @@ import {
   InputAdornment,
   FormHelperText,
 } from "@mui/material";
+import Tooltip from '@mui/material/Tooltip';
 import { useState } from "react";
 import { styled } from "@mui/system";
-import image from "./../../resources/profile.jpg";
+import profImage from "./../../resources/profile.jpg";
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -72,6 +73,10 @@ const UploadButton = styled(IconButton)(() => ({
   bottom: "3%",
   left: "50%",
   transform: "translateX(-50%)",
+  // cursor: "pointer",
+  // '&:hover': {
+  //   cursor: 'pointer',
+  // },
 }));
 
 const ImageBox = styled(Box)(() => ({
@@ -80,7 +85,8 @@ const ImageBox = styled(Box)(() => ({
   position: "relative",
   display: "inline-block",
   width: "fit-content",
-  marginTop: "0%",
+  marginTop: "-5px",
+  paddingBottom: "10px",
 }));
 
 
@@ -106,7 +112,18 @@ function ProfilePage() {
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
 
+  const [image, setImage] = useState(profImage);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -120,7 +137,7 @@ function ProfilePage() {
         {...other}
       >
         {value === index && (
-          <Box sx={{ p:1, mt:3, ml:4, width: "90%", }}>
+          <Box sx={{ p: 1, mt: 3, ml: 4, width: "90%", }}>
             {children}
           </Box>
         )}
@@ -147,7 +164,7 @@ function ProfilePage() {
     setValue(newValue);
   };
   const sxStyle = {
-    width: lessThanMd? '100%': '100%',
+    width: lessThanMd ? '100%' : '100%',
     "&:hover": {
       "&& fieldset": {
         border: "2px solid #00245A",
@@ -212,72 +229,88 @@ function ProfilePage() {
               onChange={handleChange}
               aria-label="Vertical tabs example"
               sx={{
-                mt: 3, ml: lessThanMd ? 1 : 3, color: "#00245A", display: "flex", justifyContent: "left", alignItems: "left", width: lessThanMd ? '50%' : '15%', 
+                mt: 3, ml: lessThanMd ? 1 : 3, color: "#00245A", display: "flex", justifyContent: "left", alignItems: "left", width: lessThanMd ? '50%' : '15%',
                 "& button:hover": { backgroundColor: "#e8e8e8" },
                 "& button:focus": { backgroundColor: "#e8e8e8" },
                 "& button:active": { backgroundColor: "#e8e8e8" },
                 "& button.Mui-selected": { backgroundColor: "#e8e8e8" },
-                minWidth: lessThanSm ? "100px": "200px",
+                minWidth: lessThanSm ? "100px" : "200px",
               }}
             >
-              <Tab icon={<EditIcon style={{ marginTop: "5px", marginRight: lessThanSm ? 0 : "10px", }} />}
-                label={lessThanSm ? null : "Edit Profile"}
-                {...a11yProps(0)}
-                sx={{ borderRadius: '10px', display: "flex", flexDirection: "row", backgroundColor: "#f8f8f8", p: lessThanMd ? 0 : 2 }} />
-
-              <Tab icon={<LockIcon style={{ marginTop: "5px", marginRight: lessThanSm ? 0 : "10px" }} />}
-                label={lessThanSm ? null : "Password"}
-                {...a11yProps(1)}
-                sx={{ mt: 3, borderRadius: '10px', display: "flex", flexDirection: "row", backgroundColor: "#f8f8f8", p: lessThanMd ? 0 : 2 }} />
-
+              <Tooltip title={lessThanSm ? "Edit Profile" : null} placement="top" >
+                <Tab icon={<EditIcon style={{ marginTop: "5px", marginRight: lessThanSm ? 0 : "10px", }} />}
+                  label={lessThanSm ? null : "Edit Profile"}
+                  {...a11yProps(0)}
+                  sx={{ borderRadius: '10px', display: "flex", flexDirection: "row", backgroundColor: "#f8f8f8", p: lessThanMd ? 0 : 2 }} />
+              </Tooltip>
+              <Tooltip title={lessThanSm ? "Update Password" : null} >
+                <Tab icon={<LockIcon style={{ marginTop: "5px", marginRight: lessThanSm ? 0 : "10px" }} />}
+                  label={lessThanSm ? null : "Password"}
+                  {...a11yProps(1)}
+                  sx={{ mt: 3, borderRadius: '10px', display: "flex", flexDirection: "row", backgroundColor: "#f8f8f8", p: lessThanMd ? 0 : 2 }} />
+              </Tooltip>
             </Tabs>
 
+
             <TabPanel value={value} index={0}>
-              <Box component="form" onSubmit={{}}
-                sx={{ mt: 0, ml: lessThanMd? -2 : 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={12}>
-                    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: lessThanMd ? "space-between" :  "space-between" }}>
-                      <ImageBox>
-                        <img
-                          src={image}
-                          alt="profile pic"
-                          width="200px"
-                          height="200px"
-                          style={{ borderRadius: "50%" }}
+
+              <Box sx={{ display: "flex", flexDirection: "row", justifyContent: lessThanMd ? "space-between" : "space-between", mt: "-5px" }}>
+
+                <ImageBox>
+                  <img
+                    src={image}
+                    alt="profile pic"
+                    width="200px"
+                    height="200px"
+                    style={{ borderRadius: "50%" }}
+                  />
+                  <Tooltip title="Upload Image" placement="left-start">
+                    <UploadButton aria-label="upload">
+                      <div sx={{ cursor: "pointer", }}>
+                        <input
+                          accept="image/*"
+                          id="contained-button-file"
+                          type="file"
+                          style={{ display: 'none' }}
+                          onChange={handleImageChange}
                         />
-                        <UploadButton aria-label="upload">
-                          <CameraAltIcon />
-                        </UploadButton>
-                      </ImageBox>
-                    
+                        <label htmlFor="contained-button-file">
 
-                        <Button
-                           
-                          type="submit"
-                          variant="contained"
-                          onClick={{}}
-                          sx={{
-                            mt: '145px', 
-                            mb: 2, 
-                            bgcolor: 'red',
-                             color: 'white', 
-                             pt: 0, pb: 0, ml : lessThanMd ? "0px" : 0,
-                             width: lessThanMd? "50px" :"160px", height: "45px", 
-                            '&:hover': {
-                              bgcolor: 'rgba(255, 0, 0, 0.7)',
-                            },
-                          }}
-                        >
-                          
-                          {lessThanMd ? <DeleteIcon /> : 'Delete Account' }
-                    
-                        </Button>
-                    
+                          <CameraAltIcon sx={{ mt: 1, cursor: "pointer" }} />
 
-                    </Box>
+                        </label>
+                      </div>
 
-                  </Grid>
+                    </UploadButton >
+                  </Tooltip>
+                </ImageBox>
+
+                <Tooltip title={lessThanMd ? "Delete Account" : null} >
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    // onClick={{}}
+                    sx={{
+                      // mt: '145px',
+                      mb: 2,
+                      bgcolor: 'red',
+                      color: 'white',
+                      pt: 0, pb: 0, ml: lessThanMd ? "0px" : 0,
+                      width: lessThanMd ? "50px" : "160px", height: "45px",
+                      '&:hover': {
+                        bgcolor: 'rgba(255, 0, 0, 0.7)',
+                      },
+                    }}
+                  >
+                    {lessThanMd ? <DeleteIcon /> : 'Delete Account'}
+                  </Button>
+                </Tooltip>
+
+
+              </Box>
+              <Box component="form" onSubmit={{}}
+                sx={{ mt: 1, ml: lessThanMd ? -2 : 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", }}>
+                <Grid container spacing={2}>
 
                   <Grid item xs={12} md={12}>
 
