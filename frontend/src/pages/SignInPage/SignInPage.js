@@ -17,11 +17,30 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import TextBox from "../../components/TextBox/TextBox";
-import Copyright from "../../components/Copyright/Copyright";
+// import Copyright from "../../components/Copyright/Copyright";
 import { validateEmail, validatePassword } from "./Validation";
 import { loginUser } from "../../services/authService";
 import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo8.png";
+
+function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="">
+        EMvidence
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+
 
 const defaultTheme = createTheme();
 
@@ -255,7 +274,7 @@ export default function SignInPage() {
                   </Grid>
                 </Box>
               </Box>
-              <Copyright />
+              <Copyright sx={{ mt: 5 }}/>
               {/* <h1>{catData?.fact}</h1> */}
             </Container>
           </Grid>

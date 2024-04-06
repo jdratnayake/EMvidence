@@ -11,14 +11,36 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import RuleIcon from '@mui/icons-material/Rule';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import logo from "../../resources/logo.png";
+import { Link } from "react-router-dom";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  Input,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
-const pages = ["Dashboard", "Analysis", "Uploaded Files", "Settings"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["About Us", "Contact Us"];
 
 function NavBar(pageName) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   // const borderBottom = "1px solid black";
 
   const handleOpenNavMenu = (event) => {
@@ -102,7 +124,7 @@ function NavBar(pageName) {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center" >{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -137,7 +159,7 @@ function NavBar(pageName) {
                 onClick={handleCloseNavMenu}
                 variant="plain"
                 sx={{
-                  borderRadius: "0",
+                  borderRadius: "5px",
                   my: 2,
                   color: "#000000",
                   display: "block",
@@ -149,37 +171,53 @@ function NavBar(pageName) {
               >
                 {page}
               </Button>
+
             ))}
+
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              '& > Button': {
+                marginRight: 2, // Adjust the value as needed
+              }
+            }}
+          >
+            <Tooltip title={lessThanMd ? "Login" : null}>
+              <Button
+              component={Link} to="/login"
+                variant="outlined"
+                style={{ color: "#00245A", }}
+                sx={{
+                  borderColor: "rgba(0, 36, 90, 0.4)",
+                  '&:hover': {
+                    borderColor: "#00245A", // Change to the desired hover color
+                  },
+                }}
+              >
+
+                {lessThanMd ? <LoginIcon /> : 'Login'}
+
+              </Button>
             </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+
+            <Tooltip title={lessThanMd ? "Sign Up" : null}>
+              <Button
+               component={Link} to="/register"
+                variant="contained"
+                sx={{
+                  bgcolor: '#00245A', color: 'white', ml: 3,
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 36, 90, 0.8)', // Change to the desired hover color
+                  },
+                }}
+              >
+                {lessThanMd ? <PersonAddIcon /> : 'Sign Up'}
+              </Button>
+            </Tooltip>
           </Box>
         </Toolbar>
       </Container>

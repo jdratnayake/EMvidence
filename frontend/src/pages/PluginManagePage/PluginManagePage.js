@@ -13,7 +13,17 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
+import OfflinePinIcon from '@mui/icons-material/OfflinePin';
+import UnpublishedIcon from '@mui/icons-material/Unpublished';
+import ChecklistRtlIcon from '@mui/icons-material/ChecklistRtl';
+import Tooltip from '@mui/material/Tooltip';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import RuleIcon from '@mui/icons-material/Rule';
 import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -106,6 +116,11 @@ function PluginManagePage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchText, setSearchText] = useState("");
 
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+
+
   const handleSearch = (event) => {
     setSearchText(event.target.value);
   };
@@ -185,14 +200,10 @@ function PluginManagePage() {
   function getStatus(value) {
     if (value === "Active") {
       return (
-        <TableCell align="">
+        <TableCell align="center">
           <Chip
             sx={{ background: "#ECFDF3", color: "#037847", mt: "10px", ml: "4px" }}
-            label={
-              <>
-                {value}
-              </>
-            }
+            label={"Active"}
           />
         </TableCell>
       );
@@ -201,11 +212,7 @@ function PluginManagePage() {
         <TableCell>
           <Chip
             sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-            label={
-              <>
-                {value}
-              </>
-            }
+            label={"Inactive"}
           />
         </TableCell>
       );
@@ -246,11 +253,11 @@ function PluginManagePage() {
   return (
     <>
       <ContainerBox>
-        <HeadingBox>
-          <Typography variant="h4" gutterBottom sx={{mb:-1}}>
-            Plugins
-          </Typography>
-        </HeadingBox>
+
+        <Typography variant="h4" gutterBottom sx={{ mb: -1 }}>
+          Plugins
+        </Typography>
+
         <Grid container alignItems="center" justifyContent="center" sx={{ mb: 4 }}>
           <TextField
             id="search"
@@ -262,7 +269,7 @@ function PluginManagePage() {
             value={searchText}
             onChange={handleSearch}
             variant="outlined"
-            style={{ width: "500px", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+            style={{ minWidth: "400px", width: "50%" ,   marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
             InputProps={{
               endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
             }}
@@ -274,13 +281,12 @@ function PluginManagePage() {
               <TableContainer sx={{ maxHeight: "440" }}>
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
-
-                    <TableCell >
+                    <TableCell>
                       <Typography variant="h6" color="textPrimary" >
                         Plugin Name
                       </Typography>
                     </TableCell>
-                    <TableCell align="">
+                    <TableCell align="center">
                       <Typography variant="h6" color="textPrimary" >
                         Status
                       </Typography>
@@ -290,50 +296,136 @@ function PluginManagePage() {
                         Action
                       </Typography>
                     </TableCell>
-
                   </TableHead>
                   <TableBody>
-                    {rows
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((row) => {
-                        return (
-                          <TableRow
-                            hover
-                            role="checkbox"
-                            tableIndex={-1}
-                            key={row.code}
-                          >
-                            {columns.map((column) => {
-                              const value = row[column.id];
-                              console.log(column.id);
-                              return column.id === "status" ? (
-                                getStatus(value)
-                              ) : column.id === "actions" ? (
-                                getActions(value)
-                              ) : (
-                                <TableCell key={column.id}>
-                                  {value}
-                                </TableCell>
-                              );
-                            })}
-                          </TableRow>
-                        );
-                      })}
+                    <TableRow hover>
+                      <TableCell scope="row">
+                        <Typography variant="h7" color="textPrimary" >
+                          plugin 1
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell scope="row" align="center">
+
+                        <Chip
+                          sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                          label={"Inactive"}
+                        />
+                      </TableCell>
+
+
+                      <TableCell align="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            '& > Button': {
+                              marginRight: 2, // Adjust the value as needed
+                            }
+                          }}
+                        >
+                          <Tooltip title={lessThanMd ? "Test" : null}>
+                            <Button
+                              variant="outlined"
+                              style={{ color: "#00245A", }}
+                              sx={{
+                                borderColor: "rgba(0, 36, 90, 0.4)",
+                                '&:hover': {
+                                  borderColor: "#00245A", // Change to the desired hover color
+                                },
+                              }}
+                              onClick={() => { }}
+                            >
+                              {lessThanMd ? null : <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />}
+                              {lessThanMd ? <DeveloperModeIcon /> : 'Test'}
+
+                            </Button>
+                          </Tooltip>
+
+                          <Tooltip title={lessThanMd ? "Activate" : null}>
+                            <Button
+                              variant="outlined"
+                              style={{ color: "#00245A", }}
+                              sx={{
+                                borderColor: "rgba(0, 36, 90, 0.4)",
+                                '&:hover': {
+                                  borderColor: "#00245A", // Change to the desired hover color
+                                },
+                                pl: lessThanMd ? 0 : 3,
+                                pr:lessThanMd ? 0 :3,
+                              }}
+                              onClick={() => { }}
+                            >
+                              {lessThanMd ? null : <OfflinePinIcon sx={{ ml: -1, mr: 1 }} />}
+                              {lessThanMd ? <OfflinePinIcon /> : 'Activate'}
+
+                            </Button>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow hover>
+                      <TableCell scope="row">
+                        <Typography variant="h7" color="textPrimary" >
+                          plugin 2
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell scope="row" align="center">
+                        <Chip
+                          sx={{ background: "#ECFDF3", color: "#037847", mt: "10px", ml: "4px" }}
+                          label={"Active"}
+                        />
+                      </TableCell>
+
+
+                      <TableCell align="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            '& > Button': {
+                              marginRight: 2, // Adjust the value as needed
+                            }
+                          }}
+                        >
+                          <Tooltip title={lessThanMd ? "Test" : null}>
+                            <Button
+                              variant="outlined"
+                              style={{ color: "#00245A", }}
+                              sx={{
+                                borderColor: "rgba(0, 36, 90, 0.4)",
+                                '&:hover': {
+                                  borderColor: "#00245A", // Change to the desired hover color
+                                },
+                              }}
+                              onClick={() => { }}
+                            >
+                              {lessThanMd ? null : <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />}
+                              {lessThanMd ? <DeveloperModeIcon /> : 'Test'}
+
+                            </Button>
+                          </Tooltip>
+
+                          <Tooltip title={lessThanMd ? "Deactivate" : null}>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => { }}
+                            >
+                              {lessThanMd ? null : <UnpublishedIcon sx={{ ml: -1, mr: 1 }} />}
+                              {lessThanMd ? <UnpublishedIcon  /> : 'Deactivate'}
+
+                            </Button>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
             </Paper>
           </TableBox>
         </ContentBox>
