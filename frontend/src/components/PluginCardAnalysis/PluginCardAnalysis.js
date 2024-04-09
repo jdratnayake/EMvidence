@@ -37,7 +37,9 @@ function PluginCardAnalysis({
           checked={isChecked}
           onChange={handleChange}
           inputProps={{ "aria-label": "controlled" }}
-          sx={{ marginLeft: "80%", marginBottom: "-5%" }}
+          sx={{ marginLeft: "80%", marginBottom: "-5%", "& .MuiSvgIcon-root": {
+            fill: "#00245A",
+          }, }}
         />
         <Card sx={{ height: 200 }} onClick={handleClick}>
           <CardContent>
