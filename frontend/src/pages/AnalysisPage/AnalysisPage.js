@@ -391,7 +391,7 @@ const AnalysisPage = () => {
 
               }}
             >
-               {!emDataFile && <InputLabel id="dropdown-label-1"  shrink={false}>Select</InputLabel>}
+              {!emDataFile && <InputLabel id="dropdown-label-1" shrink={false}>Select</InputLabel>}
               <Select
                 labelId="dropdown-label-1"
                 id="dropdown-1"
@@ -409,11 +409,10 @@ const AnalysisPage = () => {
           <Box
             sx={{
               mt: "0px",
-              width: "40%",
+              width: "50%",
               mb: "40px",
-              
               p: "20px",
-              border: "2px solid grey",
+              border: "2px solid #00245A",
               borderRadius: "5px",
               display: emDataFile ? "flex" : "none",
               justifyContent: "center",
@@ -423,7 +422,7 @@ const AnalysisPage = () => {
 
             }}
           >
-            <InsertDriveFileIcon sx={{ fontSize: "75px" }} />
+            <InsertDriveFileIcon sx={{ fontSize: "75px", color : "#00245A" }} />
 
             <Typography variant="h5" sx={{ mb: "10px" }}>
               <strong>File 1</strong>
@@ -435,22 +434,22 @@ const AnalysisPage = () => {
                 justifyContent: "flex-start"
               }}
             >
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Insight Type:</strong> {insightTypeName}
               </Typography>
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Sampling Rate:</strong> 20MHz
               </Typography>
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong> 16MHz
               </Typography>
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Sampling Duration:</strong> 20s
               </Typography>
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Hash Function:</strong> Md5
               </Typography>
-              <Typography variant="body1" sx={{mb:1}}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Device Name:</strong> Iphone 4S
               </Typography>
             </Box>
@@ -941,7 +940,7 @@ const AnalysisPage = () => {
               width: "50%",
               mb: "30px",
               p: "20px",
-              border: "2px solid grey",
+              border: "2px solid #00245A",
               borderRadius: "5px",
               backgroundColor: "#E8E8E8"
             }}
