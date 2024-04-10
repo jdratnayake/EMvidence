@@ -7,14 +7,14 @@ import "./Copyright.css";
 function Copyright() {
   return (
     <Box sx={{ 
-      backgroundColor: "#00245A",
+      backgroundColor: "white",
        display:"flex", 
        justifyContent: "center", 
        boxShadow:8 ,
        alignItems: "center", }}>
     <Typography
       variant="body2"
-      color="white"
+      color="grey"
       align="center"
       sx={{ mt: 4, mb: 5 }}
     >
