@@ -18,9 +18,9 @@ function HomePage() {
   return (
  
     <span className="homepage">
-    <Box sx={{ backgroundColor: "#E8E8E8", paddingBottom: "0.5%", maxWidth:"1000vh" }}>
+    <Box sx={{ backgroundColor: "white",minHeight: "100vh", paddingBottom: "0.5%", maxWidth:"1000vh" }}>
     <NavBar />
-    <Container maxWidth="lg" sx={{ marginTop: "50px", minHeight: "100vh", maxWidth:"100vh" }}>
+    <Container maxWidth="lg" sx={{ marginTop: "30px", minHeight: "90vh", maxWidth:"100vh" }}>
         <Box  sx={{display: "flex", maxHeight: "50vh"}}>
           <Grid container alignItems="left"  flexDirection="column">
             <Grid item xs={12} md={6} sx={{bgcolor:"",maxWidth:"1000px"}}>
@@ -30,13 +30,13 @@ function HomePage() {
                        lineHeight: 1.0,
                        letterSpacing: 0.32,
                       }}>
-                  Analyze Your Digital Evidence with 
+                  Analyze Your Electromagnetic Data with 
                 </Typography>
-                <Typography variant="h1" sx={{fontWeight:"bold", mt:3, color:"#00245A", fontSize: "7rem"}}>
+                <Typography variant="h1" sx={{fontWeight:"bold", mt:3, color:"#00245A", fontSize: "7rem", letterSpacing: ".1rem",}}>
                  EMvidence
                 </Typography>
                 <Typography variant="h6" sx={{mt:3, color:"grey", ml:1, fontSize: "15px"}}>
-                Forensics-as-a-Service (FaaS) model, which is a system with distributed processing that incorporates
+                EMvidence is a Forensics-as-a-Service (FaaS) platform, with distributed processing that incorporates
                 various plugins catering to different types of IoT devices, analysis techniques and techniques for 
                 data pre-processing
 
