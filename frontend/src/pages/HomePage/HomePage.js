@@ -18,12 +18,12 @@ function HomePage() {
   return (
  
     <span className="homepage">
-    <Box sx={{ backgroundColor: "white",minHeight: "100vh", paddingBottom: "0.5%", maxWidth:"1000vh" }}>
+    <Box sx={{ backgroundColor: "#E8E8E8",minHeight: "100vh", paddingBottom: "0.5%", maxWidth:"1000vh" }}>
     <NavBar />
-    <Container maxWidth="lg" sx={{ marginTop: "30px", minHeight: "90vh", maxWidth:"100vh" }}>
+    <Container maxWidth="lg" sx={{ marginTop: "30px", minHeight: "95vh", maxWidth:"100vh" }}>
         <Box  sx={{display: "flex", maxHeight: "50vh"}}>
           <Grid container alignItems="left"  flexDirection="column">
-            <Grid item xs={12} md={6} sx={{bgcolor:"",maxWidth:"1000px"}}>
+            <Grid item xs={12} md={6} sx={{maxWidth:"1000px"}}>
               <Box sx={{display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"left", mt:5}}>
                 <Typography variant="h2" 
                   sx={{fontWeight:2,  

@@ -119,8 +119,7 @@ function EmFileListPage() {
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   const lessThanLg = useMediaQuery(theme.breakpoints.down("lg"));
   const [data, setData] = useState([]);
-  const location = useLocation();
-  console.log(location);
+
 
   useEffect(() => {
     fetch(baseURL1)
@@ -199,7 +198,7 @@ function EmFileListPage() {
               Created Date : {selectedFileData.file_upload_timestamp}
             </Typography>
             <Typography color="textSecondary" align="left">
-              Device : {selectedFileData.device_name}
+              Device : {selectedFileData.device_id}
             </Typography>
             <Typography color="textSecondary" align="left">
               Center Frequency : {selectedFileData.center_frequency} Hz
@@ -341,22 +340,22 @@ function EmFileListPage() {
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow>
-                  <TableCell component="th" scope="row">
+                  <TableCell  scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       File Name
                     </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row">
+                  <TableCell  scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       Size
                     </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row">
+                  <TableCell  scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       Created Date
                     </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row" align="center">
+                  <TableCell  scope="row" align="center">
                     <Typography variant="h6" color="textPrimary" >
                       Status
                     </Typography>
@@ -375,7 +374,7 @@ function EmFileListPage() {
                   : data
                 ).map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
-                    <TableCell component="th" scope="row">
+                    <TableCell  scope="row">
                       <Stack direction="row" spacing={2}>
                         <InsertDriveFileIcon
                           fontSize="medium"
@@ -464,24 +463,6 @@ function EmFileListPage() {
                   </TableRow>
                 )}
               </TableBody>
-              <TableFooter>
-                <TablePagination
-                  rowsPerPageOptions={[10, 25, 100]}
-                  colSpan={0}
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    inputProps: {
-                      "aria-label": "rows per page",
-                    },
-                    native: true,
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                 
-                />
-              </TableFooter>
             </Table>
           </TableContainer>
         </Container>
