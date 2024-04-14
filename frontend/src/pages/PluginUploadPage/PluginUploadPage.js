@@ -1,5 +1,5 @@
 import { CssBaseline, Typography } from "@mui/material";
-import { Container, width } from "@mui/system";
+import { Container, display, width } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./PluginUploadPage.css";
 import Button from "@mui/material/Button";
@@ -26,6 +26,8 @@ import {
   MenuItem,
   Select,
   Input,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import LinearProgress, {
   linearProgressClasses,
@@ -44,11 +46,11 @@ function PluginUploadPage() {
   };
 
   const sxStyle = {
-    // "&:hover": {
-    //   "&& fieldset": {
-    //     border: "2px solid #00245A",
-    //   },
-    // },
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
     "& .MuiInputLabel-outlined": {
       color: "grey", // Initial color
       "&.Mui-focused": {
@@ -75,17 +77,27 @@ function PluginUploadPage() {
     },
   }
 
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+  const [pluginName, setSelectedPluginName] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [deviceName, setDeviceName] = useState(null);
+  const [emDataFile, setemDataFile] = useState(null);
+  const [samplingRate, setSamplingRate] = useState(null);
+  const [centerFreq, setCenterFreq] = useState(null);
+  const [fttSize, setFttSize] = useState(null);
   const [selectedFileIcon, setSelectedFileIcon] = useState(null);
   const [selectedFileDependency, setSelectedFileDependency] = useState(null);
-  const [selectedFilePlugin, setSelectedFilePlugin] = useState(null);
-  const [deviceName, setDeviceName] = useState(null);
-  const [centerFreq, setCenterFreq] = useState(10);
-  const [samplingRate, setSamplingRate] = useState(20);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedPluginFile, setSelectedPluginFile] = useState(null);
+  const [mlModel, setMlModel] = useState(null);
+
 
   const handleDeviceName = (event) => {
     setDeviceName(event.target.value);
   };
+
+
 
   const handleFileIcon = (event) => {
     event.preventDefault();
@@ -109,7 +121,16 @@ function PluginUploadPage() {
     event.preventDefault();
     const file = event.target.files[0];
     if (file != null) {
-      setSelectedFilePlugin(file);
+      setSelectedPluginFile(file);
+    }
+
+  };
+
+  const handleMlModel = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    if (file != null) {
+      setMlModel(file);
     }
 
   };
@@ -166,6 +187,89 @@ function PluginUploadPage() {
               onChange={() => { }}
             />
           </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              id="des"
+              label="Description"
+              name="Description"
+              sx={{
+                ...sxStyle
+              }}
+              onChange={() => { }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+             <FormControl
+                fullWidth
+                style={{ marginBottom: "0px", textAlign: "left" }}
+                required
+                sx={{
+                  ...sxStyle,
+
+                }}
+              >
+                <InputLabel id="dropdown-label-1">Device Name</InputLabel>
+                <Select
+                  labelId="dropdown-label-1"
+                  id="dropdown-1"
+                  value={deviceName}
+                  onChange={handleDeviceName}
+                  label="Device Name"
+                  style={{ borderColor: "#525252" }}
+
+                >
+                  <MenuItem value="Arduino">Arduino</MenuItem>
+                  <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
+                </Select>
+              </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required sx={{ ...sxStyle }}>
+              <InputLabel id="EMdataFile">EM data file</InputLabel>
+              <Select
+                id="EMdataFile"
+                // value={samplingRate}
+                // onChange={handleDropdownChange3}
+                label="EM data file"
+                style={{ borderColor: "#525252" }}
+
+              >
+                <MenuItem value="1">EM File 1</MenuItem>
+                <MenuItem value="2">EM File 2</MenuItem>
+                <MenuItem value="3">EM File 3 </MenuItem>
+                <MenuItem value="4">EM File 4</MenuItem>
+                <MenuItem value="5">EM File 5</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required
+              sx={{
+                ...sxStyle
+              }}>
+              <InputLabel id="samplingRate">Sampling Rate</InputLabel>
+              <Select
+                id="samplingRate"
+                // value={samplingRate}
+                // onChange={handleDropdownChange3}
+                label="Sampling Rate"
+                style={{ borderColor: "#525252" }}
+              >
+                <MenuItem value="8">8 MHz</MenuItem>
+                <MenuItem value="10">10 MHz</MenuItem>
+                <MenuItem value="12.5">12.5 MHz</MenuItem>
+                <MenuItem value="16">16 MHz</MenuItem>
+                <MenuItem value="20">20 MHz</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               id="centerFreq"
@@ -194,84 +298,31 @@ function PluginUploadPage() {
               required
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-             <FormControl
-                fullWidth
-                style={{ marginBottom: "20px", textAlign: "left" }}
-                required
-                sx={{
-                  ...sxStyle,
 
-                }}
-              >
-                <InputLabel id="dropdown-label-1">Device Name</InputLabel>
-                <Select
-                  labelId="dropdown-label-1"
-                  id="dropdown-1"
-                  value={deviceName}
-                  onChange={handleDeviceName}
-                  label="Device Name"
-                  style={{ borderColor: "#525252" }}
-
-                >
-                  <MenuItem value="Arduino">Arduino</MenuItem>
-                  <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
-                </Select>
-              </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              id="des"
-              label="Description"
-              name="Description"
-              sx={{
-                ...sxStyle
-              }}
-              onChange={() => { }}
-            />
-          </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth required
               sx={{
                 ...sxStyle
               }}>
-              <InputLabel id="samplingRate">Sampling Rate</InputLabel>
+              <InputLabel id="fttSizeLabel">FTT Size</InputLabel>
               <Select
-                id="samplingRate"
-                // value={samplingRate}
+                id="fttSize"
+                value={fttSize}
                 // onChange={handleDropdownChange3}
-                label="Sampling Rate"
+                label="FTT Size"
                 style={{ borderColor: "#525252" }}
               >
-                <MenuItem value="8">8 MHz</MenuItem>
-                <MenuItem value="10">10 MHz</MenuItem>
-                <MenuItem value="12.5">12.5 MHz</MenuItem>
-                <MenuItem value="16">16 MHz</MenuItem>
-                <MenuItem value="20">20 MHz</MenuItem>
+                <MenuItem value={1}>1024</MenuItem>
+                <MenuItem value={2}>2048</MenuItem>
+               
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required sx={{ ...sxStyle }}>
-              <InputLabel id="EMdataFile">EM data file</InputLabel>
-              <Select
-                id="EMdataFile"
-                // value={samplingRate}
-                // onChange={handleDropdownChange3}
-                label="EM data file"
-                style={{ borderColor: "#525252" }}
 
-              >
-                <MenuItem value="1">EM File 1</MenuItem>
-                <MenuItem value="2">EM File 2</MenuItem>
-                <MenuItem value="3">EM File 3 </MenuItem>
-                <MenuItem value="4">EM File 4</MenuItem>
-                <MenuItem value="5">EM File 5</MenuItem>
-              </Select>
-            </FormControl>
+          <Grid item xs={12} sm={6} sx={{display: lessThanSm ? "none" : "block" }}>
+           
           </Grid>
+          
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth required >
               <label style={{ color: 'grey' }}>Icon Upload (accepting formats: .jpg, .png, .jpeg)</label>
@@ -286,7 +337,7 @@ function PluginUploadPage() {
                   border: '1px solid #bbbbbb',
                   borderRadius: '4px',
                   '&:hover': {
-                    borderColor: 'black', // Border color on hover
+                    border: "2px solid #00245A", // Border color on hover
                   },
                 }}
               >
@@ -294,7 +345,7 @@ function PluginUploadPage() {
                   <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
                   <input
                     type="file"
-                    onChange={handleFilePlugin}
+                    onChange={handleFileIcon}
                     accept=".jpg, .png, .jpeg"
                     style={{
                       color: selectedFileIcon ? 'black' : 'grey', height: '53px',
@@ -306,6 +357,7 @@ function PluginUploadPage() {
               </Box>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth required display="flex" justifyContent="flex-start" >
               <label style={{ color: 'grey' }}>Dependency list (accepting format: .txt)</label>
@@ -320,7 +372,7 @@ function PluginUploadPage() {
                   border: '1px solid #bbbbbb',
                   borderRadius: '4px',
                   '&:hover': {
-                    borderColor: 'black', // Border color on hover
+                    border: "2px solid #00245A", // Border color on hover
                   },
                 }}
               >
@@ -343,6 +395,7 @@ function PluginUploadPage() {
               </Box>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth required >
               <Grid justifyContent="flex-start" display="flex" flexDirection="column">
@@ -358,7 +411,7 @@ function PluginUploadPage() {
                     border: '1px solid #bbbbbb',
                     borderRadius: '4px',
                     '&:hover': {
-                      borderColor: 'black', // Border color on hover
+                      border: "2px solid #00245A", // Border color on hover
                     },
                   }}
                 >
@@ -368,7 +421,7 @@ function PluginUploadPage() {
                     <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
                     <input
                       type="file"
-                      onChange={handleFileDependency}
+                      onChange={handleFilePlugin}
                       accept=".py"
                       style={{
                         color: selectedFileIcon ? 'black' : 'grey', height: '53px',
@@ -380,6 +433,46 @@ function PluginUploadPage() {
                 </Grid>
             </FormControl>
           </Grid>
+              
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required >
+              <Grid justifyContent="flex-start" display="flex" flexDirection="column">
+                <label style={{ color: 'grey' }}> Machine learning model (accepting format: .h5)</label>
+                <Box
+                  sx={{
+                    backgroundColor: "white",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "left",
+                    justifyContent: "left",
+                    marginLeft: 0,
+                    border: '1px solid #bbbbbb',
+                    borderRadius: '4px',
+                    '&:hover': {
+                      border: "2px solid #00245A", // Border color on hover
+                    },
+                  }}
+                >
+                  <div className="fileUploadInput" style={{
+                    display: 'flex', flexDirection: 'row', marginTop: '5px', width: '100%'
+                  }}>
+                    <AttachFileIcon sx={{ color: '#00245A', mt: '14px', ml: '4px', fontSize: "25px" }} />
+                    <input
+                      type="file"
+                      onChange={handleMlModel}
+                      accept=".py"
+                      style={{
+                        color: selectedFileIcon ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px'
+                      }}
+                    />
+                  </div>
+                </Box>
+                </Grid>
+            </FormControl>
+          </Grid>
+          
+        
         </Grid>
       </Box>
 
@@ -388,7 +481,7 @@ function PluginUploadPage() {
           type="submit"
           variant="contained"
           sx={{
-            mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+            mt: 5, mb: 5, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
             '&:hover': {
               bgcolor: 'rgba(0, 36, 90, 0.8)',
             },
