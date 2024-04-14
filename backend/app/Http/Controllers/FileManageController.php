@@ -32,7 +32,7 @@ class FileManageController extends Controller
             'em_raw_cfile_file_size',
             'em_raw_h5_file_size',
             'em_raw_h5_hash',
-            'device_name',
+            'device_id',
             'center_frequency',
             'sampling_rate',
             'user_id',
@@ -157,7 +157,7 @@ class FileManageController extends Controller
             $name = $request->input('name');
             $size = $request->input('size');
             $fileUniqueName = $request->input('unique_name');
-            $deviceName = $request->input('device_name');
+            $deviceId = $request->input('device_id');
             $centerFreq = $request->input('center_freq');
             $samplingRate = $request->input('sampling_rate');
             $file_hash = $request->input('file_hash');
@@ -175,7 +175,7 @@ class FileManageController extends Controller
                 'user_id' => 1,
                 'em_raw_file_name' => $fileUniqueName,
                 'em_raw_file_visible_name' => $name,
-                'device_name' => $deviceName,
+                'device_id' => $deviceId,
                 'center_frequency' => $centerFreq,
                 'sampling_rate' => $samplingRate,
                 'em_raw_cfile_file_size' => $size,
@@ -369,5 +369,74 @@ class FileManageController extends Controller
     public function getCSRFToken()
     {
         return csrf_token();
+    }
+
+    // for traditional upload method
+    public function testStore(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $fileName);
+            
+            return response()->json(['success' => true, 'message' => 'File uploaded successfully']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'No file uploaded'], 400);
+        }
+    }
+
+    // for new chunk method
+    public function uploadChunk(Request $request)
+    {
+        $file = $request->file('file');
+        $chunkNumber = $request->input('chunkNumber');
+        $totalChunks = $request->input('totalChunks');
+        $fileName = $request->input('originalname');
+
+        $chunkDir = storage_path('app/public/chunks'); // Directory to save chunks
+
+        if (!file_exists($chunkDir)) {
+            mkdir($chunkDir, 0755, true);
+        }
+
+        $chunkFilePath = $chunkDir . '/' . $fileName . '.part_' . $chunkNumber;
+
+        try {
+            file_put_contents($chunkFilePath, file_get_contents($file->path()));
+            \Log::info("Chunk $chunkNumber/$totalChunks saved");
+
+            if ($chunkNumber == $totalChunks - 1) {
+                // If this is the last chunk, merge all chunks into a single file
+                $this->mergeChunks($fileName, $totalChunks);
+                \Log::info("File merged successfully");
+            }
+
+            return response()->json(['message' => 'Chunk uploaded successfully'], 200);
+        } catch (\Exception $e) {
+            \Log::error("Error saving chunk: " . $e->getMessage());
+            return response()->json(['error' => 'Error saving chunk'], 500);
+        }
+    }
+
+    private function mergeChunks($fileName, $totalChunks)
+    {
+        $chunkDir = storage_path('app/public/chunks');
+        $mergedFilePath = storage_path('app/public/merged_files');
+
+        if (!file_exists($mergedFilePath)) {
+            mkdir($mergedFilePath, 0755, true);
+        }
+
+        $writeStream = fopen($mergedFilePath . '/' . $fileName, 'wb');
+
+        for ($i = 0; $i < $totalChunks; $i++) {
+            $chunkFilePath = $chunkDir . '/' . $fileName . '.part_' . $i;
+            $chunkBuffer = file_get_contents($chunkFilePath);
+            fwrite($writeStream, $chunkBuffer);
+            unlink($chunkFilePath); // Delete the individual chunk file after merging
+        }
+
+        fclose($writeStream);
+        \Log::info("Chunks merged successfully");
     }
 }

@@ -11,12 +11,10 @@ function Copyright() {
        display:"flex", 
        justifyContent: "center", 
        boxShadow:8 ,
-       backgroundColor: "#FFFFFF",
-       color: "#000000",
        alignItems: "center", }}>
     <Typography
       variant="body2"
-      color="text.secondary"
+      color="grey"
       align="center"
       sx={{ mt: 4, mb: 5 }}
     >

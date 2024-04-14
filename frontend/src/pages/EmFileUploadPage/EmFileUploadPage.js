@@ -8,7 +8,7 @@ import CryptoJS from "crypto-js";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Resumable from "resumablejs";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
@@ -49,7 +49,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 , }}>
+      <Box sx={{ width: "100%", mr: 1, }}>
         <BorderLinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
@@ -73,8 +73,10 @@ function EmFileUploadPage() {
   const baseURL1 = "http://127.0.0.1:8000/api/upload_data_file";
   const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
 
+  const key = window.crypto.getRandomValues(new Uint8Array(32));
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
   const navigate = useNavigate();
- // const history = useHistory();
   const [progress, setProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(0);
   const [isFileAdded, setIsFileAdded] = useState(false);
@@ -88,9 +90,9 @@ function EmFileUploadPage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("");
-  const [centerFreq, setCenterFreq] = useState(null);
-  const [samplingRate, setSamplingRate] = useState(null);
+  const [deviceId, setDeviceId] = useState(1);
+  const [centerFreq, setCenterFreq] = useState(10);
+  const [samplingRate, setSamplingRate] = useState(8);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
@@ -101,7 +103,7 @@ function EmFileUploadPage() {
   // Handler for dropdown value change
 
   const handleDropdownChange1 = (event) => {
-    setDeviceName(event.target.value);
+    setDeviceId(event.target.value);
   };
   const handleDropdownChange2 = (event) => {
     setCenterFreq(event.target.value);
@@ -138,7 +140,7 @@ function EmFileUploadPage() {
       // Do something with the form data, e.g., send it to an API
       console.log(
         "Form submitted with selected value:",
-        deviceName,
+        deviceId,
         centerFreq,
         samplingRate
       );
@@ -178,7 +180,7 @@ function EmFileUploadPage() {
   const calculateHash = () => {
     if (selectedFile) {
       console.log("if---");
-      const chunkSize = 1024 * 1024 * 5; // 1 MB chunks
+      const chunkSize = 1024 * 1024 * 20; // 1 MB chunks
       const totalChunks = Math.ceil(selectedFile.size / chunkSize);
       let currentChunk = 0;
       let hash = CryptoJS.algo.SHA256.create();
@@ -221,7 +223,7 @@ function EmFileUploadPage() {
       return;
     }
     const compressedFileName = `${selectedFile.name}.gz`;
-    const CHUNK_SIZE = 1024 * 1024 * 5;
+    const CHUNK_SIZE = 1024 * 1024 * 20;
     const originalFileName = selectedFile.name;
     const compressedChunks = [];
 
@@ -312,14 +314,19 @@ function EmFileUploadPage() {
       Accept: "application/json",
     },
     preprocess: function (chunk) {
-      // console.log('preprocessing');
-      // console.log(chunk.data);
-      // const encryptedData = CryptoJS.AES.encrypt(chunk.data, 'encryption_key');
-      // console.log('+++++++++++');
-      // // Update the chunk data with the encrypted data
-      // chunk.data = encryptedData;
-      // console.log(chunk.data);
-      chunk.preprocessFinished();
+      console.log('---------- preprocessing --------');
+      // const reader = new FileReader();
+      // reader.onload = async function (e) {
+      //   const data = e.target.result;
+      //   const encryptedData = await window.crypto.subtle.encrypt(
+      //     { name: "AES-GCM", iv: iv },
+      //     key,
+      //     data
+      //   );
+      //   chunk.fileObj.file = new Blob([encryptedData], { type: "application/octet-stream" });
+      //   chunk.preprocessFinished();
+      // };
+      // reader.readAsArrayBuffer(chunk.fileObj.file);
 
     },
     simultaneousUploads: 3,
@@ -348,7 +355,7 @@ function EmFileUploadPage() {
       fileName,
       fileSize,
       response.file_unique_name,
-      deviceName,
+      deviceId,
       centerFreq,
       samplingRate,
       hash
@@ -374,22 +381,22 @@ function EmFileUploadPage() {
     navigate("/file-list");
   });
 
-  uploader.on("chunkingComplete", function (file, response) {
-    // trigger when there is any error
-    console.log("this is file chunks -----------");
-    console.log(file.chunks);
-    console.log("chunking complete");
-    file.chunks.forEach(function (chunk) {
-      console.log("before encryption");
-      console.log(chunk.data);
-      var key = "1234"; // Use the same key generation logic
-      var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
-      console.log("after encryption");
-      chunk.data = encryptedChunk;
-      console.log(encryptedChunk);
-      console.log(chunk.data);
-    });
-  });
+  // uploader.on("chunkingComplete", function (file, response) {
+  //   // trigger when there is any error
+  //   console.log("this is file chunks -----------");
+  //   console.log(file.chunks);
+  //   console.log("chunking complete");
+  //   file.chunks.forEach(function (chunk) {
+  //     console.log("before encryption");
+  //     console.log(chunk.data);
+  //     var key = "1234"; // Use the same key generation logic
+  //     var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
+  //     console.log("after encryption");
+  //     chunk.data = encryptedChunk;
+  //     console.log(encryptedChunk);
+  //     console.log(chunk.data);
+  //   });
+  // });
 
   useEffect(() => {
     setResumable(uploader);
@@ -414,7 +421,7 @@ function EmFileUploadPage() {
         fileName,
         fileSize,
         fileUniqueName,
-        deviceName,
+        deviceId,
         centerFreq,
         samplingRate,
         hash
@@ -425,7 +432,7 @@ function EmFileUploadPage() {
           name: fileName,
           size: fileSize,
           unique_name: fileUniqueName,
-          device_name: deviceName,
+          device_id: deviceId,
           center_freq: centerFreq,
           sampling_rate: samplingRate,
           file_hash: hash,
@@ -464,13 +471,13 @@ function EmFileUploadPage() {
   //     }
   //   };
   const sxStyle = {
-    // "&:hover": {
-    //   "&& fieldset": {
-    //     border: "2px solid gray",
-    //   },
-    // },
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
     borderRadius: "4px",
-    backgroundColor : "white",
+    backgroundColor: "white",
     "& .MuiInputLabel-outlined": {
       color: "grey", // Initial color
       "&.Mui-focused": {
@@ -515,7 +522,7 @@ function EmFileUploadPage() {
             color="textPrimary"
             align="center"
             gutterBottom
-            sx={{p:3}}
+            sx={{ p: 3 }}
           >
             Upload File
           </Typography>
@@ -541,14 +548,14 @@ function EmFileUploadPage() {
                 <Select
                   labelId="dropdown-label-1"
                   id="dropdown-1"
-                  value={deviceName}
+                  value={deviceId}
                   onChange={handleDropdownChange1}
                   label="Device Name"
                   style={{ borderColor: "#525252" }}
 
                 >
-                  <MenuItem value="Arduino">Arduino</MenuItem>
-                  <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
+                  <MenuItem value={1}>Arduino</MenuItem>
+                  <MenuItem value={2}>Raspberry Pi</MenuItem>
                 </Select>
               </FormControl>
 
@@ -589,7 +596,7 @@ function EmFileUploadPage() {
                 style={{ marginBottom: "20px", textAlign: "left" }}
 
                 sx={{
-                 ...sxStyle,
+                  ...sxStyle,
                 }}
                 required
               >
@@ -629,12 +636,12 @@ function EmFileUploadPage() {
                     border: '1px solid #bbbbbb',
                     borderRadius: '4px',
                     '&:hover': {
-                      borderColor: 'black', // Border color on hover
+                      border: '2px solid #00245A', // Border color on hover
                     },
                   }}
 
                 >
-                  <div className="fileUploadInput" style={{ display: 'flex', flexDirection: 'row', }} >
+                  <div className="fileUploadInput" style={{ display: 'flex', flexDirection: 'row', width: "100%" }} >
 
                     <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
 
@@ -645,7 +652,7 @@ function EmFileUploadPage() {
                       accept=".h5, .cfile, .png, .pdf"
                       style={{
                         color: selectedFile ? 'black' : 'grey', height: '53px',
-                        border: 'none', left: '-20px'
+                        border: 'none', left: '-20px', width: "100%"
                       }}
 
                     />
@@ -707,7 +714,7 @@ function EmFileUploadPage() {
             </Typography>
           </div>
 
-          <Box sx={{ width: "100%", marginTop: 10 , mb: hash && compressedFile ? 40 :36}}>
+          <Box sx={{ width: "100%", marginTop: 10, mb: hash && compressedFile ? 40 : 36 }}>
             {compressedFile && <LinearProgressWithLabel value={progress} />}
 
             {!hash && !compressedFile && (
@@ -751,7 +758,7 @@ function EmFileUploadPage() {
         </Container>
       )}
       {isSendToDatabase && (
-        <Container maxWidth="sm" id="showSuccess" sx={{mb: 58}}>
+        <Container maxWidth="sm" id="showSuccess" sx={{ mb: 58 }}>
           <Alert>
             <AlertTitle>File successfully uploaded</AlertTitle>
           </Alert>
