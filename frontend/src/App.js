@@ -30,6 +30,9 @@ import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage/EditProfilePage";
 
+//for file upload testing
+import FileUploadTestingPage from "./pages/FileUploadTestingPage/FileUploadTestingPage";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -38,6 +41,7 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
+      <Route path="upload-testing" element={<FileUploadTestingPage />} />
 
       <Route
         path="plugin"
