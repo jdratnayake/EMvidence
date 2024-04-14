@@ -19,6 +19,10 @@ use App\Http\Controllers\UserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+// --------- this route is for file upload testing --------------------
+Route::post('/TestUpload', [FileManageController::class, 'testStore']);
+Route::post('/uploadChunk', [FileManageController::class, 'uploadChunk']);
+
 
 Route::post('/upload_data_file', [FileManageController::class, 'store']);
 Route::post('/send_to_database', [FileManageController::class, 'sendRecord']);
