@@ -895,7 +895,7 @@ const AnalysisPage = () => {
         </Box>
       </Box>
 
-      <Box className="analysis_summary" style={{ marginTop: "40px" }}>
+      <Box className="analysis_summary" sx={{ mt: "40px", pb: "40px" }}>
         <Box
           sx={{
             bgcolor: blackHeader,
