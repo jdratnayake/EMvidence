@@ -520,7 +520,7 @@ const AnalysisPage = () => {
               }}
               gutterBottom
             >
-              Down Sampling
+              Downsampling
             </Typography>
 
             <FormControl
@@ -635,7 +635,8 @@ const AnalysisPage = () => {
 
                   >
                     <MenuItem value={0}>10%</MenuItem>
-                    <MenuItem value={1} disabled></MenuItem>
+                    <MenuItem value={1}>20%</MenuItem>
+                    <MenuItem value={2} disabled></MenuItem>
 
                   </Select>
                 </FormControl>
@@ -691,62 +692,6 @@ const AnalysisPage = () => {
                 <MenuItem value={1}>First 20000 Samples</MenuItem>
                 <MenuItem value={2}>
                   Samples selected from 1/4 to 3/4 of the file
-                </MenuItem>
-              </Select>
-            </FormControl>
-
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column", // Horizontal layout
-              width: "50%",
-              alignItems: "left",
-              alignContent: "left"
-
-            }}
-          >
-            <Typography
-              variant="h4"
-              sx={{
-                fontSize: "18px",
-                fontStyle: "normal",
-                fontWeight: 400,
-                lineHeight: "normal",
-                color: "black",
-                mb: "5px",
-              }}
-              gutterBottom
-            >
-              Frequency Channel Selection
-            </Typography>
-
-            <FormControl
-              fullWidth
-              style={{ marginBottom: "20px", textAlign: "left" }}
-              required
-              sx={{
-                ...sxStyle,
-
-              }}
-            >
-
-              <Select
-                id="frequencyChannelSelection:"
-                defaultValue={1}
-                // onChange={(event) =>
-                //   frequencyChannelSelection(event.target.value)
-                // }
-                style={{ borderColor: "#525252" }}
-
-              >
-
-                <MenuItem value={1}>All Channels</MenuItem>
-                <MenuItem value={2}>
-                  Channel selection based on avarage (500 samples)
-                </MenuItem>
-                <MenuItem value={3}>
-                  Channel selection based on variance (500 samples)
                 </MenuItem>
               </Select>
             </FormControl>
