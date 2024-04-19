@@ -40,6 +40,12 @@ RUN composer install
 # Expose port if needed
 EXPOSE 80
 
+# Install dependencies for h5py
+RUN apt-get update && apt-get install -y pkg-config
+RUN apt-get update && apt-get install -y build-essential
+RUN apt-get update && apt-get install -y libhdf5-dev
+RUN pip install --upgrade pip setuptools
+
 # Install Python libraries
 RUN pip3 install -r requirements.txt
 
