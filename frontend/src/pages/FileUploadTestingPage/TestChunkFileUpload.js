@@ -71,7 +71,7 @@ LinearProgressWithLabel.propTypes = {
 
 function EmFileUploadPage() {
   const baseURL1 = "http://127.0.0.1:8000/api/upload_data_file";
-  const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
+  const baseURL2 = "http://127.0.0.1:8000/api/send_to_database_test";
 
   const key = window.crypto.getRandomValues(new Uint8Array(32));
   const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -81,7 +81,7 @@ function EmFileUploadPage() {
   const [isSuccess, setIsSuccess] = useState(0);
   const [isFileAdded, setIsFileAdded] = useState(false);
   const [percentage, setPercentage] = useState(0);
-  const [hash, setHash] = useState("");
+  const [hash, setHash] = useState("hsbivbijsvndsvd");
   const [hasingProgress, setHasingProgress] = useState(0);
   const [compressedFile, setCompressedFile] = useState(null);
   const [compressionProgress, setCompressionProgress] = useState(0);
@@ -124,7 +124,7 @@ function EmFileUploadPage() {
       const fileExtension = fileName.split(".").pop().toLowerCase();
 
       setIsSubmitted(true);
-      calculateHash();
+
       // Do something with the form data, e.g., send it to an API
       console.log(
         "Form submitted with selected value:",
@@ -167,134 +167,17 @@ function EmFileUploadPage() {
     }
   }, [compressedFile, selectedFile, resumable, isFileAdded]);
 
-  //calculate hash
-  const calculateHash = () => {
-    if (selectedFile) {
-      console.log("if---");
-      const chunkSize = 1024 * 1024 * 20; // 1 MB chunks
-      const totalChunks = Math.ceil(selectedFile.size / chunkSize);
-      let currentChunk = 0;
-      let hash = CryptoJS.algo.SHA256.create();
 
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const chunkData = CryptoJS.lib.WordArray.create(event.target.result);
-        hash.update(chunkData);
-
-        currentChunk++;
-        const currentProgress = (currentChunk / totalChunks) * 100;
-        setHasingProgress(currentProgress);
-
-        if (currentChunk < totalChunks) {
-          processNextChunk();
-        } else {
-          const finalHash = hash.finalize();
-          setHash(finalHash.toString());
-        }
-      };
-
-      const processNextChunk = () => {
-        const start = currentChunk * chunkSize;
-        const end = Math.min(start + chunkSize, selectedFile.size);
-        const blob = selectedFile.slice(start, end);
-        reader.readAsArrayBuffer(blob);
-      };
-
-      processNextChunk();
-    } else {
-      console.log("else---");
-    }
-  };
 
   //compress the file
   const compressFile = async (selectedFile) => {
-    if (!selectedFile) {
-      alert("Please select a file first.");
-      return;
-    }
-    let time1 = performance.now();
-    const compressedFileName = `${selectedFile.name}.gz`;
-    const CHUNK_SIZE = 1024 * 1024 * 20;
-    const originalFileName = selectedFile.name;
-    const compressedChunks = [];
 
-    let offset = 0;
+    setCompressedFile(selectedFile);
 
-    const readNextChunk = () => {
-      const reader = new FileReader();
 
-      reader.onload = (event) => {
-        // console.log(event.target.result);
-        const chunkData = new Uint8Array(event.target.result);
-        // console.log(chunkData);
-        const compressedData = pako.gzip(chunkData);
-        compressedChunks.push(compressedData);
 
-        //encrypting
-        // console.log('encrypting');
-        // let chunkData = event.target.result;
-        // console.log(chunkData.toString());
-        // let encryptedData = CryptoJS.AES.encrypt(chunkData, 'encryption_key');
-        // let  dataToCompress = new Uint8Array(encryptedData);
-        // const compressedData = pako.gzip(dataToCompress);
-        // compressedChunks.push(compressedData);
-        // console.log('+++++++++++');
-
-        offset += CHUNK_SIZE;
-        setCompressionProgress((offset / selectedFile.size) * 100);
-
-        if (offset < selectedFile.size) {
-          readNextChunk();
-        } else {
-          // Combine all compressed chunks into a single Uint8Array
-          const compressedResult = concatenateUint8Arrays(compressedChunks);
-
-          // Create a Blob with the compressed data
-          const compressedBlob = new Blob([compressedResult], {
-            type: "application/gzip",
-          });
-
-          setCompressedFile(compressedBlob);
-          let time2 = performance.now();
-          console.log("Time for Compression : ", (time2-time1)/1000, " sec");
-
-        }
-      };
-
-      const chunk = selectedFile.slice(offset, offset + CHUNK_SIZE);
-      reader.readAsArrayBuffer(chunk);
-    };
-
-    readNextChunk();
   };
 
-  const encryptChunk = (data) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const encryptedData = CryptoJS.AES.encrypt(
-          data,
-          "encryption_key"
-        ).toString();
-        resolve(encryptedData);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
-  const concatenateUint8Arrays = (arrays) => {
-    const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
-    const result = new Uint8Array(totalLength);
-
-    let offset = 0;
-    arrays.forEach((arr) => {
-      result.set(arr, offset);
-      offset += arr.length;
-    });
-
-    return result;
-  };
 
   //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -308,40 +191,7 @@ function EmFileUploadPage() {
       // 'X-CSRF-TOKEN': csrfToken,
       Accept: "application/json",
     },
-    // preprocess: function (chunk) {
-    //   console.log('---------- preprocessing --------');
-    //   const reader = new FileReader();
-    //   reader.onload = async function (e) {
-    //     const data = e.target.result;
-    //     const encryptedData = await window.crypto.subtle.encrypt(
-    //       { name: "AES-GCM", iv: iv },
-    //       key,
-    //       data  
-    //     );
-    //     chunk.fileObj.file = new Blob([encryptedData], { type: "application/octet-stream" });
-    //     chunk.preprocessFinished();
-    //   };
-    //   reader.readAsArrayBuffer(chunk.fileObj.file);
 
-    // },
-    // preprocess: function(chunk) {
-    //   console.log('---------- preprocessing --------');
-    //   const reader = new FileReader();
-    //   console.log(chunk.startByte/1024/1024);
-    //   console.log(chunk.endByte/1024/1024);
-    //   reader.readAsArrayBuffer(chunk.fileObj.file.slice(chunk.startByte, chunk.endByte));
-    //   reader.onload = function(e) {
-    //     const chunkData = e.target.result;
-    //     console.log(chunkData);
-    //     const textDecoder = new TextDecoder();
-    //     const chunkDataString = textDecoder.decode(chunkData);
-    
-    //     const encryptedData = CryptoJS.AES.encrypt(chunkDataString, "encryption_key");
-    //     // chunk.fileObj.file = new Blob([chunkData], { type: "application/octet-stream" });
-    //     // console.log(chunk.fileObj.file);
-    //     chunk.preprocessFinished();
-    //   };  
-    // },
     simultaneousUploads: 1,
     testChunks: false,
     throttleProgressCallbacks: 1,
@@ -394,23 +244,7 @@ function EmFileUploadPage() {
     navigate("/file-list");
   });
 
-  // uploader.on("chunkingComplete", function (file, response) {
-  //   // trigger when there is any error
-  //   console.log("this is file chunks -----------");
-  //   console.log(file.chunks);
-  //   console.log("chunking complete");
-  //   file.chunks.forEach(function (chunk) {
-  //     console.log("before encryption");
-  //     console.log(chunk.data);
-  //     var key = "1234"; // Use the same key generation logic
-  //     var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
-  //     console.log("after encryption");
-  //     chunk.data = encryptedChunk;
-  //     console.log(encryptedChunk);
-  //     console.log(chunk.data);
-  //   });
-  // });
-
+ 
   useEffect(() => {
     setResumable(uploader);
   }, []);
@@ -431,9 +265,9 @@ function EmFileUploadPage() {
     if (isSuccess === 1 && percentage == 100) {
       let nowtime = performance.now();
       console.log("end time : ", nowtime);
-       let dif = ((nowtime - startTime)/1000).toFixed(2);
-       console.log("time to take for upload : ", dif, " sec");
-       setUploadTime(dif);
+      let dif = ((nowtime - startTime) / 1000).toFixed(2);
+      console.log("time to take for upload : ", dif, " sec");
+      setUploadTime(dif);
 
       console.log("-- ---- --");
       console.log(
@@ -472,23 +306,7 @@ function EmFileUploadPage() {
     }
   }, [isSuccess, percentage, fileName, fileSize, fileUniqueName]);
 
-  // const handleUpload = async () => {
-  //     if (resumable) {
-  //       try {
-  //         const response = await fetch('http://127.0.0.1:8000/csrf-token'); // should do in post method
-  //         const data = await response.json();
-  //         console.log(data);
-  //         resumable.opts.query = {_token: data.csrf_token};
-  //         resumable.opts.headers = {
-  //             'X-CSRF-TOKEN': data.csrf_Token,
-  //           };
-  //         console.log("in upload section");
-  //         resumable.upload();
-  //       } catch (error) {
-  //         console.error('Error fetching CSRF token:', error);
-  //       }
-  //     }
-  //   };
+
   const sxStyle = {
     "&:hover": {
       "&& fieldset": {
@@ -543,7 +361,7 @@ function EmFileUploadPage() {
             gutterBottom
             sx={{ p: 3 }}
           >
-            Upload File
+         testUploadChunk
           </Typography>
           <Typography
             variant="h4"
@@ -732,48 +550,10 @@ function EmFileUploadPage() {
               Please wait. This will take several minutes.
             </Typography>
           </div>
-
           <Box sx={{ width: "100%", marginTop: 10, mb: hash && compressedFile ? 40 : 36 }}>
             {compressedFile && <LinearProgressWithLabel value={progress} />}
-
-            {!hash && !compressedFile && (
-              <div>
-                <Stack
-                  spacing={1}
-                  direction="row"
-                  justifyContent="left"
-                  alignItems="center"
-                >
-                  <Typography variant="h6" color="textSecondary" align="left">
-                    Calculating file hash
-                  </Typography>
-                  {/* <Box sx={{ display: "flex", size: "10px" }}>
-                    <CircularProgress size={16} />
-                  </Box> */}
-                </Stack>
-                <LinearProgressWithLabel value={hasingProgress} />
-              </div>
-            )}
-
-            {hash && !compressedFile && (
-              <div>
-                <Stack
-                  spacing={1}
-                  direction="row"
-                  justifyContent="left"
-                  alignItems="center"
-                >
-                  <Typography variant="h6" color="textSecondary" align="left">
-                    Compressing{" "}
-                  </Typography>
-                  {/* <Box sx={{ display: "flex", size: "10px" }}>
-                    <CircularProgress size={16} />
-                  </Box> */}
-                </Stack>
-                <LinearProgressWithLabel value={compressionProgress} />
-              </div>
-            )}
           </Box>
+
         </Container>
       )}
       {isSendToDatabase && (
@@ -781,6 +561,7 @@ function EmFileUploadPage() {
           <Alert>
             <AlertTitle>File successfully uploaded</AlertTitle>
           </Alert>
+          <h1>{uploadTime} sec</h1>
         </Container>
       )}
     </div>

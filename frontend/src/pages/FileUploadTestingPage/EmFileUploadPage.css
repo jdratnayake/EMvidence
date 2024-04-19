@@ -1,0 +1,98 @@
+.bouncing-loader {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .bouncing-loader > div {
+    width: 16px;
+    height: 16px;
+    margin: 3px 6px;
+    border-radius: 30%;
+    background-color: #525252;
+    opacity: 1;
+    animation: bouncing-loader 0.6s infinite alternate;
+  }
+
+
+
+@keyframes bouncing-loader {
+    to {
+      opacity: 0.1;
+      transform: translateY(-16px);
+    }
+  }
+  
+  .bouncing-loader > div:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .bouncing-loader > div:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .fileUploadInput {
+    display: grid;
+    grid-gap: 10px;
+    position: relative;
+    z-index: 1; } 
+    .fileUploadInput label {
+      display: flex;
+      align-items: center;
+      color: setColor(primary, 0.5);
+      background: setColor(rgb(255, 255, 255));
+      transition: .4s ease;
+      font-family: arial, sans-serif;
+     
+      font-weight: regular; }
+      
+    .fileUploadInput input {
+      position: relative;
+      z-index: 1;
+      padding: 0 gap(m);
+      left: 21px;
+      width: 96%;
+      height: 50px;
+      border: 1px solid #000055;
+      border-left-style: none;
+      border-radius: 0px 3px 3px 0px;
+      font-family: arial, sans-serif;
+      font-size: 1rem;
+      user-select: none;
+      cursor: pointer;
+      font-weight: regular; }
+      .fileUploadInput input[type="file"] {
+        padding: 0 gap(m); }
+        .fileUploadInput input[type="file"]::-webkit-file-upload-button {
+          visibility: hidden;
+          margin-left: 10px;
+          padding: 0;
+          height: 50px;
+          width: 0; }
+          
+    .fileUploadInput button {
+      position: absolute;
+      left: 0px;
+      bottom: 0;
+      width: 21px;
+      height: 50px;
+      line-height: 0;
+      user-select: none;
+      color: white;
+      background-color: #ffffff;
+      border: 1px solid #000055;
+      border-right-style: none;
+      border-radius: 3px 0px 0px 3px;
+      font-family: arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 800; }
+      .fileUploadInput button svg {
+        width: auto;
+        height: 50%; }
+
+  
+  
+  @-moz-document url-prefix() {
+  .fileUploadInput button{
+      display: none
+  }
+  }
