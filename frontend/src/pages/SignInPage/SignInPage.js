@@ -226,6 +226,7 @@ export default function SignInPage() {
                   />
                   <Button
                     type="submit"
+                    id="loginButton"
                     fullWidth
                     sx={{
                       bgcolor: "#00245A",
