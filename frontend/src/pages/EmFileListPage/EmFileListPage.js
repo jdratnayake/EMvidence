@@ -131,7 +131,7 @@ function EmFileListPage() {
 
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(100);
   const navigateToUploadForm = () => {
     navigate("/file-upload");
   };
@@ -336,10 +336,10 @@ function EmFileListPage() {
                 </Grid>
               ))}
             </Grid> */}
-          <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{maxHeight: "70vh", overflowY:"scroll"}}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
-                <TableRow>
+                <TableRow >
                   <TableCell  scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       File Name
