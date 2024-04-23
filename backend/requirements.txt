@@ -1,6 +1,6 @@
+tensorflow
 numpy
 scipy
 scikit-learn
 pandas
 h5py
-tensorflow

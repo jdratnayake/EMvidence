@@ -1,30 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import NavBar from "../../components/NavBar/NavBar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
-  Button,
-  Card,
-  Chip,
-  Container,
-  CssBaseline,
   FormControl,
   Grid,
-  IconButton,
   NativeSelect,
   Typography,
+  InputLabel,
+  MenuItem,
+  Select
 } from "@mui/material";
-import folder from "./../../resources/folder.png";
-import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { API_URL } from "../../constants";
-import "react-toastify/dist/ReactToastify.css";
-import "./AnalysisPage.css";
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
+import { API_URL } from "../../constants";
+import folder from "./../../resources/folder.png";
+
+import "react-toastify/dist/ReactToastify.css";
+import "./AnalysisPage.css";
 
 const AnalysisPage = () => {
+  const blackHeader = "#00245A";
+  const containerColor = "#FFFFFF";
+  const buttonColor = "#525252";
+
+  const [emDataFile, setEmDataFile] = useState();
+
+  const handleEmDataFile = (event) => {
+    setEmDataFile(event.target.value);
+
+  };
+
   const analyisPlugins = [
     {
       id: "1",
@@ -43,6 +52,30 @@ const AnalysisPage = () => {
       name: "FirmWare Version Detection",
       descrption: "Description 3",
     },
+    ,
+    {
+      id: "4",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    }
+    ,
+    {
+      id: "5",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    }
+    ,
+    {
+      id: "6",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    }
+    ,
+    {
+      id: "7",
+      name: "FirmWare Version Detection",
+      descrption: "Description 3",
+    }
   ];
 
   const [checkedPlugin, setCheckedPlugin] = useState(0);
@@ -56,8 +89,6 @@ const AnalysisPage = () => {
     "Behavior identification"
   );
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
-  const [fourierTransformationIndex, setFourierTransformationIndex] =
-    useState(0);
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
@@ -67,12 +98,7 @@ const AnalysisPage = () => {
   const [pluginModalName, setPluginModalName] = useState(null);
   const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
-  const blackHeader = "#00245A";
-  const containerColor = "#FFFFFF";
-  const buttonColor = "#525252";
-
   const executePreprocessingPlugin = () => {
-    // setIsPreprocessingFetching(true);
     setLoading(true);
     console.log("Down Sampling Index: " + downSamplingIndex);
 
@@ -117,35 +143,7 @@ const AnalysisPage = () => {
           progress: undefined,
         });
         setLoading(false);
-        // setIsPreprocessingFetching(false);
       });
-  };
-
-  const handleAnalysisPLuginChange = (event) => {
-    // console.log(analysisPlugin);
-    setAnalysisPlugin(event.target.value);
-
-    if (event.target.value == 1) {
-      setInsightTypeName("Behavior identification");
-    } else if (event.target.value == 2) {
-      setInsightTypeName("Malicious firmware modification detection");
-    }
-  };
-
-  const handleDownSamplingChange = (event) => {
-    setDownSamplingIndex(event.target.value);
-  };
-
-  const handleFftSizeChange = (event) => {
-    setFftSizeIndex(event.target.value);
-  };
-
-  const handleOverLapPercentageChange = (event) => {
-    setOverLapPercentageIndex(event.target.value);
-  };
-
-  const handleSampleSelectionChange = (event) => {
-    setSampleSelectionIndex(event.target.value);
   };
 
   const executeAnalysisPlugin = () => {
@@ -235,6 +233,40 @@ const AnalysisPage = () => {
     setIsAnalysisPluginModalOpen(false);
   };
 
+  const sxStyle = {
+    width: '100%',
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    color: "#00245A",
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
+
+
   return (
     <>
       <ToastContainer
@@ -257,384 +289,423 @@ const AnalysisPage = () => {
         modifyChecked={handleChecked}
       />
 
-      <Box class="file_selection">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mb: 6
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: "roboto",
+            fontStyle: "normal",
+            fontWeight: 400,
+            mt: 2
+          }}
+          gutterBottom
+        >
+          Analysis
+        </Typography>
+      </Box>
+
+      <Box className="file_selection" >
         <Box
           sx={{
             bgcolor: blackHeader,
             height: "10vh",
-            margin: "0",
             display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+
           }}
         >
           <Typography
             variant="h4"
             sx={{
-              pt: "10px",
-              pl: "5px",
-              fontFamily: "Inter",
               fontSize: "24px",
               fontStyle: "normal",
               fontWeight: 400,
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              mr: "20px",
+              pl: 3
+
             }}
             gutterBottom
           >
             File Selection
           </Typography>
-          {/* Add sign button */}
-          {/* <IconButton
-              sx={{ mt: "-10px" }}
-              aria-label="add-plugin"
-              color="success"
-            >
-              <ControlPointIcon />
-            </IconButton> */}
         </Box>
         <Box
           sx={{
             bgcolor: containerColor,
-            margin: "0",
             display: "flex",
             flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center"
+
           }}
         >
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row", // Horizontal layout
-              border: "2px solid rgba(50, 84, 136, 0.5)",
-              width: "60%",
-              marginTop: "10px",
-              marginLeft: "10%",
-              marginBottom: "5%",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              height: "150px",
+              // mt: 5, ml: 5,
+              justifyContent: "center",
+              alignItems: "left",
+              alignContent: "left"
+
             }}
           >
-            {/* Left Section */}
-            <Box
+            <Typography
+              variant="h4"
               sx={{
-                flex: "0 0 auto", // Do not grow or shrink, use auto for width
-                padding: "10px",
-                boxSizing: "border-box", // Include padding in width calculation
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Select Your File
+            </Typography>
+
+            <FormControl
+              fullWidth
+              style={{ marginBottom: "20px", textAlign: "left" }}
+              required
+              sx={{
+                ...sxStyle,
+
               }}
             >
-              <Box
-                sx={{
-                  width: "133px",
-                  height: "20vh",
-                  flexShrink: 0,
-                  background: `url(${folder}),  100% / cover no-repeat`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              ></Box>
-            </Box>
+              {!emDataFile && <InputLabel id="dropdown-label-1" shrink={false}>Select</InputLabel>}
+              <Select
+                labelId="dropdown-label-1"
+                id="dropdown-1"
+                value={emDataFile}
+                onChange={handleEmDataFile}
+                style={{ borderColor: "#525252" }}
 
-            {/* Divider Line */}
+              >
+                <MenuItem value="f1">File 1</MenuItem>
+                <MenuItem value="f2">File 2</MenuItem>
+              </Select>
+            </FormControl>
+
+          </Box>
+          <Box
+            sx={{
+              mt: "0px",
+              width: "50%",
+              mb: "40px",
+              p: "20px",
+              border: "2px solid #00245A",
+              borderRadius: "5px",
+              display: emDataFile ? "flex" : "none",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              backgroundColor: "#E8E8E8"
+
+            }}
+          >
+            <InsertDriveFileIcon sx={{ fontSize: "75px", color : "#00245A" }} />
+
+            <Typography variant="h5" sx={{ mb: "10px" }}>
+              <strong>File 1</strong>
+            </Typography>
             <Box
               sx={{
-                position: "relative",
-                top: 0,
-                bottom: 0,
-                width: "2px",
-                backgroundColor: "rgba(50, 84, 136, 0.5)",
-                content: "''",
-                marginTop: "10px",
-                marginBottom: "10px",
-              }}
-            />
-
-            {/* Right Section */}
-            <Box
-              sx={{
-                flex: 1,
-                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start"
               }}
             >
-              <Typography variant="body1" gutterBottom>
-                <strong>Size:</strong> 1.3 GB
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Insight Type:</strong> {insightTypeName}
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Sampling Rate:</strong> 20MHz
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong> 16MHz
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Sampling Duration:</strong> 20s
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Hash Function:</strong> SHA256
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Hash Function:</strong> Md5
               </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Device Name:</strong> iPhone 4S
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Device Name:</strong> Iphone 4S
               </Typography>
             </Box>
           </Box>
-          {/* <Button
-              sx={{
-                mb: "10px",
-                marginLeft: "80%",
-                marginRight: "10%",
-                backgroundColor: "#00245A",
-                color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-            >
-              Select
-            </Button> */}
+
         </Box>
       </Box>
-      <Box class="pre_processing" sx={{ mt: "40px" }}>
-        <Box sx={{ bgcolor: blackHeader, height: "10vh", margin: "0" }}>
+
+      <Box className="pre_processing" style={{ marginTop: "40px" }}  >
+        <Box sx={{
+          bgcolor: blackHeader,
+          height: "10vh",
+          display: "flex",
+          justifyContent: "left",
+          alignItems: "center",
+          borderTopLeftRadius: "5px",
+          borderTopRightRadius: "5px",
+        }}>
           <Typography
             variant="h4"
             sx={{
-              pt: "10px",
-              pl: "5px",
-              fontFamily: "Inter",
               fontSize: "24px",
               fontStyle: "normal",
               fontWeight: 400,
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
+              pl: 3
             }}
             gutterBottom
           >
-            Pre-Processing Plugins
+            Pre-processing Plugins
           </Typography>
         </Box>
         <Box
           sx={{
             bgcolor: containerColor,
-            margin: "0",
             display: "flex",
             flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center"
+
           }}
         >
-          <FormControl>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-                mt: "20px",
-                mb: "20px",
-              }}
-            >
-              <Typography
-                variant="body1"
-                display="block"
-                sx={{ ml: "20px", mr: "20px" }}
-                gutterBottom
-              >
-                Down Sampling:
-              </Typography>
-              <NativeSelect
-                defaultValue={1}
-                inputProps={{
-                  name: "domain-conversion",
-                  id: "uncontrollerd-native",
-                }}
-                sx={{ mt: "-10px" }}
-                value={downSamplingIndex}
-                onChange={handleDownSamplingChange}
-              >
-                <option value={0}>Not downsampled</option>
-                <option value={1}>To 10MHz</option>
-                <option value={2}>To 8MHz</option>
-                <option value={3}>To 4MHz</option>
-              </NativeSelect>
-            </Box>
-            {/* <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Domain Conversion:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                  value={fourierTransformationIndex}
-                  onChange={handleFourierTransformationChange}
-                >
-                  <option value={0}>
-                    STFT (FFT_SIZE = 2048 & Overlap Size = 256)
-                  </option>
-                  <option value={1} disabled>
-                    STFT (FFT_SIZE = 1024 & Overlap Size = 256)
-                  </option>
-                </NativeSelect>
-              </Box> */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                mt: "20px",
-                mb: "20px",
-              }}
-            >
-              <Typography
-                variant="body1"
-                display="block"
-                sx={{ ml: "20px", mr: "20px" }}
-                gutterBottom
-              >
-                Short term fourier transformation:
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  mt: "20px",
-                  mb: "20px",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  FFT Size:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
-                  }}
-                  sx={{ mt: "-10px" }}
-                  value={fftSizeIndex}
-                  onChange={handleFftSizeChange}
-                >
-                  <option value={0}>2048</option>
-                  <option value={1} disabled>
-                    1024
-                  </option>
-                </NativeSelect>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              mt: 3,
+              alignItems: "left",
+              alignContent: "left"
 
-                <Typography
-                  variant="body1"
-                  display="block"
-                  sx={{ ml: "20px", mr: "20px" }}
-                  gutterBottom
-                >
-                  Overlap Size:
-                </Typography>
-                <NativeSelect
-                  defaultValue={1}
-                  inputProps={{
-                    name: "domain-conversion",
-                    id: "uncontrollerd-native",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Down-sampling
+            </Typography>
+
+            <FormControl
+              fullWidth
+              style={{ marginBottom: "20px", textAlign: "left" }}
+              required
+              sx={{
+                ...sxStyle,
+
+              }}
+            >
+
+              <Select
+                id="downSamplingIndex"
+                defaultValue={0}
+
+                // label="Select Your File"
+                style={{ borderColor: "#525252" }}
+
+              >
+                <MenuItem value={0}>Not down-sampled</MenuItem>
+                <MenuItem value={1}>To 10MHz</MenuItem>
+                <MenuItem value={2}>To 8MHz</MenuItem>
+                <MenuItem value={3}>To 4MHz</MenuItem>
+              </Select>
+            </FormControl>
+
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              alignItems: "left",
+              alignContent: "left"
+
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Short term fourier transformation
+            </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: "20px",
+                mb: "20px",
+              }}
+            >
+
+              <Box sx={{ display: "flex", flexDirection: "row" }}>
+
+                <FormControl
+                  fullWidth
+                  style={{ textAlign: "left", width: "200px" }}
+                  required
+                  sx={{
+                    ...sxStyle,
+
                   }}
-                  sx={{ mt: "-10px" }}
-                  value={overLapPercentageIndex}
-                  onChange={handleOverLapPercentageChange}
                 >
-                  <option value={0}>10%</option>
-                  <option value={1} disabled>
-                    20%
-                  </option>
-                </NativeSelect>
+                  <InputLabel id="dropdown-label-1">FFT Size</InputLabel>
+                  <Select
+                    labelId="dropdown-label-1"
+                    id="dropdown-1"
+                    value={fftSizeIndex}
+                    onChange={(event) => setFftSizeIndex(event.target.value)}
+                    label="FFT Size"
+                    style={{ borderColor: "#525252" }}
+
+                  >
+                    <MenuItem value={0}>2048</MenuItem>
+                    <MenuItem value={1} disabled></MenuItem>
+                  </Select>
+                </FormControl>
+
               </Box>
-            </Box>
 
-            <Box
+              <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <FormControl
+                  fullWidth
+                  style={{ textAlign: "left", width: "200px" }}
+                  required
+                  sx={{
+                    ...sxStyle,
+
+                  }}
+                >
+                  <InputLabel id="dropdown-label-overLapPercentageIndex">Overlap Size</InputLabel>
+                  <Select
+                    labelId="dropdown-label-overLapPercentageIndex"
+                    id="overLapPercentageIndex"
+                    value={overLapPercentageIndex}
+                    onChange={(event) =>
+                      setOverLapPercentageIndex(event.target.value)
+                    }
+                    label="Overlap Size"
+                    style={{ borderColor: "#525252" }}
+
+                  >
+                    <MenuItem value={0}>10%</MenuItem>
+                    <MenuItem value={1}>20%</MenuItem>
+                    <MenuItem value={2} disabled></MenuItem>
+
+                  </Select>
+                </FormControl>
+              </Box>
+
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              alignItems: "left",
+              alignContent: "left"
+
+            }}
+          >
+            <Typography
+              variant="h4"
               sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-                mt: "20px",
-                mb: "20px",
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Sample Selection
+            </Typography>
+
+            <FormControl
+              fullWidth
+              style={{ marginBottom: "20px", textAlign: "left" }}
+              required
+              sx={{
+                ...sxStyle,
+
               }}
             >
-              <Typography
-                variant="body1"
-                display="block"
-                sx={{ ml: "20px", mr: "20px" }}
-                gutterBottom
-              >
-                Sample Selection:
-              </Typography>
-              <NativeSelect
-                defaultValue={1}
-                inputProps={{
-                  name: "domain-conversion",
-                  id: "uncontrollerd-native",
-                }}
-                sx={{ mt: "-10px" }}
+
+              <Select
+                id="sampleSelectionIndex"
                 value={sampleSelectionIndex}
-                onChange={handleSampleSelectionChange}
+                onChange={(event) =>
+                  setSampleSelectionIndex(event.target.value)
+                }
+                style={{ borderColor: "#525252" }}
+
               >
-                <option value={0}>All Samples</option>
-                <option value={1}>First 20000 Samples</option>
-                <option value={2}>
+                <MenuItem value={0}>All Samples</MenuItem>
+                <MenuItem value={1}>First 20000 Samples</MenuItem>
+                <MenuItem value={2}>
                   Samples selected from 1/4 to 3/4 of the file
-                </option>
-              </NativeSelect>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-                mt: "20px",
-                mb: "20px",
-              }}
-            >
-              <Typography
-                variant="body1"
-                display="block"
-                sx={{ ml: "20px", mr: "20px" }}
-                gutterBottom
-              >
-                Frequency Channel Selection:
-              </Typography>
-              <NativeSelect
-                defaultValue={1}
-                inputProps={{
-                  name: "domain-conversion",
-                  id: "uncontrollerd-native",
-                }}
-                sx={{ mt: "-10px" }}
-              >
-                <option value={1}>All Channels</option>
-                <option value={2}>
-                  Channel selection based on avarage (500 samples)
-                </option>
-                <option value={3}>
-                  Channel selection based on variance (500 samples)
-                </option>
-              </NativeSelect>
-            </Box>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+          </Box>
+          <FormControl>
             <LoadingButton
               sx={{
-                mb: "10px",
-                marginLeft: "80%",
-                marginRight: "10%",
+                mb: "20px",
                 backgroundColor: "#00245A",
+                width: "130px",
                 color: "#ffffff",
                 "&:hover": {
-                  backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
                 },
               }}
               variant="contained"
@@ -642,75 +713,56 @@ const AnalysisPage = () => {
               onClick={executePreprocessingPlugin}
               loading={loading}
             >
-              Preprocess
+              Pre-process
             </LoadingButton>
           </FormControl>
         </Box>
+        {/* starting the old version */}
       </Box>
 
-      <Box class="analysis" sx={{ mt: "40px" }}>
+      <Box className="analysis" style={{ marginTop: "40px" }}>
         <Box
           sx={{
             bgcolor: blackHeader,
             height: "10vh",
-            margin: "0",
             display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
           }}
         >
           <Typography
             variant="h4"
             sx={{
-              pt: "10px",
-              pl: "5px",
-              fontFamily: "Inter",
               fontSize: "24px",
               fontStyle: "normal",
               fontWeight: 400,
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              mr: "20px",
+              pl: 3
             }}
             gutterBottom
           >
             Analysis Plugins
           </Typography>
-          {/* <IconButton
-              sx={{ mt: "-10px" }}
-              aria-label="add-plugin"
-              color="success"
-            >
-              <ControlPointIcon />
-            </IconButton> */}
         </Box>
         <Box
           sx={{
             bgcolor: containerColor,
-            margin: "0",
             display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
           }}
         >
-          {/* <Box
-              sx={{
-                display: "flex",
-                mt: "30px",
-                ml: "10px",
-                justifyContent: "flex-start",
-                mb: "30px",
-              }}
-            > */}
-          {/* <Chip
-                label="Random Forest Algorithm"
-                onDelete
-                sx={{ mr: "20px" }}
-              />
-              <Chip label="K-Means Clustering" onDelete /> */}
-          {/* </Box> */}
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-start",
+              justifyContent: "center",
               mt: "5px",
               mb: "5px",
             }}
@@ -718,38 +770,43 @@ const AnalysisPage = () => {
             <Typography
               variant="body1"
               display="block"
-              sx={{ ml: "20px", mr: "20px", mt: "20px" }}
+              sx={{
+                fontSize: "20px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: 3,
+                mt: 3
+              }}
               gutterBottom
             >
-              Select the Analysis plugin:
+              Select the Analysis plugin
             </Typography>
-            {/* <NativeSelect
-              defaultValue={1}
-              inputProps={{
-                name: "domain-conversion",
-                id: "uncontrollerd-native",
-              }}
-              sx={{ mt: "-10px" }}
-              value={analysisPlugin}
-              onChange={handleAnalysisPLuginChange}
-            >
-              <option value={1}>Behavior identification</option>
-              <option value={2}>
-                Malicious firmware modification detection
-              </option>
-              <option value={3}>Firmware version detection</option>
-            </NativeSelect> */}
           </Box>
-          <Box>
+          <Box sx={{ display: "flex", width: "100%", }}>
             <Grid
               container
               spacing={2}
               alignItems="center"
-              justifyContent="left"
+
               marginTop={0}
+              sx={{
+                display: "flex",
+                alignItems: "left",
+                justifyContent: "center",
+                maxHeight: "300px",
+                width: "100%",
+                overflow: "scroll",
+                overflowX: "hidden",
+
+              }}
             >
               {analyisPlugins.map((plugin) => (
-                <Grid item xs={5} sm={5} md={2} marginTop={8} m={2}>
+                <Grid item xs={5} sm={5} md={3} marginTop={8} m={2} sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}>
                   <PluginCardAnalysis
                     id={plugin.id}
                     name={plugin.name}
@@ -764,13 +821,13 @@ const AnalysisPage = () => {
           </Box>
           <LoadingButton
             sx={{
-              mb: "10px",
-              marginLeft: "80%",
-              marginRight: "10%",
+              mt: 3,
+              mb: 3,
               backgroundColor: "#00245A",
               color: "#ffffff",
+              width: "100px",
               "&:hover": {
-                backgroundColor: "rgba(82, 82, 82, 0.8)", // Adjust the opacity as needed
+                backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
               },
             }}
             variant="contained"
@@ -783,28 +840,28 @@ const AnalysisPage = () => {
         </Box>
       </Box>
 
-      <Box class="analysis_summary" sx={{ mt: "40px" }}>
+      <Box className="analysis_summary" sx={{ mt: "40px", pb: "40px" }}>
         <Box
           sx={{
             bgcolor: blackHeader,
             height: "10vh",
-            margin: "0",
             display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
           }}
         >
           <Typography
             variant="h4"
             sx={{
-              pt: "10px",
-              pl: "5px",
-              fontFamily: "Inter",
               fontSize: "24px",
               fontStyle: "normal",
               fontWeight: 400,
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              mr: "20px",
+              pl: 3
             }}
             gutterBottom
           >
@@ -814,20 +871,23 @@ const AnalysisPage = () => {
         <Box
           sx={{
             bgcolor: containerColor,
-            margin: "0",
             display: "flex",
             flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
           }}
         >
           <Box
             sx={{
               mt: "30px",
-              ml: "10px",
               width: "50%",
               mb: "30px",
-              paddingLeft: "10px",
-              ml: "10%",
-              border: "2px solid rgba(50, 84, 136, 0.5)",
+              p: "20px",
+              border: "2px solid #00245A",
+              borderRadius: "5px",
+              backgroundColor: "#E8E8E8"
             }}
           >
             <Typography variant="h5" sx={{ mb: "30px" }}>
@@ -838,10 +898,6 @@ const AnalysisPage = () => {
               <strong>Insight Type:</strong> {insightTypeName}
             </Typography>
 
-            {/* <Typography variant="body1">
-                <strong>Identified Behavior:</strong> Asking a definition
-              </Typography> */}
-
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
                 <strong style={{ display: "inline-block", width: "200px" }}>
@@ -850,25 +906,6 @@ const AnalysisPage = () => {
                 <span>{result.probability}%</span>
               </Typography>
             ))}
-
-            {/* <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 1 accuracy:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography>
-              <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 2 accuracy:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography>
-              <Typography variant="body1">
-                <strong style={{ display: "inline-block", width: "200px" }}>
-                  Class 3:
-                </strong>{" "}
-                <span>92.34%</span>
-              </Typography> */}
           </Box>
         </Box>
       </Box>

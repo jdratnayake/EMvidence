@@ -12,6 +12,17 @@ use \Firebase\JWT\JWT;
 
 class AuthController extends Controller
 {
+    public function checkEmail(Request $request)
+    {
+        $email = $request->header('email');
+        
+        // Check if email exists in the database
+        $isUnique = !User::where('email', $email)->exists();
+
+        // Return JSON response indicating whether email is unique
+        return response()->json(['unique' => $isUnique],200);
+    }
+
     // Generate JWT token for the user
     private function generateJWTToken($user)
     {
@@ -139,7 +150,7 @@ class AuthController extends Controller
             ], 200);
         } else {
             // If login fails, return error message
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return response()->json(['error' => 'Invalid email or password'], 401);
         }
 
     }

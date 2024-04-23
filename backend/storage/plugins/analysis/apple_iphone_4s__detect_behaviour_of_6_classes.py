@@ -14,11 +14,6 @@ original_stderr = sys.stderr
 chunk_size = 1000  # Define your chunk size
 labels = ["Using Calendar App", "Using Email App", "In Home Screen", "Using SMS App", "Using Gallary App", "Idle"]
 
-# 0 = Normal behavior
-    # 1 = Anomaly
-if analysis_plugin_ml_model_path == "/var/www/html/storage/ml_models/apple_iphone_4s__detect_anomalies__neural_network_model.h5":
-    labels = ["Original Firmware", "Anomaly"]
-
 # Redirect stdout and stderr to null
 sys.stdout = open(os.devnull, 'w')
 sys.stderr = open(os.devnull, 'w')

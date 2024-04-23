@@ -29,22 +29,7 @@ const DeactivateCancelButton = styled(Button)(() => ({
   margin: "10px",
 }));
 
-function DeactivateModal({ open, userId, onClose }) {
-  const users = [
-    { name: "User 1", status: "Inactive", user_id: "1" },
-    { name: "User 2", status: "Active", user_id: "2" },
-    { name: "User 3", status: "Active", user_id: "3" },
-  ];
-
-  function getUserName(userId) {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].user_id == userId) {
-        return users[i].name;
-      }
-    }
-    return null;
-  }
-
+function DeactivateModal({ open, name, onClose, handleBanStatusChange }) {
   const handleCancel = () => {
     onClose();
   };
@@ -59,7 +44,7 @@ function DeactivateModal({ open, userId, onClose }) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Are you sure you want to deactivate {getUserName(userId)} ?
+            Are you sure you want to deactivate {name} ?
           </Typography>
           <ButtonBox>
             <DeactivateCancelButton
@@ -69,7 +54,11 @@ function DeactivateModal({ open, userId, onClose }) {
             >
               Cancel
             </DeactivateCancelButton>
-            <DeactivateButton variant="contained" color="error">
+            <DeactivateButton
+              variant="contained"
+              color="error"
+              onClick={handleBanStatusChange}
+            >
               Deactivate
             </DeactivateButton>
           </ButtonBox>

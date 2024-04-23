@@ -17,6 +17,7 @@ class UserFactory extends Factory
         return [
             'user_type' => $this->faker->randomElement(['admin', 'investigator', 'developer']),
             'account_status' => $this->faker->randomElement(['unverified', 'verified']),
+            'ban_status' => $this->faker->randomElement(['false', 'true']),
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,

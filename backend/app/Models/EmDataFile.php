@@ -20,7 +20,7 @@ class EmDataFile extends Model
                           'em_raw_h5_file_size',
                           'em_raw_cfile_file_size',
                           'em_raw_h5_hash',
-                          'device_name',
+                          'device_id',
                           'center_frequency',
                           'sampling_rate',
                           'user_id',

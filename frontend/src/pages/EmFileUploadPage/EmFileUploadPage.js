@@ -1,5 +1,5 @@
 import { CssBaseline, Typography } from "@mui/material";
-import { Container } from "@mui/system";
+import { borderColor, Container, height } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./EmFileUploadPage.css";
 import Button from "@mui/material/Button";
@@ -9,6 +9,7 @@ import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Resumable from "resumablejs";
 import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
 import Alert from "@mui/material/Alert";
@@ -20,6 +21,8 @@ import { OutlinedInput } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
 import {
   FormControl,
   InputLabel,
@@ -30,24 +33,25 @@ import {
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
+import { notifyManager } from "react-query";
+
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 14,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor:
-      theme.palette.grey[theme.palette.mode === "light" ? 200 : 800],
+    backgroundColor: "black",
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+    backgroundColor: "#00245A",
   },
 }));
 
 function LinearProgressWithLabel(props) {
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
+      <Box sx={{ width: "100%", mr: 1, }}>
         <BorderLinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
@@ -71,6 +75,9 @@ function EmFileUploadPage() {
   const baseURL1 = "http://127.0.0.1:8000/api/upload_data_file";
   const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
 
+  const key = window.crypto.getRandomValues(new Uint8Array(32));
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(0);
@@ -85,20 +92,23 @@ function EmFileUploadPage() {
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceName, setDeviceName] = useState("arduino");
-  const [centerFreq, setCenterFreq] = useState(100);
-  const [samplingRate, setSamplingRate] = useState(100);
+  const [deviceId, setDeviceId] = useState(1);
+  const [centerFreq, setCenterFreq] = useState(10);
+  const [samplingRate, setSamplingRate] = useState(8);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
   const [fileSize, setFileSize] = useState(0);
   const [fileName, setFileName] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [startTime, setStartTime] = useState(0);
+  const [finishTime, setFinishTime] = useState(0);
+  const [uploadTime, setUploadTime] = useState(0);
 
   // Handler for dropdown value change
 
   const handleDropdownChange1 = (event) => {
-    setDeviceName(event.target.value);
+    setDeviceId(event.target.value);
   };
   const handleDropdownChange2 = (event) => {
     setCenterFreq(event.target.value);
@@ -115,27 +125,12 @@ function EmFileUploadPage() {
       const fileName = selectedFile.name;
       const fileExtension = fileName.split(".").pop().toLowerCase();
 
-      if (
-        fileExtension === "png" ||
-        fileExtension === "cfile" ||
-        fileExtension === "h5"
-      ) {
-        // Valid PNG file selected, you can proceed with further handling
-        console.log("Valid cfile is selected:", fileName);
-        // Add your additional logic here
-      } else {
-        // Display an error message or take appropriate action for invalid file
-        alert("Invalid file type. Please select a cfile.");
-        // Clear the file input if needed
-        event.target.value = null;
-      }
-
       setIsSubmitted(true);
       calculateHash();
       // Do something with the form data, e.g., send it to an API
       console.log(
         "Form submitted with selected value:",
-        deviceName,
+        deviceId,
         centerFreq,
         samplingRate
       );
@@ -163,6 +158,9 @@ function EmFileUploadPage() {
       if (resumable) {
         resumable.addFile(zippedFile);
         if (isFileAdded) {
+          let nowtime = performance.now();
+          setStartTime(nowtime);
+          console.log("start time :", nowtime);
           resumable.upload();
         }
       }
@@ -175,7 +173,7 @@ function EmFileUploadPage() {
   const calculateHash = () => {
     if (selectedFile) {
       console.log("if---");
-      const chunkSize = 1024 * 1024 * 5; // 1 MB chunks
+      const chunkSize = 1024 * 1024 * 20; // 1 MB chunks
       const totalChunks = Math.ceil(selectedFile.size / chunkSize);
       let currentChunk = 0;
       let hash = CryptoJS.algo.SHA256.create();
@@ -217,8 +215,9 @@ function EmFileUploadPage() {
       alert("Please select a file first.");
       return;
     }
+    let time1 = performance.now();
     const compressedFileName = `${selectedFile.name}.gz`;
-    const CHUNK_SIZE = 1024 * 1024 * 5;
+    const CHUNK_SIZE = 1024 * 1024 * 20;
     const originalFileName = selectedFile.name;
     const compressedChunks = [];
 
@@ -233,16 +232,6 @@ function EmFileUploadPage() {
         // console.log(chunkData);
         const compressedData = pako.gzip(chunkData);
         compressedChunks.push(compressedData);
-
-        //encrypting
-        // console.log('encrypting');
-        // let chunkData = event.target.result;
-        // console.log(chunkData.toString());
-        // let encryptedData = CryptoJS.AES.encrypt(chunkData, 'encryption_key');
-        // let  dataToCompress = new Uint8Array(encryptedData);
-        // const compressedData = pako.gzip(dataToCompress);
-        // compressedChunks.push(compressedData);
-        // console.log('+++++++++++');
 
         offset += CHUNK_SIZE;
         setCompressionProgress((offset / selectedFile.size) * 100);
@@ -259,6 +248,9 @@ function EmFileUploadPage() {
           });
 
           setCompressedFile(compressedBlob);
+          let time2 = performance.now();
+          console.log("Time for Compression : ", (time2 - time1) / 1000, " sec");
+
         }
       };
 
@@ -308,18 +300,41 @@ function EmFileUploadPage() {
       // 'X-CSRF-TOKEN': csrfToken,
       Accept: "application/json",
     },
-    preprocess: function (chunk) {
-      // console.log('preprocessing');
-      // console.log(chunk.data);
-      // const encryptedData = CryptoJS.AES.encrypt(chunk.data, 'encryption_key');
-      // console.log('+++++++++++');
-      // // Update the chunk data with the encrypted data
-      // chunk.data = encryptedData;
-      // console.log(chunk.data);
-      chunk.preprocessFinished();
-     
-    },
-    simultaneousUploads: 3,
+    // preprocess: function (chunk) {
+    //   console.log('---------- preprocessing --------');
+    //   const reader = new FileReader();
+    //   reader.onload = async function (e) {
+    //     const data = e.target.result;
+    //     const encryptedData = await window.crypto.subtle.encrypt(
+    //       { name: "AES-GCM", iv: iv },
+    //       key,
+    //       data  
+    //     );
+    //     chunk.fileObj.file = new Blob([encryptedData], { type: "application/octet-stream" });
+    //     chunk.preprocessFinished();
+    //   };
+    //   reader.readAsArrayBuffer(chunk.fileObj.file);
+
+    // },
+    // preprocess: function(chunk) {
+    //   console.log('---------- preprocessing --------');
+    //   const reader = new FileReader();
+    //   console.log(chunk.startByte/1024/1024);
+    //   console.log(chunk.endByte/1024/1024);
+    //   reader.readAsArrayBuffer(chunk.fileObj.file.slice(chunk.startByte, chunk.endByte));
+    //   reader.onload = function(e) {
+    //     const chunkData = e.target.result;
+    //     console.log(chunkData);
+    //     const textDecoder = new TextDecoder();
+    //     const chunkDataString = textDecoder.decode(chunkData);
+
+    //     const encryptedData = CryptoJS.AES.encrypt(chunkDataString, "encryption_key");
+    //     // chunk.fileObj.file = new Blob([chunkData], { type: "application/octet-stream" });
+    //     // console.log(chunk.fileObj.file);
+    //     chunk.preprocessFinished();
+    //   };  
+    // },
+    simultaneousUploads: 1,
     testChunks: false,
     throttleProgressCallbacks: 1,
   });
@@ -345,7 +360,7 @@ function EmFileUploadPage() {
       fileName,
       fileSize,
       response.file_unique_name,
-      deviceName,
+      deviceId,
       centerFreq,
       samplingRate,
       hash
@@ -371,23 +386,6 @@ function EmFileUploadPage() {
     navigate("/file-list");
   });
 
-  uploader.on("chunkingComplete", function (file, response) {
-    // trigger when there is any error
-    console.log("this is file chunks -----------");
-    console.log(file.chunks);
-    console.log("chunking complete");
-    file.chunks.forEach(function (chunk) {
-      console.log("before encryption");
-      console.log(chunk.data);
-      var key = "1234"; // Use the same key generation logic
-      var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
-      console.log("after encryption");
-      chunk.data = encryptedChunk;
-      console.log(encryptedChunk);
-      console.log(chunk.data);
-    });
-  });
-
   useEffect(() => {
     setResumable(uploader);
   }, []);
@@ -395,21 +393,29 @@ function EmFileUploadPage() {
   const handleFileSelect = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-  
-    console.log(file);
-    setSelectedFile(file);
-    setFileName(file.name);
-    setFileSize(file.size);
+    if (file != null) {
+      console.log(file);
+      setSelectedFile(file);
+      setFileName(file.name);
+      setFileSize(file.size);
+    }
+
   };
 
   useEffect(() => {
     if (isSuccess === 1 && percentage == 100) {
+      let nowtime = performance.now();
+      console.log("end time : ", nowtime);
+      let dif = ((nowtime - startTime) / 1000).toFixed(2);
+      console.log("time to take for upload : ", dif, " sec");
+      setUploadTime(dif);
+
       console.log("-- ---- --");
       console.log(
         fileName,
         fileSize,
         fileUniqueName,
-        deviceName,
+        deviceId,
         centerFreq,
         samplingRate,
         hash
@@ -420,7 +426,7 @@ function EmFileUploadPage() {
           name: fileName,
           size: fileSize,
           unique_name: fileUniqueName,
-          device_name: deviceName,
+          device_id: deviceId,
           center_freq: centerFreq,
           sampling_rate: samplingRate,
           file_hash: hash,
@@ -431,7 +437,7 @@ function EmFileUploadPage() {
             setIsSendToDatabase(true);
             setTimeout(() => {
               navigate("/file-list");
-            }, 1000);
+            }, 10000);
           } else {
             alert("Error");
             navigate("/file-list");
@@ -458,246 +464,322 @@ function EmFileUploadPage() {
   //       }
   //     }
   //   };
+  const sxStyle = {
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    borderRadius: "4px",
+    backgroundColor: "white",
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    "& .MuiOutlinedInput-root": {
+
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#00245A",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "grey",
+          fontWeight: "bold",
+        },
+      },
+    },
+  }
+
+  const containerStyle = {
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "8px",
+    marginTop: "80px",
+  };
 
   return (
-    <>
-      <CssBaseline />
-      <NavBar />
 
-      <div className="maindiv" style={{ marginTop: "50px" }}>
-        {!isSubmitted && (
-          <Container maxWidth="sm" id="form">
-            <Typography
-              variant="h4"
-              color="textPrimary"
-              align="center"
-              gutterBottom
-            >
-              Upload File
-            </Typography>
-            <Typography
-              variant="h4"
-              color="textPrimary"
-              align="center"
-              marginTop={7}
-              gutterBottom
-            >
-              <form onSubmit={handleSubmit}>
-                {/* Dropdown */}
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px" }}
-                  required
+    <div className="maindiv" >
+
+      {!isSubmitted && (
+        <Container maxWidth="sm" id="form" style={containerStyle}>
+          <Typography
+            variant="h4"
+            color="textPrimary"
+            align="center"
+            gutterBottom
+            sx={{ p: 3 }}
+          >
+            Upload File
+          </Typography>
+          <Typography
+            variant="h4"
+            color="textPrimary"
+            align="center"
+            marginTop={7}
+            gutterBottom
+          >
+            <form onSubmit={handleSubmit}>
+              {/* Dropdown */}
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", textAlign: "left" }}
+                required
+                sx={{
+                  ...sxStyle,
+
+                }}
+              >
+                <InputLabel id="dropdown-label-1">Device Name</InputLabel>
+                <Select
+                  labelId="dropdown-label-1"
+                  id="dropdown-1"
+                  value={deviceId}
+                  onChange={handleDropdownChange1}
+                  label="Device Name"
+                  style={{ borderColor: "#525252" }}
+
                 >
-                  <InputLabel id="dropdown-label-1">Device Name</InputLabel>
-                  <Select
-                    labelId="dropdown-label-1"
-                    id="dropdown-1"
-                    value={deviceName}
-                    onChange={handleDropdownChange1}
-                    label="Device Name"
-                    style={{ borderColor: "#525252" }}
-                    sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
-                        },
-                      },
-                    }}
-                  >
-                    <MenuItem value="Arduino">Arduino</MenuItem>
-                    <MenuItem value="Raspberry Pi">Raspberry Pi</MenuItem>
-                  </Select>
-                </FormControl>
+                  <MenuItem value={1}>Arduino</MenuItem>
+                  <MenuItem value={2}>Raspberry Pi</MenuItem>
+                </Select>
+              </FormControl>
 
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px" }}
-                  required
-                >
-                  <TextField
-                    id="text-1"
-                    type="number"
-                    label="Center Frequency"
-                    variant="outlined"
-                    value={centerFreq}
-                    onChange={handleDropdownChange2}
-                    style={{ borderColor: "#525252" }}
-                    sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
-                        },
-                      },
-                    }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">Hz</InputAdornment>
-                      ),
-                      inputMode: "numeric",
-                      pattern: "/^-?d+(?:.d+)?$/g",
-                      inputProps: {
-                        min: 0,
-                        step: 0.01,
-                        style: { textAlign: "center" },
-                      },
-                    }}
-                    required
-                  />
-                </FormControl>
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px" }}
+                required
+              >
+                <TextField
+                  id="text-1"
+                  type="number"
+                  label="Center Frequency"
+                  variant="outlined"
+                  value={centerFreq}
+                  onChange={handleDropdownChange2}
 
-                <FormControl
-                  fullWidth
-                  style={{ marginBottom: "20px" }}
-                  required
-                >
-                  <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
-                  <Select
-                    labelId="dropdown-label-2"
-                    id="dropdown-2"
-                    value={samplingRate}
-                    onChange={handleDropdownChange3}
-                    label="Sampling Rate"
-                    style={{ borderColor: "#525252" }}
-                    sx={{
-                      "&:hover": {
-                        "&& fieldset": {
-                          border: "3px solid gray",
-                        },
-                      },
-                    }}
-                  >
-                    <MenuItem value="8">8 MHz</MenuItem>
-                    <MenuItem value="10">10 MHz</MenuItem>
-                    <MenuItem value="12.5">12.5 MHz</MenuItem>
-                    <MenuItem value="16">16 MHz</MenuItem>
-                    <MenuItem value="20">20 MHz</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <FormControl
-                  fullWidth
-                  required
-                  style={{ marginBottom: "20px" }}
-                >
-                  <div className="container">
-                    <div className="fileUploadInput">
-                      <button>
-                        <AttachFileIcon fontSize="small" color="primary" />
-                      </button>
-                      <input
-                        type="file"
-                        onChange={handleFileSelect}
-                        accept=".h5, .cfile, .png, .pdf"
-                      />
-                    </div>
-                  </div>
-                </FormControl>
-
-                {/* Submit button */}
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "20px",
-                    width: "200px",
-                    backgroundColor: "#00245A",
-                    color: "white",
+                  sx={{
+                    ...sxStyle,
                   }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">Hz</InputAdornment>
+                    ),
+                    inputMode: "numeric",
+                    pattern: "/^-?d+(?:.d+)?$/g",
+                    inputProps: {
+                      min: 0,
+                      step: 0.01,
+
+                    },
+                  }}
+                  required
+                />
+              </FormControl>
+
+              <FormControl
+                fullWidth
+                style={{ marginBottom: "20px", textAlign: "left" }}
+
+                sx={{
+                  ...sxStyle,
+                }}
+                required
+              >
+                <InputLabel id="dropdown-label-3">Sampling Rate</InputLabel>
+                <Select
+                  labelId="dropdown-label-2"
+                  id="dropdown-2"
+                  value={samplingRate}
+                  onChange={handleDropdownChange3}
+                  label="Sampling Rate"
                 >
-                  Submit
-                </Button>
-              </form>
-            </Typography>
-          </Container>
-        )}
-        {isSubmitted && !isSendToDatabase && (
-          <Container maxWidth="sm" id="showProgress">
-            <Stack
-              spacing={2}
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {compressedFile ? (
-                <div>
-                  <Typography variant="h3" color="textPrimary" align="center">
-                    Uploading
-                  </Typography>
-                </div>
-              ) : (
-                <div>
-                  <Typography variant="h3" color="textPrimary" align="center">
-                    Preparing
-                  </Typography>
-                </div>
-              )}
-              <div className="bouncing-loader" style={{ marginTop: "40px" }}>
-                <div></div>
-                <div></div>
-                <div></div>
+                  <MenuItem value="8">8 MHz</MenuItem>
+                  <MenuItem value="10">10 MHz</MenuItem>
+                  <MenuItem value="12.5">12.5 MHz</MenuItem>
+                  <MenuItem value="16">16 MHz</MenuItem>
+                  <MenuItem value="20">20 MHz</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl
+                required
+                sx={{
+                  width: '100%',
+                  marginLeft: '0px',
+                  borderColor: 'red'
+                }}
+
+              >
+                <Box
+                  sx={{
+                    backgroundColor: "white",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "left",
+                    justifyContent: "left",
+                    marginLeft: 0,
+                    border: '1px solid #bbbbbb',
+                    borderRadius: '4px',
+                    '&:hover': {
+                      border: '2px solid #00245A', // Border color on hover
+                    },
+                  }}
+
+                >
+                  <div className="fileUploadInput" style={{ display: 'flex', flexDirection: 'row', width: "100%" }} >
+
+                    <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
+
+                    <input
+                      type="file"
+                      required
+                      onChange={handleFileSelect}
+                      accept=".h5, .cfile, .png, .pdf, .jpg"
+                      style={{
+                        color: selectedFile ? 'black' : 'grey', height: '53px',
+                        border: 'none', left: '-20px', width: "100%"
+                      }}
+
+                    />
+                  </div>
+
+
+                </Box>
+
+              </FormControl>
+
+              {/* Submit button */}
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+                  '&:hover': {
+                    bgcolor: 'rgba(0, 36, 90, 0.8)',
+                  },
+                }}
+              >
+                Upload
+              </Button>
+            </form>
+          </Typography>
+        </Container>
+      )}
+      {isSubmitted && !isSendToDatabase && (
+        <Container maxWidth="sm" id="showProgress" >
+          <Stack
+            spacing={2}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            {compressedFile ? (
+              <div>
+                <Typography variant="h3" color="textPrimary" align="center">
+                  Uploading
+                </Typography>
               </div>
-            </Stack>
-
-            <div>
-              <Typography variant="h6" color="textSecondary" align="center">
-                Please wait. This will take few minitues.
-              </Typography>
+            ) : (
+              <div>
+                <Typography variant="h3" color="textPrimary" align="center">
+                  Preparing
+                </Typography>
+              </div>
+            )}
+            <div className="bouncing-loader" style={{ marginTop: "40px" }}>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
+          </Stack>
 
-            <Box sx={{ width: "100%", marginTop: "15px" }}>
-              {compressedFile && <LinearProgressWithLabel value={progress} />}
+          <div>
+            <Typography variant="h6" color="textSecondary" align="center">
+              Please wait. This will take several minutes.
+            </Typography>
+          </div>
 
-              {!hash && !compressedFile && (
-                <div>
-                  <Stack
-                    spacing={1}
-                    direction="row"
-                    justifyContent="left"
-                    alignItems="center"
-                  >
-                    <Typography variant="h6" color="textSecondary" align="left">
-                      Calculating file hash
-                    </Typography>
-                    <Box sx={{ display: "flex", size: "10px" }}>
-                      <CircularProgress size={16} />
-                    </Box>
-                  </Stack>
-                  <LinearProgressWithLabel value={hasingProgress} />
-                </div>
-              )}
+          <Box sx={{
+            width: "100%",
+            marginTop: 10,
+            mb: hash && compressedFile ? 40 : 36,
+            display: "flex",
+            flexDirection: "row",
+          }}>
 
-              {hash && !compressedFile && (
-                <div>
-                  <Stack
-                    spacing={1}
-                    direction="row"
-                    justifyContent="left"
-                    alignItems="center"
-                  >
-                    <Typography variant="h6" color="textSecondary" align="left">
-                      Compressing{" "}
-                    </Typography>
-                    <Box sx={{ display: "flex", size: "10px" }}>
-                      <CircularProgress size={16} />
-                    </Box>
-                  </Stack>
-                  <LinearProgressWithLabel value={compressionProgress} />
-                </div>
-              )}
-            </Box>
-          </Container>
-        )}
-        {isSendToDatabase && (
-          <Container maxWidth="sm" id="showSuccess">
-            <Alert>
-              <AlertTitle>File successfully uploaded</AlertTitle>
-            </Alert>
-          </Container>
-        )}
-      </div>
-    </>
+
+            {compressedFile &&
+              <div style={{ width: "100%" , mt:2}}>
+                <LinearProgressWithLabel value={progress} />
+              </div>
+
+            }
+
+            {!hash && !compressedFile && (
+              <div style={{ width: "100%" }}>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" color="textSecondary" align="left">
+                    Calculating file hash
+                  </Typography>
+                  {/* <Box sx={{ display: "flex", size: "10px" }}>
+                    <CircularProgress size={16} />
+                  </Box> */}
+                </Stack>
+                <LinearProgressWithLabel value={hasingProgress} />
+
+              </div>
+            )}
+
+
+            {hash && !compressedFile && (
+              <div style={{ width: "100%" }}>
+                <Stack
+                  spacing={1}
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" color="textSecondary" align="left">
+                    Compressing{" "}
+                  </Typography>
+                  {/* <Box sx={{ display: "flex", size: "10px" }}>
+                    <CircularProgress size={16} />
+                  </Box> */}
+                </Stack>
+                <LinearProgressWithLabel value={compressionProgress} />
+              </div>
+            )}
+
+            <IconButton onClick={() => { }}>
+              <CloseIcon />
+            </IconButton>
+
+          </Box>
+        </Container>
+      )}
+      {isSendToDatabase && (
+        <Container maxWidth="sm" id="showSuccess" sx={{ mb: 58 }}>
+          <Alert>
+            <AlertTitle>File successfully uploaded</AlertTitle>
+          </Alert>
+        </Container>
+      )}
+    </div>
+
   );
 }
 

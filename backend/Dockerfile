@@ -40,15 +40,21 @@ RUN composer install
 # Expose port if needed
 EXPOSE 80
 
+# Install dependencies for h5py
+RUN apt-get update && apt-get install -y pkg-config
+RUN apt-get update && apt-get install -y build-essential
+RUN apt-get update && apt-get install -y libhdf5-dev
+RUN pip install --upgrade pip setuptools
+
 # Install Python libraries
 RUN pip3 install -r requirements.txt
 
 # Increase the maximum upload file size in the apache server
 # upload_max_filesize should NOT exceed post_max_size
-RUN sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php/8.2/apache2/php.ini
-RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 40M/' /etc/php/8.2/apache2/php.ini 
-RUN sed -i 's/post_max_size = .*/post_max_size = 50M/' /etc/php/8.2/cli/php.ini
-RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 40M/' /etc/php/8.2/cli/php.ini
+RUN sed -i 's/post_max_size = .*/post_max_size = 4000M/' /etc/php/8.2/apache2/php.ini
+RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 4000M/' /etc/php/8.2/apache2/php.ini 
+RUN sed -i 's/post_max_size = .*/post_max_size = 4000M/' /etc/php/8.2/cli/php.ini
+RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 4000M/' /etc/php/8.2/cli/php.ini
 
 # Start Laravel server
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]

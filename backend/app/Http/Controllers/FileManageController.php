@@ -32,7 +32,7 @@ class FileManageController extends Controller
             'em_raw_cfile_file_size',
             'em_raw_h5_file_size',
             'em_raw_h5_hash',
-            'device_name',
+            'device_id',
             'center_frequency',
             'sampling_rate',
             'user_id',
@@ -157,7 +157,7 @@ class FileManageController extends Controller
             $name = $request->input('name');
             $size = $request->input('size');
             $fileUniqueName = $request->input('unique_name');
-            $deviceName = $request->input('device_name');
+            $deviceId = $request->input('device_id');
             $centerFreq = $request->input('center_freq');
             $samplingRate = $request->input('sampling_rate');
             $file_hash = $request->input('file_hash');
@@ -175,7 +175,7 @@ class FileManageController extends Controller
                 'user_id' => 1,
                 'em_raw_file_name' => $fileUniqueName,
                 'em_raw_file_visible_name' => $name,
-                'device_name' => $deviceName,
+                'device_id' => $deviceId,
                 'center_frequency' => $centerFreq,
                 'sampling_rate' => $samplingRate,
                 'em_raw_cfile_file_size' => $size,
@@ -370,4 +370,28 @@ class FileManageController extends Controller
     {
         return csrf_token();
     }
+
+    // for traditional upload method
+    public function testStore(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $fileName);
+
+            return response()->json(['success' => true, 'message' => 'File uploaded successfully']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'No file uploaded'], 400);
+        }
+    }
+
+    public function sendRecordTest(Request $request)
+    {
+
+
+        return response()->json([
+            'status' => 200
+        ]);
+    }
+
 }

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import NavBarAdmin from "../../components/NavBarAdmin/NavBarAdmin";
-import { Box, Container, styled } from "@mui/system";
+import React, { useState, useEffect } from "react";
+import { Box } from "@mui/system";
+import { useQuery, useQueryClient } from "react-query";
 import {
   Button,
   Chip,
@@ -10,315 +10,306 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
+  Grid,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import CircleIcon from "@mui/icons-material/Circle";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 import ActivateModal from "../../components/ActivateModal/ActivateModal";
-
-const columns = [
-  { id: "name", label: "Name", midWidth: 200 },
-  { id: "status", label: "Status", midWidth: 150 },
-  { id: "actions", label: "Actions", midWidth: 300 },
-];
-
-const ContainerBox = styled(Box)(() => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: "0 0 3% 0",
-}));
-
-const HeadingBox = styled(Box)(() => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  marginTop: "3%",
-  marginBottom: "3%",
-}));
-
-const ContentBox = styled(Box)(() => ({
-  backgroundColor: "#FFFFFF",
-  borderRadius: "24px",
-  width: "80vw",
-  marginLeft: "0",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-}));
-
-const SearchBox = styled(Box)(() => ({
-  margin: "0% 0% 3% 0%",
-  padding: "3% 0% 0% 0%",
-}));
-
-const TableBox = styled(Box)(() => ({
-  width: "100%",
-}));
-
-const SearchButton = styled(Button)(() => ({
-  backgroundColor: "#00245A",
-  height: "60px",
-  borderRadius: "0",
-}));
-
-const SearchField = styled(TextField)(() => ({
-  border: "2px solid #00245A",
-  // MUI element css change
-  "& label.Mui-focused": {
-    color: "transparent",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "transparent",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "transparent",
-    },
-    "&:hover fieldset": {
-      borderColor: "transparent",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "transparent",
-    },
-  },
-  width: "40vw",
-}));
-
-const TableHeadRow = styled(TableRow)(() => ({
-  "& th": {
-    color: "rgba(96, 96, 96)",
-    backgroundColor: "#FCFCFD",
-  },
-}));
-
-const TableCellBlue = styled(TableCell)(() => ({
-  color: "#00245A",
-}));
-
-// const SearchField = styled(TextField)(() => ({
-//   color: 'var(--text-color, #00245A)',
-//   border: '2px solid #00245A', // Set border color and thickness
-//   borderRadius: '4px', // Add optional rounded corners
-//   '& .MuiOutlinedInput-root': { // Target outlined variant properties
-//     '& fieldset': {
-//       borderColor: '#00245A', // Ensure consistency across variants
-//     },
-//   },
-// }));
+import {
+  sxStyle,
+  ContainerBox,
+  HeadingBox,
+  ContentBox,
+  TableBox,
+} from "./StyleComponents";
+import { API_URL, queryKeys } from "../../constants";
+import { getInvestigatorDeveloperDetails } from "../../services/userService";
+import { useUser } from "../../contexts/UserContext";
+import { getFullName, capitalizeWords } from "../../helper";
 
 function UserManagePage() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
-  const [deactivateUserId, setDeactivateUserId] = useState(null);
-  const [activateUserId, setActivateUserId] = useState(null);
-  const handleClose = () => setIsModalOpen(false);
-  const handleActivateClose = () => setIsActivateModalOpen(false);
+  const [selectedUserId, setSelectedUserId] = useState(0);
+  // false => activate
+  // true => deactivate
+  const [banStatus, setBanStatus] = useState(null);
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const queryClient = useQueryClient();
+  const { user } = useUser();
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  const handleSearch = (event) => {
+    const searchTerm = event.target.value;
+    setSearchText(searchTerm);
 
-  const handleClicked = (userId) => {
-    setDeactivateUserId(userId);
-    setIsModalOpen(true);
-    console.log(userId);
-  };
-
-  const handleActivateClicked = (userId) => {
-    setActivateUserId(userId);
-    setIsActivateModalOpen(true);
-
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const rows = [
-    { name: "User 1", status: "Inactive", actions: "1" },
-    { name: "User 2", status: "Active", actions: "2" },
-    { name: "User 3", status: "Active", actions: "3" },
-  ];
-
-  function getStatusByActions(actionsValue) {
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].actions === actionsValue) {
-        return rows[i].status;
-      }
-    }
-    return null;
-  }
-
-  function getActions(value) {
-    return (
-      <TableCell>
-        <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#667085", cursor: "pointer" }}
-            gutterBottom
-          >
-            Edit
-          </Typography>
-          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-          <Typography
-            variant="body2"
-            sx={{ color: "#667085", cursor: "pointer" }}
-            gutterBottom
-          >
-            View
-          </Typography>
-          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-          {getStatusByActions(value) === "Active" ? (
-            <Button onClick={() => handleClicked(value)}>
-              <Typography
-                variant="caption"
-                sx={{ color: "#F90000", cursor: "pointer" }}
-                gutterBottom
-              >
-                Deactivate
-              </Typography>
-            </Button>
-          ) : (
-            <Button onClick={() => handleActivateClicked(value)}>
-            <Typography
-              variant="body2"
-              sx={{ color: "#00245A", cursor: "pointer" }}
-              gutterBottom
-            >
-              Activate
-            </Typography>
-            </Button>
-          )}
-        </Box>
-      </TableCell>
-    );
-  }
-
-  function getStatus(value) {
-    if (value === "Active") {
-      return (
-        <TableCell>
-          <Chip
-            sx={{ background: "#ECFDF3", color: "#037847", mt: "10px" }}
-            label={
-              <>
-                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
-                {value}
-              </>
-            }
-          />
-        </TableCell>
+    // console.log(searchTerm);
+    if (!searchTerm) {
+      queryClient.prefetchQuery(
+        [queryKeys["getInvestigatorDeveloperDetails"]],
+        () => getInvestigatorDeveloperDetails(user)
       );
     } else {
-      return (
-        <TableCell>
-          <Chip
-            sx={{ background: "#F2F4F7", color: "#364254", mt: "10px" }}
-            label={
-              <>
-                <CircleIcon sx={{ fontSize: 13, marginRight: 1 }} />
-                {value}
-              </>
-            }
-          />
-        </TableCell>
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((user) => {
+        const fullName = `${user.first_name} ${user.last_name}`;
+        return fullName.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(
+        queryKeys["getInvestigatorDeveloperDetails"],
+        newData
       );
     }
-  }
+  };
+
+  const handleBanStatusChange = async () => {
+    const userData = { user_id: selectedUserId, ban_status: banStatus };
+
+    const response = await fetch(API_URL + "/user/ban-status-change", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+      },
+      body: JSON.stringify(userData),
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.hasOwnProperty("success")) {
+      const newData = data.map((user) => {
+        // Check if the user_id matches the specified userId
+        if (user.user_id === selectedUserId) {
+          // If match found, return a new user object with updated ban_status
+          return { ...user, ban_status: banStatus };
+        } else {
+          // If no match found, return the original user object
+          return user;
+        }
+      });
+
+      queryClient.setQueryData(
+        queryKeys["getInvestigatorDeveloperDetails"],
+        newData
+      );
+
+      setActivateModalStatus(false);
+      setDeactivateModalStatus(false);
+    } else {
+      console.log("Error");
+    }
+  };
+
+  // false => active account
+  // true => inactive account
+  const settingsArray = {
+    false: {
+      labelName: "Active",
+      style: {
+        background: "#ECFDF3",
+        color: "#037847",
+        mt: "10px",
+      },
+    },
+    true: {
+      labelName: "Inactive",
+      style: {
+        background: "#FFF2F2",
+        color: "red",
+        mt: "10px",
+      },
+    },
+  };
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getInvestigatorDeveloperDetails"]],
+    queryFn: () => getInvestigatorDeveloperDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery(
+        [queryKeys["getInvestigatorDeveloperDetails"]],
+        () => getInvestigatorDeveloperDetails(user)
+      );
+    }
+  }, [user]);
 
   return (
     <>
-      <DeactivateModal open={isModalOpen} userId={deactivateUserId} onClose={handleClose} />
-      <ActivateModal open={isActivateModalOpen} userId={activateUserId} onClose={handleActivateClose} />
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name="Test name"
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={handleBanStatusChange}
+      />
+      <ActivateModal
+        open={activateModalStatus}
+        name="Test name"
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={handleBanStatusChange}
+      />
       <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
             Users
           </Typography>
         </HeadingBox>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mb: 4 }}
+        >
+          <TextField
+            id="search"
+            label={searchText === "" ? "Search" : ""}
+            sx={{ ...sxStyle }}
+            InputLabelProps={{
+              shrink: false,
+            }}
+            value={searchText}
+            onChange={handleSearch}
+            variant="outlined"
+            style={{
+              width: "500px",
+              marginTop: "40px",
+              backgroundColor: "white",
+              borderRadius: 4,
+            }}
+            InputProps={{
+              endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+            }}
+          />
+        </Grid>
         <ContentBox>
-          <SearchBox>
-            <SearchField
-              id="outlined-basic"
-              variant="outlined"
-              placeholder="Search User"
-            />
-            <SearchButton variant="contained">
-              <SearchIcon />
-            </SearchButton>
-          </SearchBox>
           <TableBox>
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
               <TableContainer sx={{ maxHeight: "440" }}>
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
-                    <TableHeadRow>
-                      {columns.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          style={{ minWidth: column.minWidth }}
-                        >
-                          {column.label}{" "}
-                          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-                          <ArrowDownwardIcon />
-                        </TableCell>
-                      ))}
-                    </TableHeadRow>
+                    <TableRow>
+                      <TableCell>
+                        <Typography variant="h6" color="textPrimary">
+                          Name
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="h6" color="textPrimary">
+                          Type
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="h6" color="textPrimary">
+                          Status
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="h6" color="textPrimary">
+                          Action
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((row) => {
-                        return (
-                          <TableRow
-                            hover
-                            role="checkbox"
-                            tableIndex={-1}
-                            key={row.code}
+                    {data?.map((user) => (
+                      <TableRow hover={true} key={user.user_id}>
+                        <TableCell>
+                          {getFullName(user.first_name, user.last_name)}
+                        </TableCell>
+                        <TableCell>{capitalizeWords(user.user_type)}</TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            sx={settingsArray[user.ban_status]["style"]}
+                            label={settingsArray[user.ban_status]["labelName"]}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                           >
-                            {columns.map((column) => {
-                              const value = row[column.id];
-                              // console.log(column.id);
-                              return column.id === "status" ? (
-                                getStatus(value)
-                              ) : column.id === "actions" ? (
-                                getActions(value)
-                              ) : (
-                                <TableCellBlue key={column.id}>
-                                  {value}
-                                </TableCellBlue>
-                              );
-                            })}
-                          </TableRow>
-                        );
-                      })}
+                            <span style={{ marginLeft: "10px" }}>
+                              {"\u00A0"}
+                            </span>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: "#00245A",
+                                cursor: "pointer",
+                                borderColor: "rgba(0, 36, 90, 0.4)",
+                                "&:hover": {
+                                  borderColor: "#00245A", // Change to the desired hover color
+                                },
+                              }}
+                              onClick={() => {}}
+                            >
+                              <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                              View
+                            </Button>
+                            <span style={{ marginLeft: "10px" }}>
+                              {"\u00A0"}
+                            </span>
+
+                            {user.ban_status === "false" ? (
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={() => {
+                                  setSelectedUserId(user.user_id);
+                                  setDeactivateModalStatus(true);
+                                  setBanStatus("true");
+                                }}
+                              >
+                                Deactivate
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outlined"
+                                sx={{
+                                  color: "green",
+
+                                  cursor: "pointer",
+
+                                  borderColor: "rgba(0, 128, 0, 0.4)",
+
+                                  pl: 3,
+
+                                  pr: 3,
+
+                                  "&:hover": {
+                                    borderColor: "green",
+                                  },
+                                }}
+                                onClick={() => {
+                                  setSelectedUserId(user.user_id);
+                                  setActivateModalStatus(true);
+                                  setBanStatus("false");
+                                }}
+                              >
+                                {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
+                                Activate
+                              </Button>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
             </Paper>
           </TableBox>
         </ContentBox>
