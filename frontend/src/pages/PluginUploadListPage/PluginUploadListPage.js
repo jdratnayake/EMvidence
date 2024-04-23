@@ -41,6 +41,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Tooltip from '@mui/material/Tooltip';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 import {
   FormControl,
   InputLabel,
@@ -59,6 +60,10 @@ function PluginUploadListPage() {
 
 
   const [searchText, setSearchText] = useState("");
+  const [pageTitle, setPageTitle] = useState('Plugin Upload Page');
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
 
   const handleSearch = (event) => {
     setSearchText(event.target.value);
@@ -105,6 +110,7 @@ function PluginUploadListPage() {
 
   return (
     <>
+
       <Container >
         <Typography
           variant="h4"

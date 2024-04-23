@@ -360,7 +360,7 @@ function SignUpPage() {
                       </InputLabel>
                       <Select
                         labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        id="selectRole"
                         label="Your Role"
                         value={role}
                         onChange={(event) => setRole(event.target.value)}
@@ -462,6 +462,7 @@ function SignUpPage() {
                   </Grid>
                 </Grid>
                 <Button
+                  id="signUpButton"
                   type="submit"
                   fullWidth
                   variant="contained"
