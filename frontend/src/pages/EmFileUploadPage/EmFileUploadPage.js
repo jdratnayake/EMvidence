@@ -21,6 +21,8 @@ import { OutlinedInput } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
 import {
   FormControl,
   InputLabel,
@@ -38,7 +40,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 14,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: "white",
+    backgroundColor: "black",
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
@@ -231,16 +233,6 @@ function EmFileUploadPage() {
         const compressedData = pako.gzip(chunkData);
         compressedChunks.push(compressedData);
 
-        //encrypting
-        // console.log('encrypting');
-        // let chunkData = event.target.result;
-        // console.log(chunkData.toString());
-        // let encryptedData = CryptoJS.AES.encrypt(chunkData, 'encryption_key');
-        // let  dataToCompress = new Uint8Array(encryptedData);
-        // const compressedData = pako.gzip(dataToCompress);
-        // compressedChunks.push(compressedData);
-        // console.log('+++++++++++');
-
         offset += CHUNK_SIZE;
         setCompressionProgress((offset / selectedFile.size) * 100);
 
@@ -257,7 +249,7 @@ function EmFileUploadPage() {
 
           setCompressedFile(compressedBlob);
           let time2 = performance.now();
-          console.log("Time for Compression : ", (time2-time1)/1000, " sec");
+          console.log("Time for Compression : ", (time2 - time1) / 1000, " sec");
 
         }
       };
@@ -335,7 +327,7 @@ function EmFileUploadPage() {
     //     console.log(chunkData);
     //     const textDecoder = new TextDecoder();
     //     const chunkDataString = textDecoder.decode(chunkData);
-    
+
     //     const encryptedData = CryptoJS.AES.encrypt(chunkDataString, "encryption_key");
     //     // chunk.fileObj.file = new Blob([chunkData], { type: "application/octet-stream" });
     //     // console.log(chunk.fileObj.file);
@@ -394,23 +386,6 @@ function EmFileUploadPage() {
     navigate("/file-list");
   });
 
-  // uploader.on("chunkingComplete", function (file, response) {
-  //   // trigger when there is any error
-  //   console.log("this is file chunks -----------");
-  //   console.log(file.chunks);
-  //   console.log("chunking complete");
-  //   file.chunks.forEach(function (chunk) {
-  //     console.log("before encryption");
-  //     console.log(chunk.data);
-  //     var key = "1234"; // Use the same key generation logic
-  //     var encryptedChunk = CryptoJS.AES.encrypt(chunk.data, key);
-  //     console.log("after encryption");
-  //     chunk.data = encryptedChunk;
-  //     console.log(encryptedChunk);
-  //     console.log(chunk.data);
-  //   });
-  // });
-
   useEffect(() => {
     setResumable(uploader);
   }, []);
@@ -431,9 +406,9 @@ function EmFileUploadPage() {
     if (isSuccess === 1 && percentage == 100) {
       let nowtime = performance.now();
       console.log("end time : ", nowtime);
-       let dif = ((nowtime - startTime)/1000).toFixed(2);
-       console.log("time to take for upload : ", dif, " sec");
-       setUploadTime(dif);
+      let dif = ((nowtime - startTime) / 1000).toFixed(2);
+      console.log("time to take for upload : ", dif, " sec");
+      setUploadTime(dif);
 
       console.log("-- ---- --");
       console.log(
@@ -733,11 +708,24 @@ function EmFileUploadPage() {
             </Typography>
           </div>
 
-          <Box sx={{ width: "100%", marginTop: 10, mb: hash && compressedFile ? 40 : 36 }}>
-            {compressedFile && <LinearProgressWithLabel value={progress} />}
+          <Box sx={{
+            width: "100%",
+            marginTop: 10,
+            mb: hash && compressedFile ? 40 : 36,
+            display: "flex",
+            flexDirection: "row",
+          }}>
+
+
+            {compressedFile &&
+              <div style={{ width: "100%" , mt:2}}>
+                <LinearProgressWithLabel value={progress} />
+              </div>
+
+            }
 
             {!hash && !compressedFile && (
-              <div>
+              <div style={{ width: "100%" }}>
                 <Stack
                   spacing={1}
                   direction="row"
@@ -752,11 +740,13 @@ function EmFileUploadPage() {
                   </Box> */}
                 </Stack>
                 <LinearProgressWithLabel value={hasingProgress} />
+
               </div>
             )}
 
+
             {hash && !compressedFile && (
-              <div>
+              <div style={{ width: "100%" }}>
                 <Stack
                   spacing={1}
                   direction="row"
@@ -773,6 +763,11 @@ function EmFileUploadPage() {
                 <LinearProgressWithLabel value={compressionProgress} />
               </div>
             )}
+
+            <IconButton onClick={() => { }}>
+              <CloseIcon />
+            </IconButton>
+
           </Box>
         </Container>
       )}

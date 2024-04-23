@@ -481,7 +481,7 @@ const AnalysisPage = () => {
             }}
             gutterBottom
           >
-            Pre-Processing Plugins
+            Pre-processing Plugins
           </Typography>
         </Box>
         <Box
@@ -520,7 +520,7 @@ const AnalysisPage = () => {
               }}
               gutterBottom
             >
-              Downsampling
+              Down-sampling
             </Typography>
 
             <FormControl
@@ -541,7 +541,7 @@ const AnalysisPage = () => {
                 style={{ borderColor: "#525252" }}
 
               >
-                <MenuItem value={0}>Not downsampled</MenuItem>
+                <MenuItem value={0}>Not down-sampled</MenuItem>
                 <MenuItem value={1}>To 10MHz</MenuItem>
                 <MenuItem value={2}>To 8MHz</MenuItem>
                 <MenuItem value={3}>To 4MHz</MenuItem>
@@ -713,7 +713,7 @@ const AnalysisPage = () => {
               onClick={executePreprocessingPlugin}
               loading={loading}
             >
-              Preprocess
+              Pre-process
             </LoadingButton>
           </FormControl>
         </Box>

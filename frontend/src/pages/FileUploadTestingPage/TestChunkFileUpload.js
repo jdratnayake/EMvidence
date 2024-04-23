@@ -174,8 +174,6 @@ function EmFileUploadPage() {
 
     setCompressedFile(selectedFile);
 
-
-
   };
 
 
@@ -185,7 +183,7 @@ function EmFileUploadPage() {
     target: baseURL1,
     // fileType: ['png', 'jpg', 'jpeg', 'mp4', 'csv', 'h5', 'mkv', 'gz', 'zip', 'cfile', 'HEIC', 'iso'],
     fileType: ["png", "h5", "cfile", "gz"],
-    chunkSize: 1024 * 1024 * 20,
+    chunkSize: 1024 * 1024 * 25,
     uploadMethod: "POST",
     headers: {
       // 'X-CSRF-TOKEN': csrfToken,
@@ -241,7 +239,7 @@ function EmFileUploadPage() {
     console.log(file);
     console.log(response);
     alert("file uploading error.");
-    navigate("/file-list");
+    navigate("/testUploadChunk");
   });
 
  
