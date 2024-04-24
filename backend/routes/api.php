@@ -38,6 +38,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::prefix("v1/plugin")->group(function () {
     Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"]);
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"]);
+    Route::post("/upload", [PluginController::class, "uploadPlugin"]);
 });
 
 Route::prefix("v1/auth")->group(function () {
