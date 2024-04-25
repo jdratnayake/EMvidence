@@ -25,12 +25,11 @@ Route::post('/uploadChunk', [FileManageController::class, 'uploadChunk']);
 Route::post('/send_to_database_test', [FileManageController::class, 'sendRecordTest']);
 
 
-
-Route::post('/upload_data_file', [FileManageController::class, 'store']);
-Route::post('/send_to_database', [FileManageController::class, 'sendRecord']);
-Route::get("/em_data_records", [FileManageController::class, 'index']);
-Route::get("/process", [FileManageController::class, 'processEMFile']);
-Route::post('/delete_file', [FileManageController::class, 'deleteFile']);
+Route::post('v1/upload_data_file', [FileManageController::class, 'store']);
+Route::post('v1/send_to_database', [FileManageController::class, 'sendRecord']);
+Route::get("v1/em_data_records", [FileManageController::class, 'index']);
+Route::get("v1/process", [FileManageController::class, 'processEMFile']);
+Route::post('v1/delete_file', [FileManageController::class, 'deleteFile']);
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });

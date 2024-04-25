@@ -12,7 +12,7 @@ class processCompressedFileCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'process:compressed-file3';
+    protected $signature = 'process:compressed-file5';
 
     /**
      * The console command description.
@@ -36,7 +36,7 @@ class processCompressedFileCommand extends Command
             'em_raw_cfile_file_size',
             'em_raw_h5_file_size',
             'em_raw_h5_hash',
-            'device_name',
+            'device_id',
             'center_frequency',
             'sampling_rate',
             'user_id',
