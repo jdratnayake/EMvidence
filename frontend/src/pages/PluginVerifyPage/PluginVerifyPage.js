@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Button from '@mui/material/Button';
 import {
   Box,
   FormControl,
@@ -938,6 +939,46 @@ const PluginVerifyPage = () => {
             ))}
           </Box>
         </Box>
+        <Box sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            mt:5
+          }}
+          >
+            <Button
+              sx={{
+                
+                backgroundColor: "#00245A",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+             
+            >
+              Accept 
+            </Button>
+
+            <LoadingButton
+              sx={{
+                ml:2,
+                backgroundColor: "red",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              
+            >
+              Reject
+            </LoadingButton>
+          </Box>
       </Box>
     </>
   );
