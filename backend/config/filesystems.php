@@ -36,10 +36,30 @@ return [
             'throw' => false,
         ],
 
+        'plugin_icon' => [
+            'driver' => 'local',
+            'root' => storage_path('plugins/analysis/icon'),
+        ],
+
+        'plugin_dependency' => [
+            'driver' => 'local',
+            'root' => storage_path('plugins/analysis/dependency_list'),
+        ],
+
+        'plugin_script' => [
+            'driver' => 'local',
+            'root' => storage_path('plugins/analysis/plugin_script_file'),
+        ],
+
+        'plugin_ml_model' => [
+            'driver' => 'local',
+            'root' => storage_path('plugins/analysis/plugin_ml_model'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
