@@ -1,25 +1,31 @@
-import { Typography } from "@mui/material";
-import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./PluginUploadPage.css";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
+import { useQuery, useQueryClient } from "react-query";
+import { Container } from "@mui/system";
 import {
+  Typography,
+  Button,
+  Box,
+  TextField,
+  InputAdornment,
+  Link,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   useTheme,
   useMediaQuery,
+  Grid,
+  FormHelperText,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { API_URL, queryKeys } from "../../constants";
 import { useUser, addUser } from "../../contexts/UserContext";
+import { getDeviceDetails } from "../../services/deviceService";
+import { getEmRawDetails } from "../../services/fileManage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./PluginUploadPage.css";
 
 function PluginUploadPage() {
   const containerStyle = {
@@ -77,7 +83,21 @@ function PluginUploadPage() {
   const [selectedFileDependency, setSelectedFileDependency] = useState(null);
   const [selectedPluginFile, setSelectedPluginFile] = useState(null);
   const [selectedMlModel, setSelectedMlModel] = useState(null);
-  const { user, addUser } = useUser();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+
+  const [pluginNameError, setPluginNameError] = useState(null);
+  const [descriptionError, setDescriptionError] = useState(null);
+  const [deviceNameError, setDeviceNameError] = useState(null);
+  const [emDataFileError, setEmDataFileError] = useState(null);
+  const [samplingRateError, setSamplingRateError] = useState(null);
+  const [centerFrequencyError, setCenterFrequencyError] = useState(null);
+  const [fftSizeError, setFftSizeError] = useState(null);
+  const [selectedFileIconError, setSelectedFileIconError] = useState(null);
+  const [selectedFileDependencyError, setSelectedFileDependencyError] =
+    useState(null);
+  const [selectedPluginFileError, setSelectedPluginFileError] = useState(null);
+  const [selectedMlModelError, setSelectedMlModelError] = useState(null);
 
   const handleFileIcon = (event) => {
     event.preventDefault();
@@ -111,8 +131,38 @@ function PluginUploadPage() {
     }
   };
 
+  const clearFormData = () => {
+    setPluginName(null);
+    setDescription(null);
+    setDeviceName(null);
+    setEmDataFile(null);
+    setSamplingRate(null);
+    setCenterFrequency(null);
+    setFftSize(null);
+    setSelectedFileIcon(null);
+    setSelectedFileDependency(null);
+    setSelectedPluginFile(null);
+    setSelectedMlModel(null);
+  };
+
+  const clearErrorData = () => {
+    setPluginNameError(null);
+    setDescriptionError(null);
+    setDeviceNameError(null);
+    setEmDataFileError(null);
+    setSamplingRateError(null);
+    setCenterFrequencyError(null);
+    setFftSizeError(null);
+    setSelectedFileIconError(null);
+    setSelectedFileDependencyError(null);
+    setSelectedPluginFileError(null);
+    setSelectedMlModelError(null);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    clearErrorData();
 
     const formData = new FormData();
     formData.append("plugin_name", pluginName);
@@ -140,16 +190,72 @@ function PluginUploadPage() {
 
         // Handle success response
         if (responseData.hasOwnProperty("success")) {
-          const userData = {
-            ...user["userData"],
-            successMessage: "Plugin Upload Request Submitted Successfully",
-          };
-
-          addUser({ userData });
+          toast.success("Plugin Upload Request Submitted Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
 
           console.log(responseData["success"]);
+          clearFormData();
 
-          navigate("/plugin-list");
+          setTimeout(() => {
+            navigate("/plugin-upload-list");
+          }, 5000);
+        } else if (responseData.hasOwnProperty("error")) {
+          if (responseData["error"].hasOwnProperty("plugin_name")) {
+            setPluginNameError(responseData["error"]["plugin_name"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("description")) {
+            setDescriptionError(responseData["error"]["description"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("center_frequency")) {
+            setCenterFrequencyError(responseData["error"]["center_frequency"]);
+          }
+
+          ////
+
+          if (responseData["error"].hasOwnProperty("device_id")) {
+            setDeviceNameError(responseData["error"]["device_id"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("em_data_file_id")) {
+            setEmDataFileError(responseData["error"]["em_data_file_id"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("sampling_rate")) {
+            setSamplingRateError(responseData["error"]["sampling_rate"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("fft_size")) {
+            setFftSizeError(responseData["error"]["fft_size"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("icon")) {
+            setSelectedFileIconError(responseData["error"]["icon"]);
+          }
+
+          if (responseData["error"].hasOwnProperty("dependency_list")) {
+            setSelectedFileDependencyError(
+              responseData["error"]["dependency_list"]
+            );
+          }
+
+          if (responseData["error"].hasOwnProperty("plugin_script_file")) {
+            setSelectedPluginFileError(
+              responseData["error"]["plugin_script_file"]
+            );
+          }
+
+          if (responseData["error"].hasOwnProperty("plugin_ml_model")) {
+            setSelectedMlModelError(responseData["error"]["plugin_ml_model"]);
+          }
         }
       })
       .catch((error) => {
@@ -158,8 +264,48 @@ function PluginUploadPage() {
       });
   };
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getDeviceDetails"]],
+    queryFn: () => getDeviceDetails(user),
+    enabled: false,
+  });
+
+  const {
+    data: emRawData,
+    error: emRawError,
+    isLoading: emRawIsLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getEmRawDetails"]],
+    queryFn: () => getEmRawDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getDeviceDetails"]], () =>
+        getDeviceDetails(user)
+      );
+
+      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
+        getEmRawDetails(user)
+      );
+    }
+  }, [user]);
+
   return (
     <Container style={containerStyle} maxWidth="md">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <Typography
         variant="h4"
         color="textPrimary"
@@ -213,6 +359,8 @@ function PluginUploadPage() {
               }}
               value={pluginName}
               onChange={(event) => setPluginName(event.target.value)}
+              error={pluginNameError !== null}
+              helperText={pluginNameError}
             />
           </Grid>
 
@@ -228,6 +376,8 @@ function PluginUploadPage() {
               }}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
+              error={descriptionError !== null}
+              helperText={descriptionError}
             />
           </Grid>
 
@@ -248,10 +398,17 @@ function PluginUploadPage() {
                 onChange={(event) => setDeviceName(event.target.value)}
                 label="Device Name"
                 style={{ borderColor: "#525252" }}
+                error={deviceNameError !== null}
               >
-                <MenuItem value="1">Arduino</MenuItem>
-                <MenuItem value="2">Raspberry Pi</MenuItem>
+                {data?.map((device) => (
+                  <MenuItem value={device.device_id}>
+                    {device.device_name}
+                  </MenuItem>
+                ))}
               </Select>
+              {deviceNameError !== null && (
+                <FormHelperText error>{deviceNameError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -266,13 +423,17 @@ function PluginUploadPage() {
                 style={{ borderColor: "#525252" }}
                 value={emDataFile}
                 onChange={(event) => setEmDataFile(event.target.value)}
+                error={emDataFileError !== null}
               >
-                <MenuItem value="1">EM File 1</MenuItem>
-                <MenuItem value="2">EM File 2</MenuItem>
-                <MenuItem value="3">EM File 3 </MenuItem>
-                <MenuItem value="4">EM File 4</MenuItem>
-                <MenuItem value="5">EM File 5</MenuItem>
+                {emRawData?.map((emRawFile) => (
+                  <MenuItem value={emRawFile.em_raw_file_id}>
+                    {emRawFile.em_raw_file_visible_name}
+                  </MenuItem>
+                ))}
               </Select>
+              {emDataFileError !== null && (
+                <FormHelperText error>{emDataFileError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -293,6 +454,7 @@ function PluginUploadPage() {
                 style={{ borderColor: "#525252" }}
                 value={samplingRate}
                 onChange={(event) => setSamplingRate(event.target.value)}
+                error={samplingRateError !== null}
               >
                 <MenuItem value="8">8 MHz</MenuItem>
                 <MenuItem value="10">10 MHz</MenuItem>
@@ -300,6 +462,9 @@ function PluginUploadPage() {
                 <MenuItem value="16">16 MHz</MenuItem>
                 <MenuItem value="20">20 MHz</MenuItem>
               </Select>
+              {samplingRateError !== null && (
+                <FormHelperText error>{samplingRateError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -328,6 +493,8 @@ function PluginUploadPage() {
                 },
               }}
               required
+              error={centerFrequencyError !== null}
+              helperText={centerFrequencyError}
             />
           </Grid>
 
@@ -347,10 +514,14 @@ function PluginUploadPage() {
                 style={{ borderColor: "#525252" }}
                 value={fftSize}
                 onChange={(event) => setFftSize(event.target.value)}
+                error={fftSizeError !== null}
               >
                 <MenuItem value={1}>1024</MenuItem>
                 <MenuItem value={2}>2048</MenuItem>
               </Select>
+              {fftSizeError !== null && (
+                <FormHelperText error>{fftSizeError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -362,7 +533,11 @@ function PluginUploadPage() {
           ></Grid>
 
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required>
+            <FormControl
+              fullWidth
+              required
+              error={selectedFileIconError !== null}
+            >
               <label style={{ color: "grey" }}>
                 Icon Upload (accepting formats: .jpeg, .jpg, .png)
               </label>
@@ -374,7 +549,9 @@ function PluginUploadPage() {
                   alignItems: "left",
                   justifyContent: "left",
                   marginLeft: 0,
-                  border: "1px solid #bbbbbb",
+                  border: selectedFileIconError
+                    ? "1px solid red"
+                    : "1px solid #bbbbbb",
                   borderRadius: "4px",
                   "&:hover": {
                     border: "2px solid #00245A", // Border color on hover
@@ -392,7 +569,7 @@ function PluginUploadPage() {
                 >
                   <AttachFileIcon
                     sx={{
-                      color: "#00245A",
+                      color: selectedFileIconError ? "red" : "#00245A",
                       mt: "14px",
                       ml: "4px",
                       fontSize: "25px",
@@ -411,6 +588,9 @@ function PluginUploadPage() {
                   />
                 </div>
               </Box>
+              {selectedFileIconError && (
+                <FormHelperText>{selectedFileIconError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
@@ -420,10 +600,12 @@ function PluginUploadPage() {
               required
               display="flex"
               justifyContent="flex-start"
+              error={selectedFileDependencyError !== null}
             >
               <label style={{ color: "grey" }}>
                 Dependency list (accepting format: .txt)
               </label>
+
               <Box
                 sx={{
                   backgroundColor: "white",
@@ -432,7 +614,9 @@ function PluginUploadPage() {
                   alignItems: "left",
                   justifyContent: "left",
                   marginLeft: 0,
-                  border: "1px solid #bbbbbb",
+                  border: selectedFileDependencyError
+                    ? "1px solid red"
+                    : "1px solid #bbbbbb",
                   borderRadius: "4px",
                   "&:hover": {
                     border: "2px solid #00245A", // Border color on hover
@@ -450,7 +634,7 @@ function PluginUploadPage() {
                 >
                   <AttachFileIcon
                     sx={{
-                      color: "#00245A",
+                      color: selectedFileDependencyError ? "red" : "#00245A",
                       mt: "14px",
                       ml: "4px",
                       fontSize: "25px",
@@ -469,11 +653,18 @@ function PluginUploadPage() {
                   />
                 </div>
               </Box>
+              {selectedFileDependencyError && (
+                <FormHelperText>{selectedFileDependencyError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required>
+            <FormControl
+              fullWidth
+              required
+              error={selectedPluginFileError !== null}
+            >
               <Grid
                 justifyContent="flex-start"
                 display="flex"
@@ -490,7 +681,9 @@ function PluginUploadPage() {
                     alignItems: "left",
                     justifyContent: "left",
                     marginLeft: 0,
-                    border: "1px solid #bbbbbb",
+                    border: selectedPluginFileError
+                      ? "1px solid red"
+                      : "1px solid #bbbbbb",
                     borderRadius: "4px",
                     "&:hover": {
                       border: "2px solid #00245A", // Border color on hover
@@ -508,7 +701,7 @@ function PluginUploadPage() {
                   >
                     <AttachFileIcon
                       sx={{
-                        color: "#00245A",
+                        color: selectedPluginFileError ? "red" : "#00245A",
                         mt: "14px",
                         ml: "4px",
                         fontSize: "25px",
@@ -528,11 +721,18 @@ function PluginUploadPage() {
                   </div>
                 </Box>
               </Grid>
+              {selectedPluginFileError && (
+                <FormHelperText>{selectedPluginFileError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required>
+            <FormControl
+              fullWidth
+              required
+              error={selectedMlModelError !== null}
+            >
               <Grid
                 justifyContent="flex-start"
                 display="flex"
@@ -550,7 +750,9 @@ function PluginUploadPage() {
                     alignItems: "left",
                     justifyContent: "left",
                     marginLeft: 0,
-                    border: "1px solid #bbbbbb",
+                    border: selectedMlModelError
+                      ? "1px solid red"
+                      : "1px solid #bbbbbb",
                     borderRadius: "4px",
                     "&:hover": {
                       border: "2px solid #00245A", // Border color on hover
@@ -568,7 +770,7 @@ function PluginUploadPage() {
                   >
                     <AttachFileIcon
                       sx={{
-                        color: "#00245A",
+                        color: selectedMlModelError ? "red" : "#00245A",
                         mt: "14px",
                         ml: "4px",
                         fontSize: "25px",
@@ -588,6 +790,9 @@ function PluginUploadPage() {
                   </div>
                 </Box>
               </Grid>
+              {selectedMlModelError && (
+                <FormHelperText>{selectedMlModelError}</FormHelperText>
+              )}
             </FormControl>
           </Grid>
         </Grid>

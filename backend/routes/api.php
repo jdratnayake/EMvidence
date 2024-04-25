@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileManageController;
 use App\Http\Controllers\PluginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DeviceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::prefix("v1/plugin")->group(function () {
     Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"]);
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"]);
-    Route::post("/upload", [PluginController::class, "uploadPlugin"]);
+    Route::post("/upload", [PluginController::class, "uploadPlugin"])->middleware('jwt');
 });
 
 Route::prefix("v1/auth")->group(function () {
@@ -49,6 +50,10 @@ Route::prefix("v1/auth")->group(function () {
 Route::prefix("v1/user")->group(function () {
     Route::get('/', [UserController::class, 'index'])->middleware('jwt');
     Route::put('/ban-status-change', [UserController::class, 'changeBanStatus'])->middleware('jwt');
+});
+
+Route::prefix("v1/device")->group(function () {
+    Route::get('/', [DeviceController::class, 'index'])->middleware('jwt');
 });
 
 // Route::prefix("analysis-plugin")->group(function (){
