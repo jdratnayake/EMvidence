@@ -20,9 +20,11 @@ use Symfony\Component\Process\Process;
 
 class FileManageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $emDataRecords = EmDataFile::where('user_id', 1)->get([
+        $userId = $request->header('user_id');
+
+        $emDataRecords = EmDataFile::where('user_id', $userId)->get([
             'em_raw_file_id',
             'em_raw_file_name',
             'em_raw_file_visible_name',
@@ -38,7 +40,12 @@ class FileManageController extends Controller
             'user_id',
             'file_upload_timestamp'
         ]);
-        return $emDataRecords;
+
+        $responseData = [
+            'em_raw_file' => $emDataRecords,
+        ];
+
+        return $responseData;
     }
 
     public function deleteFile(Request $request)
@@ -126,7 +133,6 @@ class FileManageController extends Controller
                 'status' => 500
             ]);
         }
-
     }
 
     public function convertFileName($inputString)
@@ -190,7 +196,6 @@ class FileManageController extends Controller
                     'status' => 200
                 ]);
             }
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,
@@ -231,7 +236,6 @@ class FileManageController extends Controller
             try {
                 $process->mustRun();
                 return json_decode($process->getOutput());
-
             } catch (ProcessFailedException $exception) {
                 return $exception->getMessage();
             }
@@ -350,15 +354,12 @@ class FileManageController extends Controller
                         'em_raw_h5_hash' => $output->file_hash,
                         'preprocessing_file_creation_timestamp' => $formattedDateTime
                     ]);
-
                 } else {
                     continue;
                 }
-
             }
 
             return "all files are processed";
-
         } else {
 
             return "no files to process";
@@ -393,5 +394,4 @@ class FileManageController extends Controller
             'status' => 200
         ]);
     }
-
 }

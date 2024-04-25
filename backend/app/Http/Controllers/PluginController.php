@@ -82,7 +82,7 @@ class PluginController extends Controller
     public function uploadPlugin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'plugin_name' => 'required|string|max:64',
+            'plugin_name' => 'required|string|unique:analysis_plugins|max:64',
             'description' => 'required|string|max:512',
             'device_id' => 'required|numeric',
             'em_data_file_id' => 'required|numeric',
