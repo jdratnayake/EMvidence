@@ -24,6 +24,7 @@ import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
 import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
 import PluginVerifyPage from "./pages/PluginVerifyPage/PluginVerifyPage";
+import PluginVerifyListPage from "./pages/PluginVerifyListPage/PluginVerifyListPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
@@ -57,7 +58,7 @@ const router = createBrowserRouter(
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
 
-    
+
 
       <Route
         path="plugin"
@@ -81,6 +82,12 @@ const router = createBrowserRouter(
         path="plugin-verify"
         element={<AdminTemplate children={<PluginVerifyPage />} />}
       />
+      <Route
+        path="plugin-verify-list"
+        element={<AdminTemplate children={<PluginVerifyListPage />} />}
+      />
+
+
       {/* Investigator */}
       <Route
         path="analysis"

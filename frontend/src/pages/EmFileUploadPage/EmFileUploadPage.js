@@ -9,7 +9,11 @@ import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Resumable from "resumablejs";
 import { useNavigate } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
 import Alert from "@mui/material/Alert";
@@ -23,6 +27,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
+import Tooltip from '@mui/material/Tooltip';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   FormControl,
   InputLabel,
@@ -34,13 +40,14 @@ import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
 import { notifyManager } from "react-query";
+import { API_URL } from "../../constants";
 
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 14,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: "black",
+    backgroundColor: "white",
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
@@ -48,35 +55,47 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-function LinearProgressWithLabel(props) {
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
+
+
+function ConfirmCancelDialog({ open, onClose }) {
+  const handleClose = () => {
+    onClose(false); // User chose to cancel
+  };
+
+  const handleConfirm = () => {
+    onClose(true); // User chose to confirm
+  };
+
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ width: "100%", mr: 1, }}>
-        <BorderLinearProgress variant="determinate" {...props} />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value
-        )}%`}</Typography>
-      </Box>
-    </Box>
+    <ThemeProvider theme={darkTheme}>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
+          <DialogContentText>
+            Do you want to cancel the process?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ThemeProvider>
   );
 }
 
-LinearProgressWithLabel.propTypes = {
-  /**
-   * The value of the progress indicator for the determinate and buffer variants.
-   * Value between 0 and 100.
-   */
-  value: PropTypes.number.isRequired,
-};
-
 function EmFileUploadPage() {
-  const baseURL1 = "http://127.0.0.1:8000/api/upload_data_file";
-  const baseURL2 = "http://127.0.0.1:8000/api/send_to_database";
-
-  const key = window.crypto.getRandomValues(new Uint8Array(32));
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const baseURL1 = API_URL + "/upload_data_file";
+  const baseURL2 = API_URL + "/send_to_database";
 
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
@@ -90,6 +109,7 @@ function EmFileUploadPage() {
   const [uploading, setuploading] = useState(0);
   const [resumable, setResumable] = useState(null);
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
+  const [showCancelAlert, setShowCancelAlert] = useState(false);
 
   // State to manage the selected value of the dropdown
   const [deviceId, setDeviceId] = useState(1);
@@ -104,6 +124,43 @@ function EmFileUploadPage() {
   const [startTime, setStartTime] = useState(0);
   const [finishTime, setFinishTime] = useState(0);
   const [uploadTime, setUploadTime] = useState(0);
+
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+
+  const confirmCancel = () => {
+    setShowCancelDialog(true);
+  };
+
+  const handleCloseCancelDialog = (confirmed) => {
+    setShowCancelDialog(false);
+    if (confirmed) {
+      navigate("/file-list"); // Perform cancel action
+    }
+  };
+
+
+  function LinearProgressWithLabel(props) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", mt: compressedFile ? 4 : 0 }}>
+        <Box sx={{ width: "100%", mr: 1, }}>
+          <BorderLinearProgress variant="determinate" {...props} />
+        </Box>
+        <Box sx={{ minWidth: 35, ml: 1 }}>
+          <Typography variant="h6" color="text.secondary">{`${Math.round(
+            props.value
+          )}%`}</Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  LinearProgressWithLabel.propTypes = {
+    /**
+     * The value of the progress indicator for the determinate and buffer variants.
+     * Value between 0 and 100.
+     */
+    value: PropTypes.number.isRequired,
+  };
 
   // Handler for dropdown value change
 
@@ -261,19 +318,6 @@ function EmFileUploadPage() {
     readNextChunk();
   };
 
-  const encryptChunk = (data) => {
-    return new Promise((resolve, reject) => {
-      try {
-        const encryptedData = CryptoJS.AES.encrypt(
-          data,
-          "encryption_key"
-        ).toString();
-        resolve(encryptedData);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
 
   const concatenateUint8Arrays = (arrays) => {
     const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
@@ -288,52 +332,17 @@ function EmFileUploadPage() {
     return result;
   };
 
-  //const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   const uploader = new Resumable({
     target: baseURL1,
     // fileType: ['png', 'jpg', 'jpeg', 'mp4', 'csv', 'h5', 'mkv', 'gz', 'zip', 'cfile', 'HEIC', 'iso'],
-    fileType: ["png", "h5", "cfile", "gz"],
+    fileType: ["cfile", "gz"],
     chunkSize: 1024 * 1024 * 20,
     uploadMethod: "POST",
     headers: {
       // 'X-CSRF-TOKEN': csrfToken,
       Accept: "application/json",
     },
-    // preprocess: function (chunk) {
-    //   console.log('---------- preprocessing --------');
-    //   const reader = new FileReader();
-    //   reader.onload = async function (e) {
-    //     const data = e.target.result;
-    //     const encryptedData = await window.crypto.subtle.encrypt(
-    //       { name: "AES-GCM", iv: iv },
-    //       key,
-    //       data  
-    //     );
-    //     chunk.fileObj.file = new Blob([encryptedData], { type: "application/octet-stream" });
-    //     chunk.preprocessFinished();
-    //   };
-    //   reader.readAsArrayBuffer(chunk.fileObj.file);
-
-    // },
-    // preprocess: function(chunk) {
-    //   console.log('---------- preprocessing --------');
-    //   const reader = new FileReader();
-    //   console.log(chunk.startByte/1024/1024);
-    //   console.log(chunk.endByte/1024/1024);
-    //   reader.readAsArrayBuffer(chunk.fileObj.file.slice(chunk.startByte, chunk.endByte));
-    //   reader.onload = function(e) {
-    //     const chunkData = e.target.result;
-    //     console.log(chunkData);
-    //     const textDecoder = new TextDecoder();
-    //     const chunkDataString = textDecoder.decode(chunkData);
-
-    //     const encryptedData = CryptoJS.AES.encrypt(chunkDataString, "encryption_key");
-    //     // chunk.fileObj.file = new Blob([chunkData], { type: "application/octet-stream" });
-    //     // console.log(chunk.fileObj.file);
-    //     chunk.preprocessFinished();
-    //   };  
-    // },
     simultaneousUploads: 1,
     testChunks: false,
     throttleProgressCallbacks: 1,
@@ -343,6 +352,8 @@ function EmFileUploadPage() {
     console.log("File added:");
     console.log("File added:", file);
     setIsFileAdded(true);
+    console.log("----------  this is base url ----------");
+    console.log(baseURL1);
   });
 
   uploader.on("uploadStart", function (file, response) {
@@ -437,7 +448,7 @@ function EmFileUploadPage() {
             setIsSendToDatabase(true);
             setTimeout(() => {
               navigate("/file-list");
-            }, 10000);
+            }, 3000);
           } else {
             alert("Error");
             navigate("/file-list");
@@ -447,23 +458,6 @@ function EmFileUploadPage() {
     }
   }, [isSuccess, percentage, fileName, fileSize, fileUniqueName]);
 
-  // const handleUpload = async () => {
-  //     if (resumable) {
-  //       try {
-  //         const response = await fetch('http://127.0.0.1:8000/csrf-token'); // should do in post method
-  //         const data = await response.json();
-  //         console.log(data);
-  //         resumable.opts.query = {_token: data.csrf_token};
-  //         resumable.opts.headers = {
-  //             'X-CSRF-TOKEN': data.csrf_Token,
-  //           };
-  //         console.log("in upload section");
-  //         resumable.upload();
-  //       } catch (error) {
-  //         console.error('Error fetching CSRF token:', error);
-  //       }
-  //     }
-  //   };
   const sxStyle = {
     "&:hover": {
       "&& fieldset": {
@@ -718,7 +712,7 @@ function EmFileUploadPage() {
 
 
             {compressedFile &&
-              <div style={{ width: "100%" , mt:2}}>
+              <div style={{ width: "100%", mt: 10 }}>
                 <LinearProgressWithLabel value={progress} />
               </div>
 
@@ -763,10 +757,16 @@ function EmFileUploadPage() {
                 <LinearProgressWithLabel value={compressionProgress} />
               </div>
             )}
-
-            <IconButton onClick={() => { }}>
-              <CloseIcon />
-            </IconButton>
+            <Tooltip title="Cancel">
+              <IconButton sx={{ mt: "28px", ml: 1 }}
+                onClick={confirmCancel}>
+                <CloseIcon sx={{ color: "red" }} />
+              </IconButton>
+            </Tooltip>
+            <ConfirmCancelDialog
+              open={showCancelDialog}
+              onClose={handleCloseCancelDialog}
+            />
 
           </Box>
         </Container>

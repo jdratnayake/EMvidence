@@ -367,7 +367,7 @@ function SignUpPage() {
                         error={roleError !== ""}
                       >
                         <MenuItem value={"developer"}>Developer</MenuItem>
-                        <MenuItem value={"invesigator"}>Invesigator</MenuItem>
+                        <MenuItem value={"investigator"}>Invesigator</MenuItem>
                       </Select>
                       {roleError !== "" && (
                         <FormHelperText error>{roleError}</FormHelperText>

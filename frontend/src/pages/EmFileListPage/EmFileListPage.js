@@ -37,10 +37,11 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ToastContainer, toast } from "react-toastify";
+import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 
-const baseURL1 = "http://127.0.0.1:8000/api/em_data_records";
-const baseURL2 = "http://127.0.0.1:8000/api/delete_file";
+const baseURL1 = API_URL + "/em_data_records";
+const baseURL2 = API_URL + "/delete_file";
 
 
 function TablePaginationActions(props) {
@@ -125,7 +126,7 @@ function EmFileListPage() {
     fetch(baseURL1)
       .then((res) => res.json())
       .then((res) => setData(res))
-      // .then(res => console.log(res.data.emDataRecords))
+      .then(res => console.log(res.data.emDataRecords))
       .catch((res) => console.log(res));
   }, []);
 
@@ -258,11 +259,6 @@ function EmFileListPage() {
   }
 
   const notify = () => toast("File upload successfully");
-  // useEffect(() => {
-  //   if (location.state.send == 1) {
-  //     notify();
-  //   }
-  // }, [location.state.send]);
 
 
 
@@ -279,7 +275,7 @@ function EmFileListPage() {
         pauseOnFocusLoss
         draggable
         pauseOnHover />
-      {/* <button onClick={notify}>click</button> */}
+
       <div>
         <Dialog
           open={open}
@@ -320,42 +316,27 @@ function EmFileListPage() {
               upload
             </Button>
           </Stack>
-          {/* <Grid container spacing={2} style={{ marginTop: '20px' }}>
-              {data.map((file) => (
-                <Grid item key={file.file_id} xs={10} sm={5} md={5} lg={5}>
-                  <Card>
-                    <CardContent>
-                      <InsertDriveFileIcon fontSize="large" color="primary"/>
-                      <Typography variant="h7" component="div">
-                        {file.file_name}
-                      </Typography>
 
-                      
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid> */}
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{maxHeight: "70vh", overflowY:"scroll"}}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: "scroll" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow >
-                  <TableCell  scope="row">
+                  <TableCell scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       File Name
                     </Typography>
                   </TableCell>
-                  <TableCell  scope="row">
+                  <TableCell scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       Size
                     </Typography>
                   </TableCell>
-                  <TableCell  scope="row">
+                  <TableCell scope="row">
                     <Typography variant="h6" color="textPrimary" >
                       Created Date
                     </Typography>
                   </TableCell>
-                  <TableCell  scope="row" align="center">
+                  <TableCell scope="row" align="center">
                     <Typography variant="h6" color="textPrimary" >
                       Status
                     </Typography>
@@ -374,7 +355,7 @@ function EmFileListPage() {
                   : data
                 ).map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
-                    <TableCell  scope="row">
+                    <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
                         <InsertDriveFileIcon
                           fontSize="medium"
@@ -401,15 +382,15 @@ function EmFileListPage() {
                       )}
                       {data.em_raw_upload_status === "processed" && (
                         <Chip
-                        sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
-                        label={"processed"}
-                      />
+                          sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
+                          label={"processed"}
+                        />
                       )}
                       {(data.em_raw_upload_status === "failed" || data.em_raw_upload_status === "faild") && (
                         <Chip
-                        sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-                        label={"failed"}
-                      />
+                          sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                          label={"failed"}
+                        />
                       )}
                     </TableCell>
                     <TableCell align="center">
@@ -457,11 +438,18 @@ function EmFileListPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {emptyRows > 0 && (
+                {data.length == 0 && (
                   <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
+                    <TableCell colSpan={6} align="center">
+                      <Typography variant="h6">
+                        No files found
+                      </Typography>
+                    </TableCell>
                   </TableRow>
                 )}
+                <TableRow style={{ height: 30 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
