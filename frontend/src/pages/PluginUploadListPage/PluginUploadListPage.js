@@ -1,77 +1,39 @@
-import { CssBaseline, Typography } from "@mui/material";
-import { Container, width } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./PluginUploadListPage.css";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import NavBar from "../../components/NavBar/NavBar";
-import { Grid, Card, CardContent, Chip } from "@mui/material";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import Divider from "@mui/material/Divider";
-import CardActions from "@mui/material/CardActions";
-import logo from "../PluginsPage/p4.png";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import DeleteIcon from '@mui/icons-material/Delete';
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import Tooltip from '@mui/material/Tooltip';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-
+import { useNavigate } from "react-router-dom";
+import { Container } from "@mui/system";
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Input,
+  Typography,
+  Button,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableRow,
+  Paper,
+  Grid,
+  Chip,
+  TextField,
+  Tooltip,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
-import { List } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useUser } from "../../contexts/UserContext";
+import "./PluginUploadListPage.css";
 
 function PluginUploadListPage() {
-
-
   const [searchText, setSearchText] = useState("");
-  const [pageTitle, setPageTitle] = useState('Plugin Upload Page');
-  useEffect(() => {
-    document.title = pageTitle;
-  }, [pageTitle]);
+  const { user, addUser } = useUser();
 
   const handleSearch = (event) => {
     setSearchText(event.target.value);
   };
   const navigate = useNavigate();
-  const navigateToPluginUploadPage2 = () => {
-    navigate("/plugin-upload");
-  };
   const theme = useTheme();
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -90,7 +52,6 @@ function PluginUploadListPage() {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -106,23 +67,27 @@ function PluginUploadListPage() {
         },
       },
     },
-  }
+  };
 
   return (
     <>
-
-      <Container >
+      <Container>
         <Typography
           variant="h4"
           color="textPrimary"
           align="center"
           gutterBottom
-
         >
           Plugins
         </Typography>
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-          <Grid container alignItems="left" justifyContent="left" >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Grid container alignItems="left" justifyContent="left">
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
@@ -134,7 +99,12 @@ function PluginUploadListPage() {
                 value={searchText}
                 onChange={handleSearch}
                 variant="outlined"
-                style={{ width: "80%", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+                style={{
+                  width: "80%",
+                  marginTop: "40px",
+                  backgroundColor: "white",
+                  borderRadius: 4,
+                }}
                 InputProps={{
                   endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
                 }}
@@ -145,7 +115,7 @@ function PluginUploadListPage() {
             <Tooltip title={lessThanMd ? "Upload Plugin" : null}>
               <Button
                 variant="contained"
-                onClick={navigateToPluginUploadPage2}
+                onClick={() => navigate("/plugin-upload")}
                 sx={{
                   pl: 4,
                   pr: 4,
@@ -158,10 +128,9 @@ function PluginUploadListPage() {
                   },
                 }}
               >
-                {lessThanMd ? <CloudUploadIcon /> : 'Upload Plugin'}
+                {lessThanMd ? <CloudUploadIcon /> : "Upload Plugin"}
               </Button>
             </Tooltip>
-
           </Box>
         </Box>
         <TableContainer component={Paper} style={{ marginTop: "20px" }}>
@@ -169,44 +138,44 @@ function PluginUploadListPage() {
             <TableBody>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
+                  <Typography variant="h6" color="textPrimary">
                     Plugin Name
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
+                  <Typography variant="h6" color="textPrimary">
                     Size
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
+                  <Typography variant="h6" color="textPrimary">
                     Created Date
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h6" color="textPrimary" >
+                  <Typography variant="h6" color="textPrimary">
                     Status
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
-                  <Typography variant="h6" color="textPrimary" >
+                  <Typography variant="h6" color="textPrimary">
                     Action
                   </Typography>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     plugin 1
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     10 MB
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
@@ -222,26 +191,27 @@ function PluginUploadListPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "View" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
-
+                        {lessThanMd ? null : (
+                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <VisibilityIcon /> : " View"}
                       </Button>
                     </Tooltip>
 
@@ -254,13 +224,13 @@ function PluginUploadListPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
@@ -268,17 +238,17 @@ function PluginUploadListPage() {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     plugin 2
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     20 MB
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
@@ -294,26 +264,27 @@ function PluginUploadListPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "View" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
-
+                        {lessThanMd ? null : (
+                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <VisibilityIcon /> : " View"}
                       </Button>
                     </Tooltip>
 
@@ -326,13 +297,13 @@ function PluginUploadListPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
@@ -340,24 +311,28 @@ function PluginUploadListPage() {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     plugin 3
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     30 MB
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     <Chip
-                      sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                      sx={{
+                        background: "#FFF4E0",
+                        color: "orange",
+                        mt: "10px",
+                      }}
                       label={"pending"}
                     />
                   </Typography>
@@ -368,26 +343,27 @@ function PluginUploadListPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "View" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
-
+                        {lessThanMd ? null : (
+                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <VisibilityIcon /> : " View"}
                       </Button>
                     </Tooltip>
 
@@ -400,23 +376,20 @@ function PluginUploadListPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
                 </TableCell>
               </TableRow>
-
             </TableBody>
-            <TableFooter>
-
-            </TableFooter>
+            <TableFooter></TableFooter>
           </Table>
         </TableContainer>
       </Container>

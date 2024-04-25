@@ -29,7 +29,7 @@ class EmDataFileTableSeeder extends Seeder
                 'file_upload_timestamp' => now(),
                 'preprocessing_file_creation_timestamp' => now(),
                 'updated_at' => now(),
-                'user_id' => 1,
+                'user_id' => 3,
                 'device_id' => 4,
             ],
         ];
