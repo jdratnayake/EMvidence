@@ -37,8 +37,14 @@ const PluginVerifyPage = () => {
   // Loading related features
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const [
+    isDependencyInstallationFetching,
+    setIsDependencyInstallationFetching,
+  ] = useState(false);
   const [loadingPreprocessing, setLoadingPreprocessing] = React.useState(false);
   const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
+  const [loadingDependencyInstallation, setLoadingDependencyInstallation] =
+    React.useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   // Preprocessing features
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
@@ -151,6 +157,51 @@ const PluginVerifyPage = () => {
         });
         setLoadingAnalyse(false);
         setIsAnalysisFetching(false);
+      });
+  };
+
+  const executeDependencyInstallation = () => {
+    setLoadingDependencyInstallation(true);
+    setIsDependencyInstallationFetching(true);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+    };
+
+    axios
+      .get(API_URL + "/plugin/dependency", { headers })
+      .then((response) => {
+        console.log(response);
+
+        toast.success("Dependency Installation Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setIsDependencyInstallationFetching(false);
+        setLoadingDependencyInstallation(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Dependency Installation Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setLoadingDependencyInstallation(false);
+        setIsDependencyInstallationFetching(false);
       });
   };
 
@@ -717,11 +768,11 @@ const PluginVerifyPage = () => {
                 },
               }}
               variant="contained"
-              // disabled={isAnalysisFetching}
-              // onClick={executeAnalysisPlugin}
-              // loading={loadingAnalyse}
+              disabled={isDependencyInstallationFetching}
+              onClick={executeDependencyInstallation}
+              loading={loadingDependencyInstallation}
             >
-              Install Libraries
+              Install Dependencies
             </LoadingButton>
 
             <LoadingButton

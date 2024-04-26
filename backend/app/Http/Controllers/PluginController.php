@@ -119,7 +119,6 @@ class PluginController extends Controller
         }
     }
 
-
     public function executeAnalysisPlugin(Request $request)
     {
         try {
@@ -148,6 +147,52 @@ class PluginController extends Controller
             return response()->json(["error" => $e->getMessage()], 500);
         }
     }
+
+    function installPipLibrariesFromFile(Request $request)
+    {
+        try {
+            // Retrieve analysis plugin ID from request header
+            $analysisPluginID = $request->header("analysis_plugin_id");
+
+            // Retrieve analysis plugin record from the database
+            $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
+
+            // Get the dependency filename from the analysis plugin record
+            $dependencyFilename = $analysisPluginRecord->dependency_filename;
+
+            // Get the full path to the dependency file
+            $filePath = env("DEPENDENCY_DIRECTORY_PATH") . $dependencyFilename;
+
+            // Check if the dependency file exists
+            if (!file_exists($filePath)) {
+                throw new \Exception("Dependency file not found: $dependencyFilename");
+            }
+
+            // Read the contents of the dependency file
+            $fileContents = file_get_contents($filePath);
+
+            // Split the contents into an array of libraries
+            $pipLibraries = explode("\n", $fileContents);
+
+            // Install each pip library
+            foreach ($pipLibraries as $library) {
+                $process = new Process(['pip', 'install', $library]);
+                $process->run();
+
+                // Check if the installation process failed
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+            }
+
+            // Return success response
+            return response()->json(["success" => 'Pip libraries installed successfully.']);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+    }
+
 
     public function uploadPlugin(Request $request)
     {
