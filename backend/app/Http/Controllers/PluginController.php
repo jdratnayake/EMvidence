@@ -20,7 +20,7 @@ function execute_python_script($path, ...$variables)
         $process->mustRun();
         return json_decode($process->getOutput());
     } catch (ProcessFailedException $exception) {
-        return $exception->getMessage();
+        throw new \Exception($exception->getMessage(), $exception->getCode(), $exception);
     }
 }
 
@@ -79,61 +79,74 @@ class PluginController extends Controller
 
     public function executePreprocessingPlugin(Request $request)
     {
-        // Header parameters
-        $preprocessingPluginName = "basic.py";
-        $downSamplingIndex = $request->header("down_sampling_index");
-        $fftSizeIndex = $request->header("fft_size_index");
-        $overlapPercentageIndex = $request->header("overlap_percentage_index");
-        $sampleSelectionIndex = $request->header("sample_selection_index");
-        $emRawFileId = $request->header("em_raw_file_id");
-        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId);
-        $emRawFileName = $emRawFileRecord->value('em_raw_file_name');
+        try {
+            // Header parameters
+            $preprocessingPluginName = "basic.py";
+            $downSamplingIndex = $request->header("down_sampling_index");
+            $fftSizeIndex = $request->header("fft_size_index");
+            $overlapPercentageIndex = $request->header("overlap_percentage_index");
+            $sampleSelectionIndex = $request->header("sample_selection_index");
+            $emRawFileId = $request->header("em_raw_file_id");
 
-        // Set path variables
-        $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
-        $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
-        $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
+            // Retrieve EM raw file record
+            $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId)->firstOrFail();
+            $emRawFileName = $emRawFileRecord->em_raw_file_name;
 
-        // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
+            // Set path variables
+            $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
+            $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
+            $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
 
-        $output = execute_python_script(
-            $preprocessingPluginPath,
-            $emRawFilePath,
-            $emPreprocessedDirectoryPath,
-            $downSamplingIndex,
-            $fftSizeIndex,
-            $overlapPercentageIndex,
-            $sampleSelectionIndex
-        );
+            // Execute Python script
+            $output = execute_python_script(
+                $preprocessingPluginPath,
+                $emRawFilePath,
+                $emPreprocessedDirectoryPath,
+                $downSamplingIndex,
+                $fftSizeIndex,
+                $overlapPercentageIndex,
+                $sampleSelectionIndex
+            );
 
-        $emPreprocessFileName = explode(".", $emRawFileName)[0] . ".npy";
-        EmDataFile::where('em_raw_file_id', $emRawFileId)->update(['em_preprocess_file_name' => $emPreprocessFileName]);
+            // Update EM preprocess file name
+            $emPreprocessFileName = explode(".", $emRawFileName)[0] . ".npy";
+            EmDataFile::where('em_raw_file_id', $emRawFileId)->update(['em_preprocess_file_name' => $emPreprocessFileName]);
 
-        return response()->json(["output" => $output]);
+            return response()->json(["output" => $output]);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
+
 
     public function executeAnalysisPlugin(Request $request)
     {
-        $emRawFileID = $request->header("em_raw_file_id");
-        $analysisPluginID = $request->header("analysis_plugin_id");
+        try {
+            $emRawFileID = $request->header("em_raw_file_id");
+            $analysisPluginID = $request->header("analysis_plugin_id");
 
-        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID);
-        $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID);
+            $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID)->firstOrFail();
+            $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
 
-        $emPreprocessingFileName = $emRawFileRecord->value('em_preprocess_file_name');
-        $analysisPluginName = $analysisPluginRecord->value('plugin_script_filename');
-        $analysisPluginMlModelName = $analysisPluginRecord->value('ml_model_filename');
+            $emPreprocessingFileName = $emRawFileRecord->em_preprocess_file_name;
+            $analysisPluginName = $analysisPluginRecord->plugin_script_filename;
+            $analysisPluginMlModelName = $analysisPluginRecord->ml_model_filename;
 
-        // Set em preprocessing path
-        $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
+            // Set em preprocessing path
+            $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
 
-        // Set path variables
-        $analysisPluginPath = env("ANALYSIS_PLUGIN_DIRECTORY_PATH") . "/" . $analysisPluginName;
-        $analysisPluginMlModelPath = env("ML_MODEL_DIRECTORY_PATH") . "/" . $analysisPluginMlModelName;
+            // Set path variables
+            $analysisPluginPath = env("ANALYSIS_PLUGIN_DIRECTORY_PATH") . "/" . $analysisPluginName;
+            $analysisPluginMlModelPath = env("ML_MODEL_DIRECTORY_PATH") . "/" . $analysisPluginMlModelName;
 
-        $output = execute_python_script($analysisPluginPath, $emPreprocessingFilePath, $analysisPluginMlModelPath);
+            $output = execute_python_script($analysisPluginPath, $emPreprocessingFilePath, $analysisPluginMlModelPath);
 
-        return response()->json(["output" => $output]);
+            return response()->json(["output" => $output]);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
 
     public function uploadPlugin(Request $request)

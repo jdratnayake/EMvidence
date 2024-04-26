@@ -66,6 +66,7 @@ const PluginVerifyPage = () => {
     axios
       .get(API_URL + "/plugin/preprocessing", { headers })
       .then((response) => {
+        // console.log(response.data);
         console.log(response.data);
 
         toast.success("Pre-Processing Done Successfully", {
@@ -111,6 +112,7 @@ const PluginVerifyPage = () => {
     axios
       .get(API_URL + "/plugin/analysis", { headers })
       .then((response) => {
+        console.log(response);
         const analysisResultObjects = Object.entries(
           response.data["output"]
         ).map(([key, value]) => ({
@@ -118,7 +120,7 @@ const PluginVerifyPage = () => {
           probability: value,
         }));
 
-        console.log(analysisResultObjects);
+        // console.log(analysisResultObjects);
 
         toast.success("Analysis Done Successfully", {
           position: "top-right",
