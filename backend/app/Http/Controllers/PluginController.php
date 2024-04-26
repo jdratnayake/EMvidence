@@ -80,12 +80,14 @@ class PluginController extends Controller
     public function executePreprocessingPlugin(Request $request)
     {
         // Header parameters
-        $emRawFileName = $request->header("em_raw_file_name");
-        $preprocessingPluginName = $request->header("preprocessing_plugin_name");
+        $preprocessingPluginName = "basic.py";
         $downSamplingIndex = $request->header("down_sampling_index");
         $fftSizeIndex = $request->header("fft_size_index");
         $overlapPercentageIndex = $request->header("overlap_percentage_index");
         $sampleSelectionIndex = $request->header("sample_selection_index");
+        $emRawFileId = $request->header("em_raw_file_id");
+        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId);
+        $emRawFileName = $emRawFileRecord->value('em_raw_file_name');
 
         // Set path variables
         $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
@@ -103,6 +105,9 @@ class PluginController extends Controller
             $overlapPercentageIndex,
             $sampleSelectionIndex
         );
+
+        $emPreprocessFileName = explode(".", $emRawFileName)[0] . ".npy";
+        EmDataFile::where('em_raw_file_id', $emRawFileId)->update(['em_preprocess_file_name' => $emPreprocessFileName]);
 
         return response()->json(["output" => $output]);
     }

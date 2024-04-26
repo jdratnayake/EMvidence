@@ -40,8 +40,8 @@ Route::prefix("v1/plugin")->group(function () {
     Route::get("/", [PluginController::class, "index"])->middleware('jwt');
     Route::get("/single", [PluginController::class, "getPlugin"])->middleware('jwt');
     Route::get("/initial", [PluginController::class, "getInitialPlugins"])->middleware('jwt');
-    Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"]);
-    Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"]);
+    Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"])->middleware('jwt');
+    Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"])->middleware('jwt');
     Route::post("/upload", [PluginController::class, "uploadPlugin"])->middleware('jwt');
     Route::get("/icon", [PluginController::class, "getPluginIcon"])->middleware('jwt');
 });

@@ -23,7 +23,7 @@ import { getPluginFullDetails } from "../../services/pluginService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./PluginVerifyPage.css";
-import { getFullName } from "../../helper";
+import { getFullName, bytesToMB } from "../../helper";
 
 const PluginVerifyPage = () => {
   const blackHeader = "#00245A";
@@ -55,8 +55,8 @@ const PluginVerifyPage = () => {
 
     const headers = {
       "Content-Type": "application/json",
-      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
-      preprocessing_plugin_name: "basic.py",
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: data?.emFile.em_raw_file_id,
       down_sampling_index: downSamplingIndex,
       fft_size_index: fftSizeIndex,
       overlap_percentage_index: overLapPercentageIndex,
@@ -99,18 +99,13 @@ const PluginVerifyPage = () => {
 
   const executeAnalysisPlugin = () => {
     setLoadingAnalyse(true);
-    let analysisPluginMachineLearningModelName = "";
-
-    analysisPluginMachineLearningModelName =
-      "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
-
     setIsAnalysisFetching(true);
+
     const headers = {
       "Content-Type": "application/json",
-      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
-      analysis_plugin_name:
-        "apple_iphone_4s__detect_behaviour_of_10_classes.py",
-      analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: data?.emFile.em_raw_file_id,
+      analysis_plugin_id: data?.plugin.plugin_id,
     };
 
     axios
@@ -327,7 +322,8 @@ const PluginVerifyPage = () => {
                 <strong>Device Name:</strong> {data?.emFile.device_name}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>File Size:</strong> Md5
+                <strong>File Size:</strong>{" "}
+                {bytesToMB(data?.emFile.em_raw_cfile_file_size) + " MB"}
               </Typography>
             </Box>
           </Box>
@@ -410,7 +406,8 @@ const PluginVerifyPage = () => {
               <Select
                 id="downSamplingIndex"
                 defaultValue={0}
-                // label="Select Your File"
+                value={downSamplingIndex}
+                onChange={(event) => setDownSamplingIndex(event.target.value)}
                 style={{ borderColor: "#525252" }}
               >
                 <MenuItem value={0}>Not down-sampled</MenuItem>
@@ -799,11 +796,7 @@ const PluginVerifyPage = () => {
             }}
           >
             <Typography variant="h5" sx={{ mb: "30px" }}>
-              Analysis Summary 1
-            </Typography>
-
-            <Typography variant="body1">
-              <strong>Insight Type:</strong> Test insight
+              Result
             </Typography>
 
             {analysisResults.map((result, index) => (

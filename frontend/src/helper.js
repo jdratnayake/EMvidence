@@ -28,3 +28,8 @@ export const getDate = (datetimeString) => {
 
   return dateString;
 };
+
+export const bytesToMB = (bytes) => {
+  const megabytes = bytes / (1024 * 1024);
+  return megabytes.toFixed(2); // Limiting the result to 2 decimal places
+};

@@ -61,7 +61,7 @@ export const getPluginFullDetails = async (userData, pluginId) => {
 
     const resultDat = { plugin, emFile };
 
-    console.log(resultDat);
+    // console.log(resultDat);
 
     return resultDat;
   } catch (error) {
