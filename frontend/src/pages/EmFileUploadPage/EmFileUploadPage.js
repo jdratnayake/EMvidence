@@ -96,6 +96,7 @@ function ConfirmCancelDialog({ open, onClose }) {
 function EmFileUploadPage() {
   const baseURL1 = API_URL + "/upload_data_file";
   const baseURL2 = API_URL + "/send_to_database";
+  const baseURL3 = API_URL + "/process_file";
 
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
@@ -125,6 +126,8 @@ function EmFileUploadPage() {
   const [finishTime, setFinishTime] = useState(0);
   const [uploadTime, setUploadTime] = useState(0);
 
+  const abortController = new AbortController();
+  const [cancelToken, setCancelToken] = useState(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const confirmCancel = () => {
@@ -414,6 +417,7 @@ function EmFileUploadPage() {
   };
 
   useEffect(() => {
+
     if (isSuccess === 1 && percentage == 100) {
       let nowtime = performance.now();
       console.log("end time : ", nowtime);
@@ -421,19 +425,7 @@ function EmFileUploadPage() {
       console.log("time to take for upload : ", dif, " sec");
       setUploadTime(dif);
 
-      console.log("-- ---- --");
-      console.log(
-        fileName,
-        fileSize,
-        fileUniqueName,
-        deviceId,
-        centerFreq,
-        samplingRate,
-        hash
-      );
-      console.log("-- ---- --");
-      axios
-        .post(baseURL2, {
+      axios.post(baseURL2, {
           name: fileName,
           size: fileSize,
           unique_name: fileUniqueName,
@@ -446,14 +438,29 @@ function EmFileUploadPage() {
           console.log(response);
           if (response.data.status == 200) {
             setIsSendToDatabase(true);
-            setTimeout(() => {
-              navigate("/file-list");
-            }, 3000);
+
           } else {
             alert("Error");
             navigate("/file-list");
           }
         });
+
+      axios.post(baseURL3, { unique_name: fileUniqueName })
+        .then(() => {
+          console.log(" --- msg 1 ---");
+          navigate("/file-list");
+         
+        })
+        .catch(error => {
+          console.error("Error processing file:", error);
+          // Handle error, e.g., show a message to the user
+        });
+        
+      setTimeout(() => {
+        navigate("/file-list");
+        console.log(" --- msg 2 ---");
+      }, 300);
+
       console.log(fileName, fileSize, fileUniqueName);
     }
   }, [isSuccess, percentage, fileName, fileSize, fileUniqueName]);

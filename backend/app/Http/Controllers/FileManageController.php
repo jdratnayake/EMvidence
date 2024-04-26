@@ -42,7 +42,7 @@ class FileManageController extends Controller
         ]);
 
         $responseData = [
-            'em_raw_file' => $emDataRecords,
+            'em_raw_files' => $emDataRecords,
         ];
 
         return $responseData;
@@ -254,6 +254,166 @@ class FileManageController extends Controller
             foreach ($getEmDataRecords as $item) {
 
                 // ----------------- Decomprerss the file -----------------
+                
+                $gzipFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $item['em_raw_file_name'];
+               
+                $cfileName = convertFileName($item['em_raw_file_name']) . ".cfile";
+                $decompressedFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $cfileName;
+              
+                // Open the compressed file for reading
+                $gzipFileHandle = fopen($gzipFilePath, 'rb');
+               
+                // Open a writable file handle for the decompressed file
+                $decompressedFileHandle = fopen($decompressedFilePath, 'wb');
+
+                if ($gzipFileHandle === false || $decompressedFileHandle === false) {
+                    // Handle file opening errors, go to next iteration.
+                    fclose($gzipFileHandle);
+                    fclose($decompressedFileHandle);
+                    continue;
+                }
+
+                // Initialize decompression stream
+                $gzipStream = gzopen($gzipFilePath, 'rb');
+
+                if ($gzipStream === false) {
+                    // Handle decompression stream creation error
+                    fclose($gzipFileHandle);
+                    fclose($decompressedFileHandle);
+                    continue;
+                }
+
+                // Stream decompressed content and write to the decompressed file
+                while (!gzeof($gzipStream)) {
+                    $chunk = gzread($gzipStream, 1024 * 1024 * 5); // Read 5MB at a time
+                    fwrite($decompressedFileHandle, $chunk);
+                }
+
+                // Close handles
+                gzclose($gzipStream);
+                fclose($gzipFileHandle);
+                fclose($decompressedFileHandle);
+
+                // ----------------- Calculate cfile hash -----------------
+
+                // Specify the path to your large file
+                $filePath = $decompressedFilePath;
+
+                // Open the file for reading
+                $fileHandle = fopen($filePath, 'r');
+
+                // Initialize the hash context
+                $hashContext = hash_init('sha256');
+
+                // Read the file in chunks and update the hash context
+                while (!feof($fileHandle)) {
+                    hash_update($hashContext, fread($fileHandle, 1024 * 1024 * 5)); // Read 5MB at a time
+                }
+
+                // Finalize the hash computation and get the resulting hash
+                $hash = hash_final($hashContext);
+
+                // Close the file handle
+                fclose($fileHandle);
+
+                if ($item['em_raw_cfile_hash'] != $hash) {
+
+                    // update relevat database record em_raw_upload_status = 'faild'
+                    EmDataFile::where('em_raw_file_id', $item['em_raw_file_id'])->update([
+                        'em_raw_upload_status' => 'faild'
+                    ]);
+
+                    continue;
+                }
+
+                // ----------------- Convert cfile to h5 format can calculate the hash -----------------
+
+
+                $h5FileName = convertFileName($item['em_raw_file_name']) . ".h5";
+                $h5FilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $h5FileName;
+                $output = execute_python_script(env("CFILE_TO_H5_FILE_PATH"), $decompressedFilePath, $h5FilePath);
+
+                if ($output->status == 200) {
+
+                    // Delete the zip file
+                    unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $item['em_raw_file_name']);
+
+                    $currentDateTime = Carbon::now();
+
+                    // Add 5 hours and 30 minutes
+                    $localDateTime = $currentDateTime->addHours(5)->addMinutes(30);
+
+                    // Format the future time as desired
+                    $formattedDateTime = $localDateTime->format("Y-m-d H:i:s");
+
+                    // Update the relevent records.
+                    EmDataFile::where('em_raw_file_id', $item['em_raw_file_id'])->update([
+                        'em_raw_upload_status' => 'processed',
+                        'em_raw_file_name' => $cfileName,
+                        'em_preprocess_file_name' => $h5FileName,
+                        'em_raw_h5_file_size' => $output->file_size,
+                        'em_raw_h5_hash' => $output->file_hash,
+                        'preprocessing_file_creation_timestamp' => $formattedDateTime
+                    ]);
+                } else {
+                    continue;
+                }
+            }
+            info("all files are processed");
+            return "all files are processed";
+        } else {
+            info("no files to process");
+            return "no files to process";
+        }
+    }
+
+
+    public function processRawFile(Request $request){
+        function convertFileName($inputString)
+        {
+
+            $parts = explode('.cfile', $inputString);
+
+            // Extract the file extension
+            $extension = pathinfo($parts[1], PATHINFO_EXTENSION);
+
+            // Remove the file extension from the second part
+            $uniqIdentifier = Str::replaceLast('.' . $extension, '', $parts[1]);
+
+            // Reorder the parts and concatenate
+            $outputString = $parts[0] . $uniqIdentifier;
+
+            return $outputString;
+        }
+
+        function execute_python_script($path, ...$variables)
+        {
+            $process = new Process(['python3', $path, ...$variables]);
+            $process->setTimeout(360);
+
+            try {
+                $process->mustRun();
+                return json_decode($process->getOutput());
+            } catch (ProcessFailedException $exception) {
+                return $exception->getMessage();
+            }
+        }
+
+        $fileUniqueName = $request->unique_name;
+        info( $fileUniqueName);
+        $getEmDataRecords = EmDataFile::where('em_raw_file_name', $fileUniqueName)->get([
+            'em_raw_file_id',
+            'em_raw_file_name',
+            'em_raw_cfile_hash',
+            'em_raw_upload_status',
+            'user_id',
+        ])->toArray();
+
+        if (count($getEmDataRecords) > 0) {
+
+            foreach ($getEmDataRecords as $item) {
+
+                // ----------------- Decomprerss the file -----------------
 
                 $gzipFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $item['em_raw_file_name'];
                 $cfileName = convertFileName($item['em_raw_file_name']) . ".cfile";
@@ -358,13 +518,27 @@ class FileManageController extends Controller
                     continue;
                 }
             }
-
+            info("all files are processed");
             return "all files are processed";
         } else {
-
-            return "no files to process";
+            info("no files to process");
+            // return "no files to process";
         }
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public function getCSRFToken()
