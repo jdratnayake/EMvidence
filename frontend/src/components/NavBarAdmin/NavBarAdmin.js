@@ -18,7 +18,7 @@ import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
 const pages = ["Dashboard", "Users", "Plugins"];
-const pageLinks = ["/admin", "/user-list", "/plugin-list"];
+const pageLinks = ["/admin", "/user-list", "/plugin-verify-list"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarAdmin(pageName) {

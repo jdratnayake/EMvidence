@@ -9,6 +9,7 @@ use Symfony\Component\Process\Process;
 use App\Models\AnalysisPlugin;
 use App\Models\EmDataFile;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 function execute_python_script($path, ...$variables)
 {
@@ -25,6 +26,57 @@ function execute_python_script($path, ...$variables)
 
 class PluginController extends Controller
 {
+    public function index()
+    {
+        $plugins = AnalysisPlugin::all();
+
+        $responseData = [
+            'plugins' => $plugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getPlugin(Request $request)
+    {
+        $pluginId = $request->header("plugin_id");
+        $plugin = AnalysisPlugin::where('plugin_id', $pluginId)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->get();
+
+        $responseData = [
+            'plugin' => $plugin[0],
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getInitialPlugins()
+    {
+        $initialPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')->where('compatibility_status', 'initial')->get();
+
+        $responseData = [
+            'initialPlugins' => $initialPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getPluginIcon(Request $request)
+    {
+        $filename = $request->header("icon_filename");
+
+        $path = env("PLUGIN_ICON_DIRECTORY_PATH") . $filename;
+
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            $defaultImagePath = env("PLUGIN_ICON_DIRECTORY_PATH") . "default.png";
+            return response()->file($defaultImagePath);
+        }
+    }
+
     public function executePreprocessingPlugin(Request $request)
     {
         // Header parameters

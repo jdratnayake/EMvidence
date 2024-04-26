@@ -29,6 +29,7 @@ Route::post('/send_to_database_test', [FileManageController::class, 'sendRecordT
 Route::post('v1/upload_data_file', [FileManageController::class, 'store']);
 Route::post('v1/send_to_database', [FileManageController::class, 'sendRecord']);
 Route::get("v1/em_data_records", [FileManageController::class, 'index']);
+Route::get("v1/em-data-record", [FileManageController::class, 'getEmFile']);
 Route::get("v1/process", [FileManageController::class, 'processEMFile']);
 Route::post('v1/delete_file', [FileManageController::class, 'deleteFile']);
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -36,9 +37,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::prefix("v1/plugin")->group(function () {
+    Route::get("/", [PluginController::class, "index"])->middleware('jwt');
+    Route::get("/single", [PluginController::class, "getPlugin"])->middleware('jwt');
+    Route::get("/initial", [PluginController::class, "getInitialPlugins"])->middleware('jwt');
     Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"]);
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"]);
     Route::post("/upload", [PluginController::class, "uploadPlugin"])->middleware('jwt');
+    Route::get("/icon", [PluginController::class, "getPluginIcon"])->middleware('jwt');
 });
 
 Route::prefix("v1/auth")->group(function () {
@@ -54,6 +59,7 @@ Route::prefix("v1/user")->group(function () {
 
 Route::prefix("v1/device")->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->middleware('jwt');
+    Route::get('/single', [DeviceController::class, 'getDevice'])->middleware('jwt');
 });
 
 // Route::prefix("analysis-plugin")->group(function (){

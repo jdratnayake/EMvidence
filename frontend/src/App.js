@@ -9,7 +9,6 @@ import AdminTemplate from "./templates/AdminTemplate/AdminTemplate";
 import DeveloperTemplate from "./templates/DeveloperTemplate/DeveloperTemplate";
 import InvestigatorTemplate from "./templates/InvestigatorTemplate/InvestigatorTemplate";
 
-
 import HomePage from "./pages/HomePage/HomePage";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
@@ -31,23 +30,16 @@ import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage/EditProfilePage";
 
-
-
-
 //for file upload test
 import FileUploadTestingPage from "./pages/FileUploadTestingPage/FileUploadTestingPage";
 import ChunkFileUploadTest from "./pages/FileUploadTestingPage/TestChunkFileUpload";
 // for file hasing test
-import Sha256 from "./pages/TestSenal/Sha256"
-import BlowFish from "./pages/TestSenal/BlowFish"
-import AesCbc from "./pages/TestSenal/AesCBC"
+import Sha256 from "./pages/TestSenal/Sha256";
+import BlowFish from "./pages/TestSenal/BlowFish";
+import AesCbc from "./pages/TestSenal/AesCBC";
 // for file compression test
-import Gzip from "./pages/TestSenal/Gzip"
-import Deflate from "./pages/TestSenal/Deflate"
-
-
-
-
+import Gzip from "./pages/TestSenal/Gzip";
+import Deflate from "./pages/TestSenal/Deflate";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -57,8 +49,6 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-
-
 
       <Route
         path="plugin"
@@ -79,14 +69,13 @@ const router = createBrowserRouter(
         element={<AdminTemplate children={<PluginManagePage />} />}
       />
       <Route
-        path="plugin-verify"
+        path="plugin-verify/:pluginId"
         element={<AdminTemplate children={<PluginVerifyPage />} />}
       />
       <Route
         path="plugin-verify-list"
         element={<AdminTemplate children={<PluginVerifyListPage />} />}
       />
-
 
       {/* Investigator */}
       <Route
@@ -127,7 +116,6 @@ const router = createBrowserRouter(
       {/* Modification Required UIs If Time Permits */}
       <Route path="analysis1" element={<AnalysisPage1 />} />
 
-
       {/* { for testing} */}
       <Route path="testUploadTradi" element={<FileUploadTestingPage />} />
       <Route path="testUploadChunk" element={<ChunkFileUploadTest />} />
@@ -139,7 +127,6 @@ const router = createBrowserRouter(
     </Route>
   )
 );
-
 
 function App() {
   return <RouterProvider router={router} />;

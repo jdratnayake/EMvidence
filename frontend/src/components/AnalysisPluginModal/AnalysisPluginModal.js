@@ -9,13 +9,21 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import plugin from "./../../resources/plugins.png";
 
-function AnalysisPluginModal({ id,name, description, open, onClose,modifyChecked }) {
-    const handleClicked = () => {
-        modifyChecked(id);
-        onClose();
-    };
+function AnalysisPluginModal({
+  id,
+  name,
+  description,
+  author = "Sherlock Holmes",
+  iconPath,
+  open,
+  onClose,
+  modifyChecked,
+}) {
+  const handleClicked = () => {
+    modifyChecked(id);
+    onClose();
+  };
 
   return (
     <>
@@ -31,7 +39,7 @@ function AnalysisPluginModal({ id,name, description, open, onClose,modifyChecked
             <CardContent>
               <Grid container alignItems="center" justifyContent="center">
                 <img
-                  src={plugin}
+                  src={iconPath}
                   alt="plugin"
                   style={{
                     width: "70px",
@@ -51,7 +59,7 @@ function AnalysisPluginModal({ id,name, description, open, onClose,modifyChecked
                 {name}
               </Typography>
               <Typography color="text.secondary" marginTop={2} align="center">
-                Maintained by Sherlock Holmes
+                Maintained by {author}
               </Typography>
               <Typography color="text.secondary" marginTop={2} align="left">
                 {description}
@@ -59,7 +67,11 @@ function AnalysisPluginModal({ id,name, description, open, onClose,modifyChecked
             </CardContent>
             <CardActions>
               <Grid container alignItems="center" justifyContent="center">
-                <Button size="medium" variant="outlined" onClick={handleClicked}>
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  onClick={handleClicked}
+                >
                   USE
                 </Button>
               </Grid>

@@ -48,6 +48,22 @@ class FileManageController extends Controller
         return $responseData;
     }
 
+    public function getEmFile(Request $request)
+    {
+        $em_raw_file_id = $request->header('em_raw_file_id');
+
+        $emDataRecord = EmDataFile::where('em_raw_file_id', $em_raw_file_id)
+            ->join('devices', 'em_data_files.device_id', '=', 'devices.device_id')
+            ->select('em_data_files.*', 'devices.device_name')
+            ->get();
+
+        $responseData = [
+            'em_raw_file' => $emDataRecord[0],
+        ];
+
+        return $responseData;
+    }
+
     public function deleteFile(Request $request)
     {
 

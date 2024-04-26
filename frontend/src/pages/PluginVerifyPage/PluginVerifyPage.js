@@ -1,106 +1,56 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import LoadingButton from "@mui/lab/LoadingButton";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 import {
   Box,
   FormControl,
   Grid,
-  NativeSelect,
   Typography,
   InputLabel,
   MenuItem,
-  Select
+  Select,
+  CardContent,
+  Card,
 } from "@mui/material";
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-
-import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
-import { API_URL } from "../../constants";
-import folder from "./../../resources/folder.png";
-
+import { API_URL, queryKeys } from "../../constants";
+import { useUser } from "../../contexts/UserContext";
+import { getPluginFullDetails } from "../../services/pluginService";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./PluginVerifyPage.css";
+import { getFullName } from "../../helper";
 
 const PluginVerifyPage = () => {
   const blackHeader = "#00245A";
   const containerColor = "#FFFFFF";
   const buttonColor = "#525252";
 
-  const [emDataFile, setEmDataFile] = useState();
-
-  const handleEmDataFile = (event) => {
-    setEmDataFile(event.target.value);
-
-  };
-
-  const analyisPlugins = [
-    {
-      id: "1",
-      name: "Behavior Identification",
-      descrption:
-        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
-    },
-    {
-      id: "2",
-      name: "Malicious Firmware Modification Detection",
-      descrption:
-        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
-    },
-    {
-      id: "3",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-    ,
-    {
-      id: "4",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    }
-    ,
-    {
-      id: "5",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    }
-    ,
-    {
-      id: "6",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    }
-    ,
-    {
-      id: "7",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    }
-  ];
-
-  const [checkedPlugin, setCheckedPlugin] = useState(0);
+  // Filter variables
+  const { pluginId } = useParams();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+  // Loading related features
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState([]);
-  const [analysisPlugin, setAnalysisPlugin] = useState(1);
-  const [loading, setLoading] = React.useState(false);
+  const [loadingPreprocessing, setLoadingPreprocessing] = React.useState(false);
   const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
-  const [insightTypeName, setInsightTypeName] = useState(
-    "Behavior identification"
-  );
+  const [analysisResults, setAnalysisResults] = useState([]);
+  // Preprocessing features
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  // Modal related features
   const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
     useState(false);
-  const [pluginModalId, setPluginModalId] = useState(null);
-  const [pluginModalName, setPluginModalName] = useState(null);
-  const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
   const executePreprocessingPlugin = () => {
-    setLoading(true);
+    setLoadingPreprocessing(true);
     console.log("Down Sampling Index: " + downSamplingIndex);
 
     const headers = {
@@ -129,7 +79,7 @@ const PluginVerifyPage = () => {
         });
 
         setIsPreprocessingFetching(false);
-        setLoading(false);
+        setLoadingPreprocessing(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -143,7 +93,7 @@ const PluginVerifyPage = () => {
           draggable: true,
           progress: undefined,
         });
-        setLoading(false);
+        setLoadingPreprocessing(false);
       });
   };
 
@@ -151,13 +101,8 @@ const PluginVerifyPage = () => {
     setLoadingAnalyse(true);
     let analysisPluginMachineLearningModelName = "";
 
-    if (analysisPlugin == 1) {
-      analysisPluginMachineLearningModelName =
-        "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
-    } else {
-      analysisPluginMachineLearningModelName =
-        "apple_iphone_4s__detect_anomalies__neural_network_model.h5";
-    }
+    analysisPluginMachineLearningModelName =
+      "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
 
     setIsAnalysisFetching(true);
     const headers = {
@@ -212,30 +157,8 @@ const PluginVerifyPage = () => {
       });
   };
 
-  const handleChecked = (id) => {
-    console.log("Id: ", id);
-    setCheckedPlugin(id);
-    setAnalysisPlugin(parseInt(id));
-    if (id == "1") {
-      setInsightTypeName("Behavior identification");
-    } else if (id == "2") {
-      setInsightTypeName("Malicious firmware modification detection");
-    }
-  };
-
-  const handleClicked = (id, name, description) => {
-    setPluginModalId(id);
-    setPluginModalName(name);
-    setPluginModalDescription(description);
-    setIsAnalysisPluginModalOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsAnalysisPluginModalOpen(false);
-  };
-
   const sxStyle = {
-    width: '100%',
+    width: "100%",
     "&:hover": {
       "&& fieldset": {
         border: "2px solid #00245A",
@@ -249,7 +172,6 @@ const PluginVerifyPage = () => {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -265,8 +187,21 @@ const PluginVerifyPage = () => {
         },
       },
     },
-  }
+  };
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getPluginFullDetails"]],
+    queryFn: () => getPluginFullDetails(user, pluginId),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getPluginFullDetails"]], () =>
+        getPluginFullDetails(user, pluginId)
+      );
+    }
+  }, [user]);
 
   return (
     <>
@@ -282,12 +217,14 @@ const PluginVerifyPage = () => {
         pauseOnHover
       />
       <AnalysisPluginModal
-        id={pluginModalId}
-        name={pluginModalName}
-        description={pluginModalDescription}
+        id={data?.plugin.plugin_id}
+        name={data?.plugin.plugin_name}
+        description={data?.plugin.plugin_description}
+        author={getFullName(data?.plugin.first_name, data?.plugin.last_name)}
+        iconPath={data?.plugin.icon_filepath}
         open={isAnalysisPluginModalOpen}
-        onClose={handleClose}
-        modifyChecked={handleChecked}
+        onClose={() => setIsAnalysisPluginModalOpen(false)}
+        modifyChecked={() => {}}
       />
 
       <Box
@@ -295,7 +232,7 @@ const PluginVerifyPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          mb: 6
+          mb: 6,
         }}
       >
         <Typography
@@ -304,7 +241,7 @@ const PluginVerifyPage = () => {
             fontFamily: "roboto",
             fontStyle: "normal",
             fontWeight: 400,
-            mt: 2
+            mt: 2,
           }}
           gutterBottom
         >
@@ -312,7 +249,7 @@ const PluginVerifyPage = () => {
         </Typography>
       </Box>
 
-      <Box className="file_selection" >
+      <Box className="file_selection">
         <Box
           sx={{
             bgcolor: blackHeader,
@@ -322,7 +259,6 @@ const PluginVerifyPage = () => {
             alignItems: "center",
             borderTopLeftRadius: "5px",
             borderTopRightRadius: "5px",
-
           }}
         >
           <Typography
@@ -334,8 +270,7 @@ const PluginVerifyPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
-
+              pl: 3,
             }}
             gutterBottom
           >
@@ -351,62 +286,9 @@ const PluginVerifyPage = () => {
             borderEndEndRadius: "5px",
             justifyContent: "center",
             alignItems: "center",
-            alignContent: "center"
-
+            alignContent: "center",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column", // Horizontal layout
-              width: "50%",
-              height: "150px",
-              // mt: 5, ml: 5,
-              justifyContent: "center",
-              alignItems: "left",
-              alignContent: "left"
-
-            }}
-          >
-            <Typography
-              variant="h4"
-              sx={{
-                fontSize: "18px",
-                fontStyle: "normal",
-                fontWeight: 400,
-                lineHeight: "normal",
-                color: "black",
-                mb: "5px",
-              }}
-              gutterBottom
-            >
-              Select Your File
-            </Typography>
-
-            <FormControl
-              fullWidth
-              style={{ marginBottom: "20px", textAlign: "left" }}
-              required
-              sx={{
-                ...sxStyle,
-
-              }}
-            >
-              {!emDataFile && <InputLabel id="dropdown-label-1" shrink={false}>Select</InputLabel>}
-              <Select
-                labelId="dropdown-label-1"
-                id="dropdown-1"
-                value={emDataFile}
-                onChange={handleEmDataFile}
-                style={{ borderColor: "#525252" }}
-
-              >
-                <MenuItem value="f1">File 1</MenuItem>
-                <MenuItem value="f2">File 2</MenuItem>
-              </Select>
-            </FormControl>
-
-          </Box>
           <Box
             sx={{
               mt: "0px",
@@ -415,60 +297,55 @@ const PluginVerifyPage = () => {
               p: "20px",
               border: "2px solid #00245A",
               borderRadius: "5px",
-              display: emDataFile ? "flex" : "none",
+              display: "flex",
               justifyContent: "center",
               alignItems: "center",
               flexDirection: "column",
-              backgroundColor: "#E8E8E8"
-
+              backgroundColor: "#E8E8E8",
             }}
           >
             <InsertDriveFileIcon sx={{ fontSize: "75px", color: "#00245A" }} />
 
             <Typography variant="h5" sx={{ mb: "10px" }}>
-              <strong>File 1</strong>
+              <strong>{data?.emFile.em_raw_file_visible_name}</strong>
             </Typography>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-start"
+                justifyContent: "flex-start",
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Insight Type:</strong> {insightTypeName}
+                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} Hz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Rate:</strong> 20MHz
+                <strong>Center Frequency:</strong>{" "}
+                {data?.emFile.center_frequency} Hz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Center Frequency:</strong> 16MHz
+                <strong>Device Name:</strong> {data?.emFile.device_name}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Duration:</strong> 20s
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Hash Function:</strong> Md5
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Device Name:</strong> Iphone 4S
+                <strong>File Size:</strong> Md5
               </Typography>
             </Box>
           </Box>
-
         </Box>
       </Box>
 
-      <Box className="pre_processing" style={{ marginTop: "40px" }}  >
-        <Box sx={{
-          bgcolor: blackHeader,
-          height: "10vh",
-          display: "flex",
-          justifyContent: "left",
-          alignItems: "center",
-          borderTopLeftRadius: "5px",
-          borderTopRightRadius: "5px",
-        }}>
+      <Box className="pre_processing" style={{ marginTop: "40px" }}>
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
           <Typography
             variant="h4"
             sx={{
@@ -478,7 +355,7 @@ const PluginVerifyPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -494,8 +371,7 @@ const PluginVerifyPage = () => {
             borderEndEndRadius: "5px",
             justifyContent: "center",
             alignItems: "center",
-            alignContent: "center"
-
+            alignContent: "center",
           }}
         >
           <Box
@@ -505,8 +381,7 @@ const PluginVerifyPage = () => {
               width: "50%",
               mt: 3,
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -530,17 +405,13 @@ const PluginVerifyPage = () => {
               required
               sx={{
                 ...sxStyle,
-
               }}
             >
-
               <Select
                 id="downSamplingIndex"
                 defaultValue={0}
-
                 // label="Select Your File"
                 style={{ borderColor: "#525252" }}
-
               >
                 <MenuItem value={0}>Not down-sampled</MenuItem>
                 <MenuItem value={1}>To 10MHz</MenuItem>
@@ -548,7 +419,6 @@ const PluginVerifyPage = () => {
                 <MenuItem value={3}>To 4MHz</MenuItem>
               </Select>
             </FormControl>
-
           </Box>
 
           <Box
@@ -557,8 +427,7 @@ const PluginVerifyPage = () => {
               flexDirection: "column", // Horizontal layout
               width: "50%",
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -584,16 +453,13 @@ const PluginVerifyPage = () => {
                 mb: "20px",
               }}
             >
-
               <Box sx={{ display: "flex", flexDirection: "row" }}>
-
                 <FormControl
                   fullWidth
                   style={{ textAlign: "left", width: "200px" }}
                   required
                   sx={{
                     ...sxStyle,
-
                   }}
                 >
                   <InputLabel id="dropdown-label-1">FFT Size</InputLabel>
@@ -604,13 +470,11 @@ const PluginVerifyPage = () => {
                     onChange={(event) => setFftSizeIndex(event.target.value)}
                     label="FFT Size"
                     style={{ borderColor: "#525252" }}
-
                   >
                     <MenuItem value={0}>2048</MenuItem>
                     <MenuItem value={1} disabled></MenuItem>
                   </Select>
                 </FormControl>
-
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "row" }}>
@@ -620,10 +484,11 @@ const PluginVerifyPage = () => {
                   required
                   sx={{
                     ...sxStyle,
-
                   }}
                 >
-                  <InputLabel id="dropdown-label-overLapPercentageIndex">Overlap Size</InputLabel>
+                  <InputLabel id="dropdown-label-overLapPercentageIndex">
+                    Overlap Size
+                  </InputLabel>
                   <Select
                     labelId="dropdown-label-overLapPercentageIndex"
                     id="overLapPercentageIndex"
@@ -633,16 +498,13 @@ const PluginVerifyPage = () => {
                     }
                     label="Overlap Size"
                     style={{ borderColor: "#525252" }}
-
                   >
                     <MenuItem value={0}>10%</MenuItem>
                     <MenuItem value={1}>20%</MenuItem>
                     <MenuItem value={2} disabled></MenuItem>
-
                   </Select>
                 </FormControl>
               </Box>
-
             </Box>
           </Box>
           <Box
@@ -651,8 +513,7 @@ const PluginVerifyPage = () => {
               flexDirection: "column", // Horizontal layout
               width: "50%",
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -676,10 +537,8 @@ const PluginVerifyPage = () => {
               required
               sx={{
                 ...sxStyle,
-
               }}
             >
-
               <Select
                 id="sampleSelectionIndex"
                 value={sampleSelectionIndex}
@@ -687,7 +546,6 @@ const PluginVerifyPage = () => {
                   setSampleSelectionIndex(event.target.value)
                 }
                 style={{ borderColor: "#525252" }}
-
               >
                 <MenuItem value={0}>All Samples</MenuItem>
                 <MenuItem value={1}>First 20000 Samples</MenuItem>
@@ -696,7 +554,6 @@ const PluginVerifyPage = () => {
                 </MenuItem>
               </Select>
             </FormControl>
-
           </Box>
           <FormControl>
             <LoadingButton
@@ -712,7 +569,7 @@ const PluginVerifyPage = () => {
               variant="contained"
               disabled={isPreprocessingFetching}
               onClick={executePreprocessingPlugin}
-              loading={loading}
+              loading={loadingPreprocessing}
             >
               Pre-process
             </LoadingButton>
@@ -742,7 +599,7 @@ const PluginVerifyPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -760,37 +617,11 @@ const PluginVerifyPage = () => {
             borderEndEndRadius: "5px",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mt: "5px",
-              mb: "5px",
-            }}
-          >
-            <Typography
-              variant="body1"
-              display="block"
-              sx={{
-                fontSize: "20px",
-                fontStyle: "normal",
-                fontWeight: 400,
-                lineHeight: "normal",
-                color: "black",
-                mb: 3,
-                mt: 3
-              }}
-              gutterBottom
-            >
-              Select the Analysis plugin
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", width: "100%", }}>
+          <Box sx={{ display: "flex", width: "100%" }}>
             <Grid
               container
               spacing={2}
               alignItems="center"
-
               marginTop={0}
               sx={{
                 display: "flex",
@@ -800,32 +631,80 @@ const PluginVerifyPage = () => {
                 width: "100%",
                 overflow: "scroll",
                 overflowX: "hidden",
-
               }}
             >
-              {analyisPlugins.map((plugin) => (
-                <Grid item xs={5} sm={5} md={3} marginTop={8} m={2} sx={{
+              <Grid
+                item
+                xs={5}
+                sm={5}
+                md={3}
+                marginTop={8}
+                m={2}
+                sx={{
                   display: "flex",
                   justifyContent: "center",
-                }}>
-                  <PluginCardAnalysis
-                    id={plugin.id}
-                    name={plugin.name}
-                    description={plugin.descrption}
-                    isChecked={plugin.id == checkedPlugin ? true : false}
-                    modifyChecked={handleChecked}
-                    handleClicked={handleClicked}
-                  />
-                </Grid>
-              ))}
+                }}
+              >
+                <Box
+                  sx={{
+                    minWidth: 200,
+                    maxWidth: 200,
+                    boxShadow:
+                      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+                    borderRadius: "6px",
+                    "&:hover": {
+                      boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
+                    },
+                  }}
+                >
+                  <Card
+                    sx={{ height: 200 }}
+                    onClick={() => setIsAnalysisPluginModalOpen(true)}
+                  >
+                    <CardContent>
+                      <Grid
+                        container
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <img
+                          src={data?.plugin.icon_filepath}
+                          alt="Logo"
+                          style={{
+                            width: "70px",
+                            height: "70px",
+                            alignContent: "center",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Grid>
+
+                      <Typography
+                        sx={{ fontSize: 16 }}
+                        color="text.primary"
+                        gutterBottom
+                        align="center"
+                        marginTop={2}
+                      >
+                        {data?.plugin.plugin_name}
+                      </Typography>
+
+                      {/* <Typography color="text.secondary" marginTop={2} align="center">
+              1.5k
+            </Typography> */}
+                    </CardContent>{" "}
+                  </Card>
+                </Box>
+              </Grid>
             </Grid>
           </Box>
-          <Box sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "row"
-          }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
           >
             <LoadingButton
               sx={{
@@ -839,16 +718,16 @@ const PluginVerifyPage = () => {
                 },
               }}
               variant="contained"
-              disabled={isAnalysisFetching}
-              onClick={executeAnalysisPlugin}
-              loading={loadingAnalyse}
+              // disabled={isAnalysisFetching}
+              // onClick={executeAnalysisPlugin}
+              // loading={loadingAnalyse}
             >
               Install Libraries
             </LoadingButton>
 
             <LoadingButton
               sx={{
-                ml:2,
+                ml: 2,
                 mt: 3,
                 mb: 3,
                 backgroundColor: "#00245A",
@@ -866,8 +745,6 @@ const PluginVerifyPage = () => {
               Analyze
             </LoadingButton>
           </Box>
-
-
         </Box>
       </Box>
 
@@ -892,7 +769,7 @@ const PluginVerifyPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -918,7 +795,7 @@ const PluginVerifyPage = () => {
               p: "20px",
               border: "2px solid #00245A",
               borderRadius: "5px",
-              backgroundColor: "#E8E8E8"
+              backgroundColor: "#E8E8E8",
             }}
           >
             <Typography variant="h5" sx={{ mb: "30px" }}>
@@ -926,7 +803,7 @@ const PluginVerifyPage = () => {
             </Typography>
 
             <Typography variant="body1">
-              <strong>Insight Type:</strong> {insightTypeName}
+              <strong>Insight Type:</strong> Test insight
             </Typography>
 
             {analysisResults.map((result, index) => (
@@ -939,46 +816,44 @@ const PluginVerifyPage = () => {
             ))}
           </Box>
         </Box>
-        <Box sx={{
+        <Box
+          sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexDirection: "row",
-            mt:5
+            mt: 5,
           }}
+        >
+          <Button
+            sx={{
+              backgroundColor: "#00245A",
+              color: "#ffffff",
+              width: "100px",
+              "&:hover": {
+                backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+              },
+            }}
+            variant="contained"
           >
-            <Button
-              sx={{
-                
-                backgroundColor: "#00245A",
-                color: "#ffffff",
-                width: "100px",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-             
-            >
-              Accept 
-            </Button>
+            Accept
+          </Button>
 
-            <LoadingButton
-              sx={{
-                ml:2,
-                backgroundColor: "red",
-                color: "#ffffff",
-                width: "100px",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-              
-            >
-              Reject
-            </LoadingButton>
-          </Box>
+          <LoadingButton
+            sx={{
+              ml: 2,
+              backgroundColor: "red",
+              color: "#ffffff",
+              width: "100px",
+              "&:hover": {
+                backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+              },
+            }}
+            variant="contained"
+          >
+            Reject
+          </LoadingButton>
+        </Box>
       </Box>
     </>
   );
