@@ -15,6 +15,11 @@ import {
   CardContent,
   Card,
 } from "@mui/material";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
 import { API_URL, queryKeys } from "../../constants";
@@ -251,8 +256,111 @@ const PluginVerifyPage = () => {
     }
   }, [user]);
 
+  const [showAcceptDialog, setShowAceptDialog] = useState(false);
+  const [showCancelDialog, setShowRejectDialog] = useState(false);
+
+  const acceptPlugin = () => {
+    setShowAceptDialog(true);
+  };
+  const rejectPlugin = () => {
+    setShowRejectDialog(true);
+  };
+
+  const handleCloseAcceptDialog = (confirmed) => {
+    setShowAceptDialog(false);
+    if (confirmed) {
+      // Perform accept action
+    }
+  };
+
+  const handleCloseRejectDialog = (confirmed) => {
+    setShowRejectDialog(false);
+    if (confirmed) {
+      // Perform cancel action
+    }
+  };
+
+  // for accepting the plugin
+  function AcceptDialog({ open, onClose }) {
+    const handleClose = () => {
+      console.log("accept click no");
+      onClose(false); // User chose to cancel
+    };
+
+    const handleConfirm = () => {
+      console.log("accept click yes");
+      onClose(true); // User chose to confirm
+    };
+
+    return (
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
+          <DialogContentText>
+            Do you want to Accept the plugin?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+    );
+  }
+
+
+  // for rejecting the plugin
+  function RejectDialog({ open, onClose }) {
+    const handleClose = () => {
+      console.log("reject click no");
+      onClose(false); // User chose to cancel
+    };
+
+    const handleConfirm = () => {
+      console.log("reject click yes");
+      onClose(true); // User chose to confirm
+    };
+
+    return (
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
+          <DialogContentText>
+            Do you want to reject the plugin?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
   return (
     <>
+
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -272,7 +380,7 @@ const PluginVerifyPage = () => {
         iconPath={data?.plugin.icon_filepath}
         open={isAnalysisPluginModalOpen}
         onClose={() => setIsAnalysisPluginModalOpen(false)}
-        modifyChecked={() => {}}
+        modifyChecked={() => { }}
       />
 
       <Box
@@ -873,19 +981,24 @@ const PluginVerifyPage = () => {
         >
           <Button
             sx={{
-              backgroundColor: "#00245A",
+              backgroundColor: "green",
               color: "#ffffff",
               width: "100px",
               "&:hover": {
-                backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
               },
             }}
             variant="contained"
+            onClick={acceptPlugin}
           >
             Accept
           </Button>
+          <AcceptDialog
+            open={showAcceptDialog}
+            onClose={handleCloseAcceptDialog}
+          />
 
-          <LoadingButton
+          <Button
             sx={{
               ml: 2,
               backgroundColor: "red",
@@ -896,9 +1009,15 @@ const PluginVerifyPage = () => {
               },
             }}
             variant="contained"
+            onClick={rejectPlugin}
           >
             Reject
-          </LoadingButton>
+          </Button>
+
+          <RejectDialog
+            open={showCancelDialog}
+            onClose={handleCloseRejectDialog}
+          />
         </Box>
       </Box>
     </>
