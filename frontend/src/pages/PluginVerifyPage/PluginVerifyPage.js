@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -15,11 +15,11 @@ import {
   CardContent,
   Card,
 } from "@mui/material";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
 import { API_URL, queryKeys } from "../../constants";
@@ -39,6 +39,7 @@ const PluginVerifyPage = () => {
   const { pluginId } = useParams();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   // Loading related features
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
@@ -289,11 +290,39 @@ const PluginVerifyPage = () => {
 
     const handleConfirm = () => {
       console.log("accept click yes");
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        user_id: user["userData"]["user_id"],
+        analysis_plugin_id: data?.plugin.plugin_id,
+        compatibility_status: "compatible",
+      };
+
+      axios
+        .get(API_URL + "/plugin/compatibility", { headers })
+        .then((response) => {
+          console.log(response);
+
+          toast.success("Plugin Acceptance Successful", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+
+          setTimeout(() => {
+            navigate("/plugin-verify-list");
+          }, 5000);
+        });
+
       onClose(true); // User chose to confirm
     };
 
     return (
-
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           <DialogContentText>
@@ -309,10 +338,8 @@ const PluginVerifyPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
     );
   }
-
 
   // for rejecting the plugin
   function RejectDialog({ open, onClose }) {
@@ -323,11 +350,39 @@ const PluginVerifyPage = () => {
 
     const handleConfirm = () => {
       console.log("reject click yes");
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        user_id: user["userData"]["user_id"],
+        analysis_plugin_id: data?.plugin.plugin_id,
+        compatibility_status: "incompatible",
+      };
+
+      axios
+        .get(API_URL + "/plugin/compatibility", { headers })
+        .then((response) => {
+          console.log(response);
+
+          toast.success("Plugin Rejection Successful", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+
+          setTimeout(() => {
+            navigate("/plugin-verify-list");
+          }, 5000);
+        });
+
       onClose(true); // User chose to confirm
     };
 
     return (
-
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           <DialogContentText>
@@ -343,24 +398,11 @@ const PluginVerifyPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
     );
   }
 
-
-
-
-
-
-
-
-
-
-
   return (
     <>
-
-
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -380,7 +422,7 @@ const PluginVerifyPage = () => {
         iconPath={data?.plugin.icon_filepath}
         open={isAnalysisPluginModalOpen}
         onClose={() => setIsAnalysisPluginModalOpen(false)}
-        modifyChecked={() => { }}
+        modifyChecked={() => {}}
       />
 
       <Box

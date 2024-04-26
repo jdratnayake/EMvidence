@@ -258,4 +258,20 @@ class PluginController extends Controller
 
         return response()->json(["success" => 'Plugin uploaded successfully.'], 200);
     }
+
+    public function updatePluginCompatibilityStatus(Request $request)
+    {
+        $userId = $request->header("user_id");
+        $analysisPluginID = $request->header("analysis_plugin_id");
+        $compatibilityStatus = $request->header("compatibility_status");
+
+        $analysisPluginUpdateStatus = AnalysisPlugin::where('plugin_id', $analysisPluginID)
+            ->update([
+                'compatibility_status' => $compatibilityStatus,
+                "plugin_compatibility_verified_timestamp" => now(),
+                "compatibility_check_admin_id" => $userId
+            ]);
+
+        return response()->json(["success" => $analysisPluginUpdateStatus]);
+    }
 }
