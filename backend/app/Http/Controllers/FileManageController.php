@@ -396,7 +396,10 @@ class FileManageController extends Controller
 
                 $h5FileName = convertFileName($item['em_raw_file_name']) . ".h5";
                 $h5FilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $h5FileName;
-                $output = execute_python_script(env("CFILE_TO_H5_FILE_PATH"), $decompressedFilePath, $h5FilePath);
+                $encrptH5FilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $h5FileName . "enc";
+                $getKey = env('APP_KEY');
+                $output = execute_python_script(env("CFILE_TO_H5_FILE_PATH"), $decompressedFilePath, $h5FilePath,
+                                               $getKey, $encrptH5FilePath);
 
                 if ($output->status == 200) {
 
