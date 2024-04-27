@@ -59,8 +59,6 @@ const AnalysisPage = () => {
     getPluginDetails(event.target.value, fftSizeIndex);
   };
 
-  const [analysisPlugin, setAnalysisPlugin] = useState(1);
-
   const executePreprocessingPlugin = () => {
     setLoadingPreprocessing(true);
     console.log("Down Sampling Index: " + downSamplingIndex);

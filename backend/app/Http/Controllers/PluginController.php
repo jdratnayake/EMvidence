@@ -10,6 +10,7 @@ use App\Models\AnalysisPlugin;
 use App\Models\EmDataFile;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Dompdf\Dompdf;
 
 function execute_python_script($path, ...$variables)
 {
@@ -295,5 +296,36 @@ class PluginController extends Controller
             ]);
 
         return response()->json(["success" => $analysisPluginUpdateStatus]);
+    }
+
+    public function generateAnalysisReport(Request $request)
+    {
+        // Initialize Dompdf
+        $dompdf = new Dompdf();
+
+        // Generate PDF content
+        $html = '<html><body>';
+        $html .= '<h1>PDF Report</h1>';
+        // Add content based on the provided data
+        $html .= '<p>User: ' . "Janitha" . '</p>';
+        $html .= '<p>Date: ' . "Today" . '</p>';
+        // Add more content as needed
+        $html .= '</body></html>';
+
+        // Load HTML content into Dompdf
+        $dompdf->loadHtml($html);
+
+        // Render PDF
+        $dompdf->render();
+
+        // Generate a unique filename for the PDF
+        $pdfFilename = 'report_' . time() . '.pdf';
+
+        // Store PDF in the storage directory
+        $pdfContent = $dompdf->output();
+        Storage::put('pdf/' . $pdfFilename, $pdfContent);
+
+        // Return the filename of the stored PDF
+        return $pdfFilename;
     }
 }

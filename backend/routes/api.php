@@ -47,6 +47,7 @@ Route::prefix("v1/plugin")->group(function () {
     Route::get("/icon", [PluginController::class, "getPluginIcon"])->middleware('jwt');
     Route::get("/dependency", [PluginController::class, "installPipLibrariesFromFile"])->middleware('jwt');
     Route::get("/compatibility", [PluginController::class, "updatePluginCompatibilityStatus"])->middleware('jwt');
+    Route::post("/analysis-report", [PluginController::class, "generateAnalysisReport"])->middleware('jwt');
 });
 
 Route::prefix("v1/auth")->group(function () {
