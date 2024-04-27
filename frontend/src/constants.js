@@ -7,4 +7,5 @@ export const queryKeys = {
   getEmRawDetails: "EmRawDetails",
   getInitialPluginDetails: "initialPluginDetails",
   getPluginFullDetails: "pluginFullDetails",
+  getFilteredPluginDetails: "filteredPluginDetails",
 };

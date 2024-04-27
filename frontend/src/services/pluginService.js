@@ -68,3 +68,29 @@ export const getPluginFullDetails = async (userData, pluginId) => {
     throw error;
   }
 };
+
+export const getFilteredPluginDetails = async (
+  userData,
+  emRawFileId,
+  fftSize
+) => {
+  const token = userData["userData"]["token"];
+
+  try {
+    const response = await fetch(API_URL + "/plugin/filter", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        em_raw_file_id: emRawFileId,
+        fft_size: fftSize,
+      },
+    });
+
+    const data = await response.json();
+    console.log(data["filteredPluginData"]);
+    return data["filteredPluginData"];
+  } catch (error) {
+    throw error;
+  }
+};

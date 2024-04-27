@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
   FormControl,
   Grid,
-  NativeSelect,
   Typography,
   InputLabel,
   MenuItem,
-  Select
+  Select,
 } from "@mui/material";
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
-import { API_URL } from "../../constants";
-import folder from "./../../resources/folder.png";
-
+import { API_URL, queryKeys } from "../../constants";
+import { useUser } from "../../contexts/UserContext";
+import { getEmRawDetails } from "../../services/fileManage";
+import { getFilteredPluginDetails } from "../../services/pluginService";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AnalysisPage.css";
 
@@ -27,11 +27,21 @@ const AnalysisPage = () => {
   const containerColor = "#FFFFFF";
   const buttonColor = "#525252";
 
-  const [emDataFile, setEmDataFile] = useState();
+  // new start
+  const [emRawFileRecord, setEmRawFileRecord] = useState(null);
+  const [downSamplingIndex, setDownSamplingIndex] = useState(0);
+  const [fftSizeIndex, setFftSizeIndex] = useState(0);
+  const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
+  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const handleEmDataFile = (event) => {
-    setEmDataFile(event.target.value);
-
+    const foundObject = emRawData.find(
+      (obj) => obj.em_raw_file_id === event.target.value
+    );
+    setEmRawFileRecord(foundObject);
+    getPluginDetails(event.target.value, fftSizeIndex);
   };
 
   const analyisPlugins = [
@@ -57,25 +67,22 @@ const AnalysisPage = () => {
       id: "4",
       name: "FirmWare Version Detection",
       descrption: "Description 3",
-    }
-    ,
+    },
     {
       id: "5",
       name: "FirmWare Version Detection",
       descrption: "Description 3",
-    }
-    ,
+    },
     {
       id: "6",
       name: "FirmWare Version Detection",
       descrption: "Description 3",
-    }
-    ,
+    },
     {
       id: "7",
       name: "FirmWare Version Detection",
       descrption: "Description 3",
-    }
+    },
   ];
 
   const [checkedPlugin, setCheckedPlugin] = useState(0);
@@ -88,10 +95,7 @@ const AnalysisPage = () => {
   const [insightTypeName, setInsightTypeName] = useState(
     "Behavior identification"
   );
-  const [downSamplingIndex, setDownSamplingIndex] = useState(0);
-  const [fftSizeIndex, setFftSizeIndex] = useState(0);
-  const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
-  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+
   const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
     useState(false);
   const [pluginModalId, setPluginModalId] = useState(null);
@@ -234,7 +238,7 @@ const AnalysisPage = () => {
   };
 
   const sxStyle = {
-    width: '100%',
+    width: "100%",
     "&:hover": {
       "&& fieldset": {
         border: "2px solid #00245A",
@@ -248,7 +252,6 @@ const AnalysisPage = () => {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -264,8 +267,48 @@ const AnalysisPage = () => {
         },
       },
     },
-  }
+  };
 
+  const getPluginDetails = (emFileId, fftSizeIndexValue) => {
+    if (fftSizeIndexValue !== 0 && emFileId !== null) {
+      queryClient.prefetchQuery([queryKeys["getFilteredPluginDetails"]], () =>
+        getFilteredPluginDetails(user, emFileId, fftSizeIndexValue)
+      );
+    }
+  };
+
+  const {
+    data: emRawData,
+    error: emRawError,
+    isLoading: emRawIsLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getEmRawDetails"]],
+    queryFn: () => getEmRawDetails(user),
+    enabled: false,
+  });
+
+  const {
+    data: pluginData,
+    error: pluginError,
+    isLoading: pluginIsLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getFilteredPluginDetails"]],
+    queryFn: () =>
+      getFilteredPluginDetails(
+        user,
+        emRawFileRecord?.em_raw_file_id,
+        fftSizeIndex
+      ),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
+        getEmRawDetails(user)
+      );
+    }
+  }, [user]);
 
   return (
     <>
@@ -294,7 +337,7 @@ const AnalysisPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          mb: 6
+          mb: 6,
         }}
       >
         <Typography
@@ -303,7 +346,7 @@ const AnalysisPage = () => {
             fontFamily: "roboto",
             fontStyle: "normal",
             fontWeight: 400,
-            mt: 2
+            mt: 2,
           }}
           gutterBottom
         >
@@ -311,7 +354,7 @@ const AnalysisPage = () => {
         </Typography>
       </Box>
 
-      <Box className="file_selection" >
+      <Box className="file_selection">
         <Box
           sx={{
             bgcolor: blackHeader,
@@ -321,7 +364,6 @@ const AnalysisPage = () => {
             alignItems: "center",
             borderTopLeftRadius: "5px",
             borderTopRightRadius: "5px",
-
           }}
         >
           <Typography
@@ -333,8 +375,7 @@ const AnalysisPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
-
+              pl: 3,
             }}
             gutterBottom
           >
@@ -350,8 +391,7 @@ const AnalysisPage = () => {
             borderEndEndRadius: "5px",
             justifyContent: "center",
             alignItems: "center",
-            alignContent: "center"
-
+            alignContent: "center",
           }}
         >
           <Box
@@ -363,8 +403,7 @@ const AnalysisPage = () => {
               // mt: 5, ml: 5,
               justifyContent: "center",
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -388,23 +427,27 @@ const AnalysisPage = () => {
               required
               sx={{
                 ...sxStyle,
-
               }}
             >
-              {!emDataFile && <InputLabel id="dropdown-label-1" shrink={false}>Select</InputLabel>}
+              {!emRawFileRecord && (
+                <InputLabel id="dropdown-label-1" shrink={false}>
+                  Select
+                </InputLabel>
+              )}
               <Select
                 labelId="dropdown-label-1"
                 id="dropdown-1"
-                value={emDataFile}
+                value={emRawFileRecord?.em_raw_file_id}
                 onChange={handleEmDataFile}
                 style={{ borderColor: "#525252" }}
-
               >
-                <MenuItem value="f1">File 1</MenuItem>
-                <MenuItem value="f2">File 2</MenuItem>
+                {emRawData?.map((emRawRecord) => (
+                  <MenuItem value={emRawRecord.em_raw_file_id}>
+                    {emRawRecord.em_raw_file_visible_name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
-
           </Box>
           <Box
             sx={{
@@ -414,15 +457,14 @@ const AnalysisPage = () => {
               p: "20px",
               border: "2px solid #00245A",
               borderRadius: "5px",
-              display: emDataFile ? "flex" : "none",
+              display: emRawFileRecord ? "flex" : "none",
               justifyContent: "center",
               alignItems: "center",
               flexDirection: "column",
-              backgroundColor: "#E8E8E8"
-
+              backgroundColor: "#E8E8E8",
             }}
           >
-            <InsertDriveFileIcon sx={{ fontSize: "75px", color : "#00245A" }} />
+            <InsertDriveFileIcon sx={{ fontSize: "75px", color: "#00245A" }} />
 
             <Typography variant="h5" sx={{ mb: "10px" }}>
               <strong>File 1</strong>
@@ -431,7 +473,7 @@ const AnalysisPage = () => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-start"
+                justifyContent: "flex-start",
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -454,20 +496,21 @@ const AnalysisPage = () => {
               </Typography>
             </Box>
           </Box>
-
         </Box>
       </Box>
 
-      <Box className="pre_processing" style={{ marginTop: "40px" }}  >
-        <Box sx={{
-          bgcolor: blackHeader,
-          height: "10vh",
-          display: "flex",
-          justifyContent: "left",
-          alignItems: "center",
-          borderTopLeftRadius: "5px",
-          borderTopRightRadius: "5px",
-        }}>
+      <Box className="pre_processing" style={{ marginTop: "40px" }}>
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
           <Typography
             variant="h4"
             sx={{
@@ -477,7 +520,7 @@ const AnalysisPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -493,8 +536,7 @@ const AnalysisPage = () => {
             borderEndEndRadius: "5px",
             justifyContent: "center",
             alignItems: "center",
-            alignContent: "center"
-
+            alignContent: "center",
           }}
         >
           <Box
@@ -504,8 +546,7 @@ const AnalysisPage = () => {
               width: "50%",
               mt: 3,
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -529,17 +570,14 @@ const AnalysisPage = () => {
               required
               sx={{
                 ...sxStyle,
-
               }}
             >
-
               <Select
                 id="downSamplingIndex"
                 defaultValue={0}
-
-                // label="Select Your File"
+                value={downSamplingIndex}
+                onChange={(event) => setDownSamplingIndex(event.target.value)}
                 style={{ borderColor: "#525252" }}
-
               >
                 <MenuItem value={0}>Not down-sampled</MenuItem>
                 <MenuItem value={1}>To 10MHz</MenuItem>
@@ -547,7 +585,6 @@ const AnalysisPage = () => {
                 <MenuItem value={3}>To 4MHz</MenuItem>
               </Select>
             </FormControl>
-
           </Box>
 
           <Box
@@ -556,8 +593,7 @@ const AnalysisPage = () => {
               flexDirection: "column", // Horizontal layout
               width: "50%",
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -583,16 +619,13 @@ const AnalysisPage = () => {
                 mb: "20px",
               }}
             >
-
               <Box sx={{ display: "flex", flexDirection: "row" }}>
-
                 <FormControl
                   fullWidth
                   style={{ textAlign: "left", width: "200px" }}
                   required
                   sx={{
                     ...sxStyle,
-
                   }}
                 >
                   <InputLabel id="dropdown-label-1">FFT Size</InputLabel>
@@ -600,16 +633,20 @@ const AnalysisPage = () => {
                     labelId="dropdown-label-1"
                     id="dropdown-1"
                     value={fftSizeIndex}
-                    onChange={(event) => setFftSizeIndex(event.target.value)}
+                    onChange={(event) => {
+                      setFftSizeIndex(event.target.value);
+                      getPluginDetails(
+                        emRawFileRecord?.em_raw_file_id,
+                        event.target.value
+                      );
+                    }}
                     label="FFT Size"
                     style={{ borderColor: "#525252" }}
-
                   >
-                    <MenuItem value={0}>2048</MenuItem>
+                    <MenuItem value={2048}>2048</MenuItem>
                     <MenuItem value={1} disabled></MenuItem>
                   </Select>
                 </FormControl>
-
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "row" }}>
@@ -619,10 +656,11 @@ const AnalysisPage = () => {
                   required
                   sx={{
                     ...sxStyle,
-
                   }}
                 >
-                  <InputLabel id="dropdown-label-overLapPercentageIndex">Overlap Size</InputLabel>
+                  <InputLabel id="dropdown-label-overLapPercentageIndex">
+                    Overlap Size
+                  </InputLabel>
                   <Select
                     labelId="dropdown-label-overLapPercentageIndex"
                     id="overLapPercentageIndex"
@@ -632,16 +670,13 @@ const AnalysisPage = () => {
                     }
                     label="Overlap Size"
                     style={{ borderColor: "#525252" }}
-
                   >
                     <MenuItem value={0}>10%</MenuItem>
                     <MenuItem value={1}>20%</MenuItem>
                     <MenuItem value={2} disabled></MenuItem>
-
                   </Select>
                 </FormControl>
               </Box>
-
             </Box>
           </Box>
           <Box
@@ -650,8 +685,7 @@ const AnalysisPage = () => {
               flexDirection: "column", // Horizontal layout
               width: "50%",
               alignItems: "left",
-              alignContent: "left"
-
+              alignContent: "left",
             }}
           >
             <Typography
@@ -675,10 +709,8 @@ const AnalysisPage = () => {
               required
               sx={{
                 ...sxStyle,
-
               }}
             >
-
               <Select
                 id="sampleSelectionIndex"
                 value={sampleSelectionIndex}
@@ -686,7 +718,6 @@ const AnalysisPage = () => {
                   setSampleSelectionIndex(event.target.value)
                 }
                 style={{ borderColor: "#525252" }}
-
               >
                 <MenuItem value={0}>All Samples</MenuItem>
                 <MenuItem value={1}>First 20000 Samples</MenuItem>
@@ -695,7 +726,6 @@ const AnalysisPage = () => {
                 </MenuItem>
               </Select>
             </FormControl>
-
           </Box>
           <FormControl>
             <LoadingButton
@@ -741,7 +771,7 @@ const AnalysisPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -777,19 +807,18 @@ const AnalysisPage = () => {
                 lineHeight: "normal",
                 color: "black",
                 mb: 3,
-                mt: 3
+                mt: 3,
               }}
               gutterBottom
             >
               Select the Analysis plugin
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", width: "100%", }}>
+          <Box sx={{ display: "flex", width: "100%" }}>
             <Grid
               container
               spacing={2}
               alignItems="center"
-
               marginTop={0}
               sx={{
                 display: "flex",
@@ -799,14 +828,21 @@ const AnalysisPage = () => {
                 width: "100%",
                 overflow: "scroll",
                 overflowX: "hidden",
-
               }}
             >
               {analyisPlugins.map((plugin) => (
-                <Grid item xs={5} sm={5} md={3} marginTop={8} m={2} sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}>
+                <Grid
+                  item
+                  xs={5}
+                  sm={5}
+                  md={3}
+                  marginTop={8}
+                  m={2}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   <PluginCardAnalysis
                     id={plugin.id}
                     name={plugin.name}
@@ -861,7 +897,7 @@ const AnalysisPage = () => {
               lineHeight: "normal",
               color: "#FFFFFF",
               mb: 0,
-              pl: 3
+              pl: 3,
             }}
             gutterBottom
           >
@@ -887,7 +923,7 @@ const AnalysisPage = () => {
               p: "20px",
               border: "2px solid #00245A",
               borderRadius: "5px",
-              backgroundColor: "#E8E8E8"
+              backgroundColor: "#E8E8E8",
             }}
           >
             <Typography variant="h5" sx={{ mb: "30px" }}>

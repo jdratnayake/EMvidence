@@ -52,6 +52,26 @@ class PluginController extends Controller
         return response()->json($responseData);
     }
 
+    public function getFilteredPlugin(Request $request)
+    {
+        $emRawFileId = $request->header('em_raw_file_id');
+        $fftSize = $request->header('fft_size');
+
+        $plugin = EmDataFile::where('em_raw_file_id', $emRawFileId)
+            ->select('center_frequency', 'sampling_rate')
+            ->get();
+        $centerFrequency = $plugin[0]->center_frequency;
+        $samplingRate = $plugin[0]->sampling_rate;
+
+
+        $responseData = AnalysisPlugin::where('center_frequency', $centerFrequency)
+            ->where('sampling_rate', $samplingRate)
+            ->where('fft_size', $fftSize)
+            ->get();
+
+        return response()->json(["filteredPluginData" => $responseData]);
+    }
+
     public function getInitialPlugins()
     {
         $initialPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')->where('compatibility_status', 'initial')->get();

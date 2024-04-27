@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::prefix("v1/plugin")->group(function () {
     Route::get("/", [PluginController::class, "index"])->middleware('jwt');
     Route::get("/single", [PluginController::class, "getPlugin"])->middleware('jwt');
+    Route::get("/filter", [PluginController::class, "getFilteredPlugin"])->middleware('jwt');
     Route::get("/initial", [PluginController::class, "getInitialPlugins"])->middleware('jwt');
     Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"])->middleware('jwt');
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"])->middleware('jwt');
