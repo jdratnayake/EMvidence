@@ -10,7 +10,13 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Dialog,
+  DialogActions, 
+  DialogContent, 
+  DialogTitle, 
+  TextField 
 } from "@mui/material";
+import Button from "@mui/material/Button";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import PluginCardAnalysis from "../../components/PluginCardAnalysis/PluginCardAnalysis";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
@@ -27,7 +33,39 @@ const AnalysisPage = () => {
   const blackHeader = "#00245A";
   const containerColor = "#FFFFFF";
   const buttonColor = "#525252";
+  const sxStyle = {
+    width: "100%",
+    "&:hover": {
+      "&& fieldset": {
+        border: "2px solid #00245A",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "grey", // Initial color
+      "&.Mui-focused": {
+        color: "#00245A", // Color when focused
+      },
+    },
+    color: "#00245A",
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused": {
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#00245A",
+          borderWidth: "2px",
+        },
+      },
+      "& .MuiInputLabel-outlined": {
+        color: "#2e2e2e",
+        fontWeight: "bold",
+        "&.Mui-focused": {
+          color: "secondary.main",
+          fontWeight: "bold",
+        },
+      },
+    },
+  };
 
+  
   // new start
   const [emRawFileRecord, setEmRawFileRecord] = useState(null);
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
@@ -189,37 +227,6 @@ const AnalysisPage = () => {
     setIsAnalysisPluginModalOpen(false);
   };
 
-  const sxStyle = {
-    width: "100%",
-    "&:hover": {
-      "&& fieldset": {
-        border: "2px solid #00245A",
-      },
-    },
-    "& .MuiInputLabel-outlined": {
-      color: "grey", // Initial color
-      "&.Mui-focused": {
-        color: "#00245A", // Color when focused
-      },
-    },
-    color: "#00245A",
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused": {
-        "& .MuiOutlinedInput-notchedOutline": {
-          borderColor: "#00245A",
-          borderWidth: "2px",
-        },
-      },
-      "& .MuiInputLabel-outlined": {
-        color: "#2e2e2e",
-        fontWeight: "bold",
-        "&.Mui-focused": {
-          color: "secondary.main",
-          fontWeight: "bold",
-        },
-      },
-    },
-  };
 
   const getPluginDetails = (emFileId, fftSizeIndexValue) => {
     if (fftSizeIndexValue !== 0 && emFileId !== null) {
@@ -261,6 +268,24 @@ const AnalysisPage = () => {
       );
     }
   }, [user]);
+
+  const [emDataFile, setEmDataFile] = useState();
+  const [openPopup, setOpenPopup] = useState(false);
+  const [reportName, setReportName] = useState('');
+
+  const handleOpenPopup = () => {
+    setOpenPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
+  };
+
+  const handleSave = () => {
+    console.log(reportName);
+    setOpenPopup(false);
+  };
+
 
   return (
     <>
@@ -899,6 +924,53 @@ const AnalysisPage = () => {
               </Typography>
             ))}
           </Box>
+        </Box>
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mt: "40px"
+        }}>
+          <Button
+            sx={{
+
+              backgroundColor: "#00245A",
+              color: "#ffffff",
+              width: "150px",
+              "&:hover": {
+                backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+              },
+            }}
+            variant="contained"
+            onClick={handleOpenPopup}
+          >
+            Save Analysis
+          </Button>
+
+          <Dialog open={openPopup} onClose={handleClosePopup} >
+            <Typography variant="h5" sx={{ml:3, mt:1, fontWeight: 'bold'}}>Add Title</Typography>
+            <DialogContent sx={{ width: '500px', height: '120px' , }}>
+              <TextField
+                autoFocus
+                // margin="dense"
+                label="Enter Title for Analysis"
+                fullWidth
+                sx={{
+                  ...sxStyle,
+                }}
+                value={reportName}
+                onChange={(e) => setReportName(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClosePopup} sx={{color:"#00245A"}}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} sx={{color:"#00245A"}}>
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Box>
     </>
