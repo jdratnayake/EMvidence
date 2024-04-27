@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -17,10 +17,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
-const pages = ["Dashboard", "Analysis", "Uploaded Files", "Settings"];
+const pages = ["Analysis", "Upload File", "Settings"];
+const pageLinks = ["/report", "/file-list", "/profile"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-function NavBarInvestigator(pageName) {
+function NavBarInvestigator({ pageName }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const { removeUser } = useUser();
@@ -127,7 +128,7 @@ function NavBarInvestigator(pageName) {
               display: { xs: "none", md: "flex", justifyContent: "center" },
             }}
           >
-            {pages.map((page) => (
+            {pages.map((page, i) => (
               <Button
                 key={page}
                 onClick={() => setAnchorElNav(null)}
@@ -137,11 +138,10 @@ function NavBarInvestigator(pageName) {
                   my: 2,
                   color: "#000000",
                   display: "block",
-                  borderBottom:
-                    pageName.page == "analysis" && page == "Analysis"
-                      ? "2px solid black"
-                      : "none",
+                  borderBottom: page === pageName ? "2px solid black" : "none",
                 }}
+                component={Link}
+                to={pageLinks[i]}
               >
                 {page}
               </Button>

@@ -20,7 +20,7 @@ import EmFileUploadPage from "./pages/EmFileUploadPage/EmFileUploadPage";
 import UserManagePage from "./pages/UserManagePage/UserManagePage";
 import PluginUploadListPage from "./pages/PluginUploadListPage/PluginUploadListPage";
 import PluginUploadPage from "./pages/PluginUploadPage/PluginUploadPage";
-import InvestigationPage from "./pages/InvestigationPage/InvestigationPage";
+import ReportPage from "./pages/ReportPage/ReportPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
 import PluginVerifyPage from "./pages/PluginVerifyPage/PluginVerifyPage";
 import PluginVerifyListPage from "./pages/PluginVerifyListPage/PluginVerifyListPage";
@@ -57,47 +57,82 @@ const router = createBrowserRouter(
       {/* Admin */}
       <Route
         path="admin"
-        element={<AdminTemplate children={<AdminPage />} />}
+        element={
+          <AdminTemplate pageName="Dashboard" children={<AdminPage />} />
+        }
       />
       <Route
         path="user-list"
-        element={<AdminTemplate children={<UserManagePage />} />}
+        element={
+          <AdminTemplate pageName="Users" children={<UserManagePage />} />
+        }
       />
       {/* Contains all plugins */}
       <Route
         path="plugin-list"
-        element={<AdminTemplate children={<PluginManagePage />} />}
+        element={
+          <AdminTemplate pageName="Plugins" children={<PluginManagePage />} />
+        }
       />
       {/* Contains verification required plugins */}
       <Route
         path="plugin-verify-list"
-        element={<AdminTemplate children={<PluginVerifyListPage />} />}
+        element={
+          <AdminTemplate
+            pageName="Plugins"
+            children={<PluginVerifyListPage />}
+          />
+        }
       />
       <Route
         path="plugin-verify/:pluginId"
-        element={<AdminTemplate children={<PluginVerifyPage />} />}
+        element={
+          <AdminTemplate pageName="Plugins" children={<PluginVerifyPage />} />
+        }
       />
 
       {/* Investigator */}
       <Route
+        path="report"
+        element={
+          <InvestigatorTemplate pageName="Analysis" children={<ReportPage />} />
+        }
+      />
+      <Route
         path="analysis"
-        element={<InvestigatorTemplate children={<AnalysisPage />} />}
+        element={
+          <InvestigatorTemplate
+            pageName="Analysis"
+            children={<AnalysisPage />}
+          />
+        }
       />
       <Route
         path="file-list"
-        element={<InvestigatorTemplate children={<EmFileListPage />} />}
+        element={
+          <InvestigatorTemplate
+            pageName="Upload File"
+            children={<EmFileListPage />}
+          />
+        }
       />
       <Route
         path="file-upload"
-        element={<InvestigatorTemplate children={<EmFileUploadPage />} />}
-      />
-      <Route
-        path="investigation"
-        element={<InvestigatorTemplate children={<InvestigationPage />} />}
+        element={
+          <InvestigatorTemplate
+            pageName="Upload File"
+            children={<EmFileUploadPage />}
+          />
+        }
       />
       <Route
         path="profile"
-        element={<InvestigatorTemplate children={<ProfilePage />} />}
+        element={
+          <InvestigatorTemplate
+            pageName="Settings"
+            children={<ProfilePage />}
+          />
+        }
       />
       <Route
         path="edit-profile"
@@ -107,11 +142,21 @@ const router = createBrowserRouter(
       {/* Developer */}
       <Route
         path="plugin-upload-list"
-        element={<DeveloperTemplate children={<PluginUploadListPage />} />}
+        element={
+          <DeveloperTemplate
+            pageName="Upload Plugin"
+            children={<PluginUploadListPage />}
+          />
+        }
       />
       <Route
         path="plugin-upload"
-        element={<DeveloperTemplate children={<PluginUploadPage />} />}
+        element={
+          <DeveloperTemplate
+            pageName="Upload Plugin"
+            children={<PluginUploadPage />}
+          />
+        }
       />
 
       {/* Modification Required UIs If Time Permits */}

@@ -42,15 +42,15 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Stack from "@mui/material/Stack";
 import SearchIcon from "@mui/icons-material/Search";
-import Tooltip from '@mui/material/Tooltip';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import Tooltip from "@mui/material/Tooltip";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 import {
   FormControl,
@@ -66,7 +66,7 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { List } from "@mui/material";
 
-import "./InvestigationPage.css";
+import "./ReportPage.css";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 
 const style = {
@@ -82,8 +82,7 @@ const style = {
   borderRadius: "20px",
 };
 
-function InvestigationPage() {
-
+function ReportPage() {
   const [searchText, setSearchText] = useState("");
 
   const handleSearch = (event) => {
@@ -118,7 +117,6 @@ function InvestigationPage() {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -134,9 +132,8 @@ function InvestigationPage() {
         },
       },
     },
-  }
+  };
   return (
-
     <>
       <Modal
         open={open}
@@ -156,7 +153,7 @@ function InvestigationPage() {
                 fullWidth
                 label="Name"
                 id="fullWidth"
-                onChange={() => { }}
+                onChange={() => {}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -166,7 +163,7 @@ function InvestigationPage() {
                 maxRows={4}
                 label="Description"
                 id="fullWidth"
-                onChange={() => { }}
+                onChange={() => {}}
               />
             </Grid>
 
@@ -193,84 +190,133 @@ function InvestigationPage() {
         </Box>
       </Modal>
 
-      <Container >
+      <Container>
         <Typography
           variant="h4"
           color="textPrimary"
           align="center"
           gutterBottom
-
         >
           Investigation
         </Typography>
-        <Typography sx={{ fontSize: 25, mt: 5 }} color="text.secondary" gutterBottom>
+        <Typography
+          sx={{ fontSize: 25, mt: 5 }}
+          color="text.secondary"
+          gutterBottom
+        >
           Recenty Accessed
         </Typography>
-        <Box sx={{
-          display: "flex",
-          flexDirection: lessThanMd ? "column" : "row",
-          justifyContent: lessThanSm ? "center" : "space-between",
-          alignContent: "center",
-          alignItems: lessThanMd ? null : null,
-          // mt: lessThanMd ? 5 : 0,
-        }}>
-
-          <Card sx={{
-              minWidth: 300, 
-              '&:hover': {
-              backgroundColor: 'rgba(0,36,90,0.2)', 
-              cursor: 'pointer', 
-              '& .MuiTypography-root': {
-                color: 'white', // Change this to the desired color for Typography
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: lessThanMd ? "column" : "row",
+            justifyContent: lessThanSm ? "center" : "space-between",
+            alignContent: "center",
+            alignItems: lessThanMd ? null : null,
+            // mt: lessThanMd ? 5 : 0,
+          }}
+        >
+          <Card
+            sx={{
+              minWidth: 300,
+              "&:hover": {
+                backgroundColor: "rgba(0,36,90,0.2)",
+                cursor: "pointer",
+                "& .MuiTypography-root": {
+                  color: "white", // Change this to the desired color for Typography
+                },
               },
-            },
-          }}>
-            <CardContent sx={{display:"flex",alignItems:"center",justifyContent:"center", mt: 1}}>
-              <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
+            }}
+          >
+            <CardContent
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mt: 1,
+              }}
+            >
+              <Typography
+                sx={{ fontSize: 20 }}
+                color="text.secondary"
+                gutterBottom
+              >
                 Investigation 1
               </Typography>
             </CardContent>
           </Card>
           <span style={{ marginLeft: "10px" }}> </span>
-          <Card sx={{
-             minWidth: 300,
-              mt: lessThanMd ? 2 : 0 ,
-              '&:hover': {
-                backgroundColor: 'rgba(0,36,90,0.2)', 
-                cursor: 'pointer', 
-                '& .MuiTypography-root': {
-                  color: 'white', // Change this to the desired color for Typography
-                },}
-                }}>
-            <CardContent sx={{display:"flex",alignItems:"center",justifyContent:"center", mt: 1}}>
-              <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-                Investigation 2   
+          <Card
+            sx={{
+              minWidth: 300,
+              mt: lessThanMd ? 2 : 0,
+              "&:hover": {
+                backgroundColor: "rgba(0,36,90,0.2)",
+                cursor: "pointer",
+                "& .MuiTypography-root": {
+                  color: "white", // Change this to the desired color for Typography
+                },
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mt: 1,
+              }}
+            >
+              <Typography
+                sx={{ fontSize: 20 }}
+                color="text.secondary"
+                gutterBottom
+              >
+                Investigation 2
               </Typography>
             </CardContent>
           </Card>
           <span style={{ marginLeft: "10px" }}> </span>
-          <Card sx={{ minWidth: 300,
-                      mt: lessThanMd ? 2 : 0,
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,36,90,0.2)', 
-                        cursor: 'pointer', 
-                        '& .MuiTypography-root': {
-                          color: 'white', // Change this to the desired color for Typography
-                        },
-                      },
-                      
-                        }}>
-            <CardContent sx={{display:"flex",alignItems:"center",justifyContent:"center", mt: 1}}>
-              <Typography sx={{ fontSize: 20 ,'&:hover': {font: 'white', } }} color="text.secondary" gutterBottom>
+          <Card
+            sx={{
+              minWidth: 300,
+              mt: lessThanMd ? 2 : 0,
+              "&:hover": {
+                backgroundColor: "rgba(0,36,90,0.2)",
+                cursor: "pointer",
+                "& .MuiTypography-root": {
+                  color: "white", // Change this to the desired color for Typography
+                },
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mt: 1,
+              }}
+            >
+              <Typography
+                sx={{ fontSize: 20, "&:hover": { font: "white" } }}
+                color="text.secondary"
+                gutterBottom
+              >
                 Investigation 3
               </Typography>
             </CardContent>
           </Card>
         </Box>
 
-
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-          <Grid container alignItems="left" justifyContent="left" >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Grid container alignItems="left" justifyContent="left">
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
@@ -282,7 +328,12 @@ function InvestigationPage() {
                 value={searchText}
                 onChange={handleSearch}
                 variant="outlined"
-                style={{ width: "80%", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+                style={{
+                  width: "80%",
+                  marginTop: "40px",
+                  backgroundColor: "white",
+                  borderRadius: 4,
+                }}
                 InputProps={{
                   endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
                 }}
@@ -306,10 +357,9 @@ function InvestigationPage() {
                   },
                 }}
               >
-                {lessThanMd ? <CreateNewFolderIcon /> : ' Create '}
+                {lessThanMd ? <CreateNewFolderIcon /> : " Create "}
               </Button>
             </Tooltip>
-
           </Box>
         </Box>
         <TableContainer component={Paper} style={{ marginTop: "20px" }}>
@@ -317,36 +367,48 @@ function InvestigationPage() {
             <TableBody>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant={lessThanMd ? "h7" : "h6"} color="textPrimary" >
+                  <Typography
+                    variant={lessThanMd ? "h7" : "h6"}
+                    color="textPrimary"
+                  >
                     Investigation
                   </Typography>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
-                  <Typography variant={lessThanMd ? "h7" : "h6"} color="textPrimary" >
+                  <Typography
+                    variant={lessThanMd ? "h7" : "h6"}
+                    color="textPrimary"
+                  >
                     Created Date
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row" align="center">
-                  <Typography variant={lessThanMd ? "h7" : "h6"} color="textPrimary" >
+                  <Typography
+                    variant={lessThanMd ? "h7" : "h6"}
+                    color="textPrimary"
+                  >
                     Status
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
-                  <Typography variant={lessThanMd ? "h7" : "h6"} color="textPrimary" >
+                  <Typography
+                    variant={lessThanMd ? "h7" : "h6"}
+                    color="textPrimary"
+                  >
                     Action
                   </Typography>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     Investigation 1
                   </Typography>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
@@ -362,26 +424,27 @@ function InvestigationPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "Open" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <OpenInNewIcon /> : 'Open'}
-
+                        {lessThanMd ? null : (
+                          <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <OpenInNewIcon /> : "Open"}
                       </Button>
                     </Tooltip>
 
@@ -394,13 +457,13 @@ function InvestigationPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
@@ -408,13 +471,13 @@ function InvestigationPage() {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     Investigation 2
                   </Typography>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
@@ -430,26 +493,27 @@ function InvestigationPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "Open" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <OpenInNewIcon /> : ' Open'}
-
+                        {lessThanMd ? null : (
+                          <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <OpenInNewIcon /> : " Open"}
                       </Button>
                     </Tooltip>
 
@@ -462,13 +526,13 @@ function InvestigationPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
@@ -476,20 +540,24 @@ function InvestigationPage() {
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     Investigation 3
                   </Typography>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
                 <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h7" color="textPrimary" >
+                  <Typography variant="h7" color="textPrimary">
                     <Chip
-                      sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                      sx={{
+                        background: "#FFF4E0",
+                        color: "orange",
+                        mt: "10px",
+                      }}
                       label={"ongoing"}
                     />
                   </Typography>
@@ -500,26 +568,27 @@ function InvestigationPage() {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "center",
-                      '& > Button': {
+                      "& > Button": {
                         marginRight: 2, // Adjust the value as needed
-                      }
+                      },
                     }}
                   >
                     <Tooltip title={lessThanMd ? "Open" : null}>
                       <Button
                         variant="outlined"
-                        style={{ color: "#00245A", }}
+                        style={{ color: "#00245A" }}
                         sx={{
                           borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
+                          "&:hover": {
                             borderColor: "#00245A", // Change to the desired hover color
                           },
                         }}
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
-                        {lessThanMd ? null : <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <OpenInNewIcon /> : 'Open'}
-
+                        {lessThanMd ? null : (
+                          <OpenInNewIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <OpenInNewIcon /> : "Open"}
                       </Button>
                     </Tooltip>
 
@@ -532,23 +601,20 @@ function InvestigationPage() {
                             "Do you want to delete this plugin?"
                           );
                           if (confirmBox === true) {
-
                           }
                         }}
                       >
-                        {lessThanMd ? null : <DeleteIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <DeleteIcon /> : 'Delete'}
-
+                        {lessThanMd ? null : (
+                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                        )}
+                        {lessThanMd ? <DeleteIcon /> : "Delete"}
                       </Button>
                     </Tooltip>
                   </Box>
                 </TableCell>
               </TableRow>
-
             </TableBody>
-            <TableFooter>
-
-            </TableFooter>
+            <TableFooter></TableFooter>
           </Table>
         </TableContainer>
       </Container>
@@ -556,4 +622,4 @@ function InvestigationPage() {
   );
 }
 
-export default InvestigationPage;
+export default ReportPage;
