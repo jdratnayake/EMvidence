@@ -18,6 +18,7 @@ import { API_URL, queryKeys } from "../../constants";
 import { useUser } from "../../contexts/UserContext";
 import { getEmRawDetails } from "../../services/fileManage";
 import { getFilteredPluginDetails } from "../../services/pluginService";
+import { getFullName, bytesToMB } from "../../helper";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AnalysisPage.css";
@@ -33,8 +34,22 @@ const AnalysisPage = () => {
   const [fftSizeIndex, setFftSizeIndex] = useState(0);
   const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
   const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  const [checkedPlugin, setCheckedPlugin] = useState(0);
+  const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
+  const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
+  const [analysisResults, setAnalysisResults] = useState([]);
   const { user } = useUser();
   const queryClient = useQueryClient();
+
+  const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
+    useState(false);
+  const [pluginModalId, setPluginModalId] = useState(null);
+  const [pluginModalName, setPluginModalName] = useState(null);
+  const [pluginModalIcon, setPluginModalIcon] = useState(null);
+  const [pluginAuthorName, setPluginAuthorName] = useState(null);
+  const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
   const handleEmDataFile = (event) => {
     const foundObject = emRawData.find(
@@ -44,63 +59,7 @@ const AnalysisPage = () => {
     getPluginDetails(event.target.value, fftSizeIndex);
   };
 
-  const analyisPlugins = [
-    {
-      id: "1",
-      name: "Behavior Identification",
-      descrption:
-        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
-    },
-    {
-      id: "2",
-      name: "Malicious Firmware Modification Detection",
-      descrption:
-        "In computing, a plug-in (or plugin, add-in, addin, add-on, or addon) is a software component that adds a specific feature to an existing computer program. When a program supports plug-ins, it enables customization.",
-    },
-    {
-      id: "3",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-    ,
-    {
-      id: "4",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-    {
-      id: "5",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-    {
-      id: "6",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-    {
-      id: "7",
-      name: "FirmWare Version Detection",
-      descrption: "Description 3",
-    },
-  ];
-
-  const [checkedPlugin, setCheckedPlugin] = useState(0);
-  const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
-  const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
-  const [loading, setLoading] = React.useState(false);
-  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
-  const [insightTypeName, setInsightTypeName] = useState(
-    "Behavior identification"
-  );
-
-  const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
-    useState(false);
-  const [pluginModalId, setPluginModalId] = useState(null);
-  const [pluginModalName, setPluginModalName] = useState(null);
-  const [pluginModalDescription, setPluginModalDescription] = useState(null);
 
   const executePreprocessingPlugin = () => {
     setLoading(true);
@@ -217,19 +176,22 @@ const AnalysisPage = () => {
 
   const handleChecked = (id) => {
     console.log("Id: ", id);
-    setCheckedPlugin(id);
-    setAnalysisPlugin(parseInt(id));
-    if (id == "1") {
-      setInsightTypeName("Behavior identification");
-    } else if (id == "2") {
-      setInsightTypeName("Malicious firmware modification detection");
-    }
+    setCheckedPlugin(parseInt(id));
   };
 
-  const handleClicked = (id, name, description) => {
+  const handleClicked = (
+    id,
+    name,
+    description,
+    first_name,
+    last_name,
+    icon
+  ) => {
     setPluginModalId(id);
     setPluginModalName(name);
+    setPluginAuthorName(getFullName(first_name, last_name));
     setPluginModalDescription(description);
+    setPluginModalIcon(icon);
     setIsAnalysisPluginModalOpen(true);
   };
 
@@ -326,7 +288,9 @@ const AnalysisPage = () => {
       <AnalysisPluginModal
         id={pluginModalId}
         name={pluginModalName}
+        author={pluginAuthorName}
         description={pluginModalDescription}
+        iconPath={pluginModalIcon}
         open={isAnalysisPluginModalOpen}
         onClose={handleClose}
         modifyChecked={handleChecked}
@@ -467,7 +431,7 @@ const AnalysisPage = () => {
             <InsertDriveFileIcon sx={{ fontSize: "75px", color: "#00245A" }} />
 
             <Typography variant="h5" sx={{ mb: "10px" }}>
-              <strong>File 1</strong>
+              <strong>{emRawFileRecord?.em_raw_file_visible_name}</strong>
             </Typography>
             <Box
               sx={{
@@ -477,22 +441,19 @@ const AnalysisPage = () => {
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Insight Type:</strong> {insightTypeName}
+                <strong>Sampling Rate:</strong> {emRawFileRecord?.sampling_rate}{" "}
+                Hz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Rate:</strong> 20MHz
+                <strong>Center Frequency:</strong>{" "}
+                {emRawFileRecord?.center_frequency} Hz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Center Frequency:</strong> 16MHz
+                <strong>Device Name:</strong> {emRawFileRecord?.device_name}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Duration:</strong> 20s
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Hash Function:</strong> Md5
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Device Name:</strong> Iphone 4S
+                <strong>File Size:</strong>{" "}
+                {bytesToMB(emRawFileRecord?.em_raw_cfile_file_size) + " MB"}
               </Typography>
             </Box>
           </Box>
@@ -797,22 +758,24 @@ const AnalysisPage = () => {
               mb: "5px",
             }}
           >
-            <Typography
-              variant="body1"
-              display="block"
-              sx={{
-                fontSize: "20px",
-                fontStyle: "normal",
-                fontWeight: 400,
-                lineHeight: "normal",
-                color: "black",
-                mb: 3,
-                mt: 3,
-              }}
-              gutterBottom
-            >
-              Select the Analysis plugin
-            </Typography>
+            {pluginData && (
+              <Typography
+                variant="body1"
+                display="block"
+                sx={{
+                  fontSize: "20px",
+                  fontStyle: "normal",
+                  fontWeight: 400,
+                  lineHeight: "normal",
+                  color: "black",
+                  mb: 3,
+                  mt: 3,
+                }}
+                gutterBottom
+              >
+                Select the Analysis plugin
+              </Typography>
+            )}
           </Box>
           <Box sx={{ display: "flex", width: "100%" }}>
             <Grid
@@ -830,7 +793,7 @@ const AnalysisPage = () => {
                 overflowX: "hidden",
               }}
             >
-              {analyisPlugins.map((plugin) => (
+              {pluginData?.map((plugin) => (
                 <Grid
                   item
                   xs={5}
@@ -844,10 +807,15 @@ const AnalysisPage = () => {
                   }}
                 >
                   <PluginCardAnalysis
-                    id={plugin.id}
-                    name={plugin.name}
-                    description={plugin.descrption}
-                    isChecked={plugin.id == checkedPlugin ? true : false}
+                    id={plugin.plugin_id}
+                    name={plugin.plugin_name}
+                    description={plugin.plugin_description}
+                    firstName={plugin.first_name}
+                    lastName={plugin.last_name}
+                    imageUrl={plugin.icon_filepath}
+                    isChecked={
+                      plugin.plugin_id === checkedPlugin ? true : false
+                    }
                     modifyChecked={handleChecked}
                     handleClicked={handleClicked}
                   />
@@ -855,24 +823,26 @@ const AnalysisPage = () => {
               ))}
             </Grid>
           </Box>
-          <LoadingButton
-            sx={{
-              mt: 3,
-              mb: 3,
-              backgroundColor: "#00245A",
-              color: "#ffffff",
-              width: "100px",
-              "&:hover": {
-                backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
-              },
-            }}
-            variant="contained"
-            disabled={isAnalysisFetching}
-            onClick={executeAnalysisPlugin}
-            loading={loadingAnalyse}
-          >
-            Analyze
-          </LoadingButton>
+          {pluginData && (
+            <LoadingButton
+              sx={{
+                mt: 3,
+                mb: 3,
+                backgroundColor: "#00245A",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              disabled={isAnalysisFetching}
+              onClick={executeAnalysisPlugin}
+              loading={loadingAnalyse}
+            >
+              Analyze
+            </LoadingButton>
+          )}
         </Box>
       </Box>
 
@@ -927,11 +897,7 @@ const AnalysisPage = () => {
             }}
           >
             <Typography variant="h5" sx={{ mb: "30px" }}>
-              Analysis Summary 1
-            </Typography>
-
-            <Typography variant="body1">
-              <strong>Insight Type:</strong> {insightTypeName}
+              Result
             </Typography>
 
             {analysisResults.map((result, index) => (

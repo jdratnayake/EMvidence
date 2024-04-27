@@ -24,22 +24,10 @@ class FileManageController extends Controller
     {
         $userId = $request->header('user_id');
 
-        $emDataRecords = EmDataFile::where('user_id', $userId)->get([
-            'em_raw_file_id',
-            'em_raw_file_name',
-            'em_raw_file_visible_name',
-            'em_raw_cfile_hash',
-            'em_raw_upload_status',
-            'em_preprocess_file_name',
-            'em_raw_cfile_file_size',
-            'em_raw_h5_file_size',
-            'em_raw_h5_hash',
-            'device_id',
-            'center_frequency',
-            'sampling_rate',
-            'user_id',
-            'file_upload_timestamp'
-        ]);
+        $emDataRecords = EmDataFile::where('user_id', $userId)
+            ->join('devices', 'em_data_files.device_id', '=', 'devices.device_id')
+            ->select('em_data_files.*', 'devices.device_name')
+            ->get();
 
         $responseData = [
             'em_raw_file' => $emDataRecords,

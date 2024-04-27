@@ -67,6 +67,8 @@ class PluginController extends Controller
         $responseData = AnalysisPlugin::where('center_frequency', $centerFrequency)
             ->where('sampling_rate', $samplingRate)
             ->where('fft_size', $fftSize)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
             ->get();
 
         return response()->json(["filteredPluginData" => $responseData]);
