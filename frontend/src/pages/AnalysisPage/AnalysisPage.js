@@ -37,7 +37,7 @@ const AnalysisPage = () => {
   const [checkedPlugin, setCheckedPlugin] = useState(0);
   const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
   const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [loadingPreprocessing, setLoadingPreprocessing] = React.useState(false);
   const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   const { user } = useUser();
@@ -62,13 +62,13 @@ const AnalysisPage = () => {
   const [analysisPlugin, setAnalysisPlugin] = useState(1);
 
   const executePreprocessingPlugin = () => {
-    setLoading(true);
+    setLoadingPreprocessing(true);
     console.log("Down Sampling Index: " + downSamplingIndex);
 
     const headers = {
       "Content-Type": "application/json",
-      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
-      preprocessing_plugin_name: "basic.py",
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: emRawFileRecord.em_raw_file_id,
       down_sampling_index: downSamplingIndex,
       fft_size_index: fftSizeIndex,
       overlap_percentage_index: overLapPercentageIndex,
@@ -78,6 +78,7 @@ const AnalysisPage = () => {
     axios
       .get(API_URL + "/plugin/preprocessing", { headers })
       .then((response) => {
+        // console.log(response.data);
         console.log(response.data);
 
         toast.success("Pre-Processing Done Successfully", {
@@ -91,7 +92,7 @@ const AnalysisPage = () => {
         });
 
         setIsPreprocessingFetching(false);
-        setLoading(false);
+        setLoadingPreprocessing(false);
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -105,34 +106,25 @@ const AnalysisPage = () => {
           draggable: true,
           progress: undefined,
         });
-        setLoading(false);
+        setLoadingPreprocessing(false);
       });
   };
 
   const executeAnalysisPlugin = () => {
     setLoadingAnalyse(true);
-    let analysisPluginMachineLearningModelName = "";
-
-    if (analysisPlugin == 1) {
-      analysisPluginMachineLearningModelName =
-        "apple_iphone_4s__detect_behaviour_of_6_classes__neural_network_model.h5";
-    } else {
-      analysisPluginMachineLearningModelName =
-        "apple_iphone_4s__detect_anomalies__neural_network_model.h5";
-    }
-
     setIsAnalysisFetching(true);
+
     const headers = {
       "Content-Type": "application/json",
-      em_raw_file_name: "class_8_iphone4s_sms-app.cfile",
-      analysis_plugin_name:
-        "apple_iphone_4s__detect_behaviour_of_10_classes.py",
-      analysis_plugin_ml_model_name: analysisPluginMachineLearningModelName,
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: emRawFileRecord.em_raw_file_id,
+      analysis_plugin_id: checkedPlugin,
     };
 
     axios
       .get(API_URL + "/plugin/analysis", { headers })
       .then((response) => {
+        console.log(response);
         const analysisResultObjects = Object.entries(
           response.data["output"]
         ).map(([key, value]) => ({
@@ -140,7 +132,7 @@ const AnalysisPage = () => {
           probability: value,
         }));
 
-        console.log(analysisResultObjects);
+        // console.log(analysisResultObjects);
 
         toast.success("Analysis Done Successfully", {
           position: "top-right",
@@ -702,7 +694,7 @@ const AnalysisPage = () => {
               variant="contained"
               disabled={isPreprocessingFetching}
               onClick={executePreprocessingPlugin}
-              loading={loading}
+              loading={loadingPreprocessing}
             >
               Pre-process
             </LoadingButton>
@@ -758,7 +750,7 @@ const AnalysisPage = () => {
               mb: "5px",
             }}
           >
-            {pluginData && (
+            {pluginData && pluginData?.length !== 0 && (
               <Typography
                 variant="body1"
                 display="block"
@@ -823,7 +815,7 @@ const AnalysisPage = () => {
               ))}
             </Grid>
           </Box>
-          {pluginData && (
+          {pluginData && pluginData?.length !== 0 && (
             <LoadingButton
               sx={{
                 mt: 3,
