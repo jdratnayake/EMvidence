@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
+
 
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
@@ -16,6 +18,7 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadFailedException;
 use Carbon\Carbon;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use GuzzleHttp\Client;
 
 
 class FileManageController extends Controller
@@ -211,6 +214,68 @@ class FileManageController extends Controller
 
     public function processEMFile()
     {
+        $msg = 'AAAAAAAAAAAAAAAA';
+        $encryptedMessage = Crypt::encrypt($msg);
+        info('encrypted msg --------');
+        info($encryptedMessage);
+        $decryptedMessage = Crypt::decrypt($encryptedMessage);
+        info('decrypted msg --------');
+        info($decryptedMessage);
+
+        $sec = env('APP_KEY');
+        info($sec);
+
+        // Create a new client instance
+        $client = new Client();
+
+        // Set your HCP client ID and secret
+        $clientId = env('HCP_CLIENT_ID');
+        $clientSecret = env('HCP_CLIENT_SECRET');
+
+        // Make the POST request
+        $response = $client->request('POST', 'https://auth.idp.hashicorp.com/oauth2/token', [
+            'form_params' => [
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'grant_type' => 'client_credentials',
+                'audience' => 'https://api.hashicorp.cloud'
+            ]
+        ]);
+        // Get the response body
+        $body = $response->getBody();
+
+        // Parse the JSON response
+        $data = json_decode($body, true);
+
+        // Now you can access your API token
+        $apiToken = $data['access_token'];
+        info('--- api token ----');
+        info($apiToken);
+
+        // Set your HCP Vault API endpoint
+        $endpoint = 'https://api.cloud.hashicorp.com/secrets/2023-06-13/organizations/27a8d745-402a-421f-a6eb-8683496356f6/projects/635a7238-60de-4394-85d6-66b72a486eec/apps/emvidence/open';
+
+        // Make the GET request
+        $response = $client->request('GET', $endpoint, [
+            'headers' => [
+                'Authorization' => "Bearer $apiToken"
+            ]
+        ]);
+
+        // Get the response body
+        $body = $response->getBody();
+
+        // Parse the JSON response
+        $data = json_decode($body, true);
+
+        // Now you can access your secret data
+        info($data);
+        $secretValue = $data['secrets'][0]['version']['value'];
+        info($secretValue);
+
+      
+
+
         function convertFileName($inputString)
         {
 
@@ -254,15 +319,15 @@ class FileManageController extends Controller
             foreach ($getEmDataRecords as $item) {
 
                 // ----------------- Decomprerss the file -----------------
-                
+
                 $gzipFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $item['em_raw_file_name'];
-               
+
                 $cfileName = convertFileName($item['em_raw_file_name']) . ".cfile";
                 $decompressedFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $cfileName;
-              
+
                 // Open the compressed file for reading
                 $gzipFileHandle = fopen($gzipFilePath, 'rb');
-               
+
                 // Open a writable file handle for the decompressed file
                 $decompressedFileHandle = fopen($decompressedFilePath, 'wb');
 
@@ -326,7 +391,7 @@ class FileManageController extends Controller
                     continue;
                 }
 
-                // ----------------- Convert cfile to h5 format can calculate the hash -----------------
+                // ----------------- Convert cfile to h5 format, calculate the hash and encrypt the file -----------------
 
 
                 $h5FileName = convertFileName($item['em_raw_file_name']) . ".h5";
@@ -368,7 +433,12 @@ class FileManageController extends Controller
     }
 
 
-    public function processRawFile(Request $request){
+    public function processRawFile(Request $request)
+    {
+
+
+
+
         function convertFileName($inputString)
         {
 
@@ -400,7 +470,7 @@ class FileManageController extends Controller
         }
 
         $fileUniqueName = $request->unique_name;
-        info( $fileUniqueName);
+        info($fileUniqueName);
         $getEmDataRecords = EmDataFile::where('em_raw_file_name', $fileUniqueName)->get([
             'em_raw_file_id',
             'em_raw_file_name',

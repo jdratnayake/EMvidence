@@ -440,21 +440,21 @@ function EmFileUploadPage() {
             setIsSendToDatabase(true);
 
           } else {
-            alert("Error");
+            alert("Error", response);
             navigate("/file-list");
           }
         });
 
-      axios.post(baseURL3, { unique_name: fileUniqueName })
-        .then(() => {
-          console.log(" --- msg 1 ---");
-          navigate("/file-list");
+      // axios.post(baseURL3, { unique_name: fileUniqueName })
+      //   .then(() => {
+      //     console.log(" --- msg 1 ---");
+      //     navigate("/file-list");
          
-        })
-        .catch(error => {
-          console.error("Error processing file:", error);
-          // Handle error, e.g., show a message to the user
-        });
+      //   })
+      //   .catch(error => {
+      //     console.error("Error processing file:", error);
+      //     // Handle error, e.g., show a message to the user
+      //   });
         
       setTimeout(() => {
         navigate("/file-list");
