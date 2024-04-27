@@ -49,7 +49,6 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-
       <Route
         path="plugin"
         element={<InvestigatorTemplate children={<PluginPage />} />}
@@ -64,17 +63,19 @@ const router = createBrowserRouter(
         path="user-list"
         element={<AdminTemplate children={<UserManagePage />} />}
       />
+      {/* Contains all plugins */}
       <Route
         path="plugin-list"
         element={<AdminTemplate children={<PluginManagePage />} />}
       />
-      <Route
-        path="plugin-verify/:pluginId"
-        element={<AdminTemplate children={<PluginVerifyPage />} />}
-      />
+      {/* Contains verification required plugins */}
       <Route
         path="plugin-verify-list"
         element={<AdminTemplate children={<PluginVerifyListPage />} />}
+      />
+      <Route
+        path="plugin-verify/:pluginId"
+        element={<AdminTemplate children={<PluginVerifyPage />} />}
       />
 
       {/* Investigator */}
@@ -115,7 +116,6 @@ const router = createBrowserRouter(
 
       {/* Modification Required UIs If Time Permits */}
       <Route path="analysis1" element={<AnalysisPage1 />} />
-
       {/* { for testing} */}
       <Route path="testUploadTradi" element={<FileUploadTestingPage />} />
       <Route path="testUploadChunk" element={<ChunkFileUploadTest />} />

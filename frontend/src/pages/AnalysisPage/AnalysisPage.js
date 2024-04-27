@@ -11,10 +11,10 @@ import {
   MenuItem,
   Select,
   Dialog,
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  TextField 
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -65,7 +65,6 @@ const AnalysisPage = () => {
     },
   };
 
-  
   // new start
   const [emRawFileRecord, setEmRawFileRecord] = useState(null);
   const [downSamplingIndex, setDownSamplingIndex] = useState(0);
@@ -101,15 +100,19 @@ const AnalysisPage = () => {
     setLoadingPreprocessing(true);
     console.log("Down Sampling Index: " + downSamplingIndex);
 
+    const fftValue = fftSizeIndex === 2048 ? 0 : 0;
+
     const headers = {
       "Content-Type": "application/json",
       Authorization: user["userData"]["token"],
-      em_raw_file_id: emRawFileRecord.em_raw_file_id,
-      down_sampling_index: downSamplingIndex,
-      fft_size_index: fftSizeIndex,
+      em_raw_file_id: emRawFileRecord?.em_raw_file_id,
+      down_sampling_index: 0,
+      fft_size_index: fftValue,
       overlap_percentage_index: overLapPercentageIndex,
       sample_selection_index: sampleSelectionIndex,
     };
+
+    console.log(headers);
 
     axios
       .get(API_URL + "/plugin/preprocessing", { headers })
@@ -227,7 +230,6 @@ const AnalysisPage = () => {
     setIsAnalysisPluginModalOpen(false);
   };
 
-
   const getPluginDetails = (emFileId, fftSizeIndexValue) => {
     if (fftSizeIndexValue !== 0 && emFileId !== null) {
       queryClient.prefetchQuery([queryKeys["getFilteredPluginDetails"]], () =>
@@ -271,7 +273,7 @@ const AnalysisPage = () => {
 
   const [emDataFile, setEmDataFile] = useState();
   const [openPopup, setOpenPopup] = useState(false);
-  const [reportName, setReportName] = useState('');
+  const [reportName, setReportName] = useState("");
 
   const handleOpenPopup = () => {
     setOpenPopup(true);
@@ -285,7 +287,6 @@ const AnalysisPage = () => {
     console.log(reportName);
     setOpenPopup(false);
   };
-
 
   return (
     <>
@@ -925,15 +926,16 @@ const AnalysisPage = () => {
             ))}
           </Box>
         </Box>
-        <Box sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          mt: "40px"
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            mt: "40px",
+          }}
+        >
           <Button
             sx={{
-
               backgroundColor: "#00245A",
               color: "#ffffff",
               width: "150px",
@@ -947,9 +949,11 @@ const AnalysisPage = () => {
             Save Analysis
           </Button>
 
-          <Dialog open={openPopup} onClose={handleClosePopup} >
-            <Typography variant="h5" sx={{ml:3, mt:1, fontWeight: 'bold'}}>Add Title</Typography>
-            <DialogContent sx={{ width: '500px', height: '120px' , }}>
+          <Dialog open={openPopup} onClose={handleClosePopup}>
+            <Typography variant="h5" sx={{ ml: 3, mt: 1, fontWeight: "bold" }}>
+              Add Title
+            </Typography>
+            <DialogContent sx={{ width: "500px", height: "120px" }}>
               <TextField
                 autoFocus
                 // margin="dense"
@@ -963,10 +967,10 @@ const AnalysisPage = () => {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClosePopup} sx={{color:"#00245A"}}>
+              <Button onClick={handleClosePopup} sx={{ color: "#00245A" }}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} sx={{color:"#00245A"}}>
+              <Button onClick={handleSave} sx={{ color: "#00245A" }}>
                 Save
               </Button>
             </DialogActions>
