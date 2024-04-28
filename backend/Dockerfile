@@ -57,4 +57,4 @@ RUN sed -i 's/post_max_size = .*/post_max_size = 4000M/' /etc/php/8.2/cli/php.in
 RUN sed -i 's/upload_max_filesize = .*/upload_max_filesize = 4000M/' /etc/php/8.2/cli/php.ini
 
 # Start Laravel server
-CMD ["bash", "-c", "php artisan schedule:run & php artisan serve --host=0.0.0.0 --port=80"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]
