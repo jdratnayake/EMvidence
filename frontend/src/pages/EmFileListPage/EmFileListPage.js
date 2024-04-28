@@ -37,8 +37,11 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ToastContainer, toast } from "react-toastify";
+import { useQuery, useQueryClient } from "react-query";
 import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
+import noFiles from "../../resources/no_files_found.png";
+import { useUser } from "../../contexts/UserContext";
 
 const baseURL1 = API_URL + "/em_data_records";
 const baseURL2 = API_URL + "/delete_file";
@@ -119,20 +122,27 @@ function EmFileListPage() {
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   const lessThanLg = useMediaQuery(theme.breakpoints.down("lg"));
-  const [data, setData] = useState([]);
+  const [emData, setEMData] = useState([]);
 
 
   useEffect(() => {
-    fetch(baseURL1)
-      .then((res) => res.json())
-      .then((res) => setData(res))
-      .then(res => console.log(res.data.emDataRecords))
-      .catch((res) => console.log(res));
+    axios.get(baseURL1, {
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': 1,
+      },
+    })
+      .then((response) => {
+        console.log("--- file list ---");
+        console.log(response.data.em_raw_files);
+        setEMData(response.data.em_raw_files);
+      })
+      .catch((error) => {
+        console.error('There was a problem with Axios request:', error);
+      });
   }, []);
 
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(100);
   const navigateToUploadForm = () => {
     navigate("/file-upload");
   };
@@ -216,18 +226,7 @@ function EmFileListPage() {
     }
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   function deleteRecord(id) {
     console.log(id);
@@ -317,7 +316,7 @@ function EmFileListPage() {
             </Button>
           </Stack>
 
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: "scroll" }}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emData.length > 5 ? "scroll" : "hidden" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow >
@@ -347,13 +346,7 @@ function EmFileListPage() {
                     </Typography>
                   </TableCell>
                 </TableRow>
-                {(rowsPerPage > 0
-                  ? data.slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
-                  : data
-                ).map((data) => (
+                {emData?.map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
                     <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
@@ -438,16 +431,26 @@ function EmFileListPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {data.length == 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
+                {emData.length == 0 && (
+                  <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
-                      <Typography variant="h6">
+                      <Typography variant="h4" sx={{color:"#00245A"}}>
                         No files found
                       </Typography>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 200,
+                          width: 200,
+                          mt:2,
+                          ml:2
+                        }}
+                        src={noFiles}
+                      />
                     </TableCell>
                   </TableRow>
                 )}
-                <TableRow style={{ height: 30 * emptyRows }}>
+                <TableRow style={{ height: 30 }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               </TableBody>

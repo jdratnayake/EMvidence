@@ -47,6 +47,14 @@ services:
         - "-p${DB_PASSWORD}"
       retries: 3
       timeout: 5s
+    # cron:
+    #   build:
+    #     context: .
+    #     dockerfile: cron.dockerfile
+    #   container_name: cron
+    #   volumes:
+    #     - ./backend:/var/www/html
+
 
   phpmyadmin:
     container_name: phpmyadmin
