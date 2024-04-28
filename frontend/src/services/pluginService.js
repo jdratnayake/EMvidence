@@ -1,5 +1,25 @@
 import { API_URL } from "../constants";
 
+export const getVerifiedPluginDetails = async (userData) => {
+  const token = userData["userData"]["token"];
+
+  try {
+    const response = await fetch(API_URL + "/plugin/pending", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    });
+
+    const data = await response.json();
+
+    return data["pendingPlugins"];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getPendingPluginDetails = async (userData) => {
   const token = userData["userData"]["token"];
 

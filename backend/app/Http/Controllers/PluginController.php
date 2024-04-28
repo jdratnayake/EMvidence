@@ -112,6 +112,19 @@ class PluginController extends Controller
         return response()->json($responseData);
     }
 
+    public function getVerifiedPlugins()
+    {
+        $verifiedPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')
+            ->whereIn('compatibility_status', ['compatible', 'incompatible'])
+            ->get();
+
+        $responseData = [
+            'verifiedPlugins' => $verifiedPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
     public function getPluginIcon(Request $request)
     {
         $filename = $request->header("icon_filename");

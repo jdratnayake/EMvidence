@@ -43,6 +43,7 @@ Route::prefix("v1/plugin")->group(function () {
     Route::get("/single", [PluginController::class, "getPlugin"])->middleware('jwt');
     Route::get("/filter", [PluginController::class, "getFilteredPlugin"])->middleware('jwt');
     Route::get("/pending", [PluginController::class, "getPendingPlugins"])->middleware('jwt');
+    Route::get("/verified", [PluginController::class, "getVerifiedPlugins"])->middleware('jwt');
     Route::get("/preprocessing", [PluginController::class, "executePreprocessingPlugin"])->middleware('jwt');
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"])->middleware('jwt');
     Route::post("/upload", [PluginController::class, "uploadPlugin"])->middleware('jwt');
