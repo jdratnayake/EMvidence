@@ -42,7 +42,23 @@ function PluginUploadListPage() {
   const queryClient = useQueryClient();
 
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
+    const searchTerm = event.target.value;
+    setSearchText(searchTerm);
+
+    // console.log(searchTerm);
+    if (!searchTerm) {
+      queryClient.prefetchQuery([queryKeys["getDeveloperPluginDetails"]], () =>
+        getDeveloperPluginDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((plugin) => {
+        return plugin.plugin_name.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(queryKeys["getDeveloperPluginDetails"], newData);
+    }
   };
   const navigate = useNavigate();
   const theme = useTheme();
