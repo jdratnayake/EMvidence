@@ -5,7 +5,7 @@ export const queryKeys = {
   getInvestigatorDeveloperDetails: "investigatorDeveloperDetails",
   getDeviceDetails: "deviceDetails",
   getEmRawDetails: "EmRawDetails",
-  getInitialPluginDetails: "initialPluginDetails",
+  getPendingPluginDetails: "pendingPluginDetails",
   getPluginFullDetails: "pluginFullDetails",
   getFilteredPluginDetails: "filteredPluginDetails",
   getDeveloperPluginDetails: "developerPluginDetails",

@@ -24,7 +24,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RuleIcon from "@mui/icons-material/Rule";
 import { API_URL, queryKeys } from "../../constants";
-import { getInitialPluginDetails } from "../../services/pluginService";
+import { getPendingPluginDetails } from "../../services/pluginService";
 import { useUser } from "../../contexts/UserContext";
 import { getDate } from "../../helper";
 import "./PluginVerifyListPage.css";
@@ -35,7 +35,22 @@ function PluginVerifyPage() {
   const queryClient = useQueryClient();
 
   const handleSearch = (event) => {
+    const searchTerm = event.target.value;
     setSearchText(event.target.value);
+
+    if (!searchTerm) {
+      queryClient.prefetchQuery([queryKeys["getPendingPluginDetails"]], () =>
+        getPendingPluginDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((plugin) => {
+        return plugin.plugin_name.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(queryKeys["getPendingPluginDetails"], newData);
+    }
   };
   const navigate = useNavigate();
   const navigateToPluginList = () => {
@@ -77,16 +92,16 @@ function PluginVerifyPage() {
   };
 
   const { data, error, isLoading } = useQuery({
-    queryKey: [queryKeys["getInitialPluginDetails"]],
-    queryFn: () => getInitialPluginDetails(user),
+    queryKey: [queryKeys["getPendingPluginDetails"]],
+    queryFn: () => getPendingPluginDetails(user),
     enabled: false,
   });
 
   useEffect(() => {
     // Enable the query when the user object becomes available
     if (user) {
-      queryClient.prefetchQuery([queryKeys["getInitialPluginDetails"]], () =>
-        getInitialPluginDetails(user)
+      queryClient.prefetchQuery([queryKeys["getPendingPluginDetails"]], () =>
+        getPendingPluginDetails(user)
       );
     }
   }, [user]);

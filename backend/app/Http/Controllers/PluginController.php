@@ -101,12 +101,12 @@ class PluginController extends Controller
         return response()->json(["filteredPluginData" => $responseData]);
     }
 
-    public function getInitialPlugins()
+    public function getPendingPlugins()
     {
-        $initialPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')->where('compatibility_status', 'initial')->get();
+        $initialPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')->where('compatibility_status', 'pending')->get();
 
         $responseData = [
-            'initialPlugins' => $initialPlugins,
+            'pendingPlugins' => $initialPlugins,
         ];
 
         return response()->json($responseData);

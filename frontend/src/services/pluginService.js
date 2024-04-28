@@ -1,10 +1,10 @@
 import { API_URL } from "../constants";
 
-export const getInitialPluginDetails = async (userData) => {
+export const getPendingPluginDetails = async (userData) => {
   const token = userData["userData"]["token"];
 
   try {
-    const response = await fetch(API_URL + "/plugin/initial", {
+    const response = await fetch(API_URL + "/plugin/pending", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export const getInitialPluginDetails = async (userData) => {
 
     const data = await response.json();
 
-    return data["initialPlugins"];
+    return data["pendingPlugins"];
   } catch (error) {
     throw error;
   }
