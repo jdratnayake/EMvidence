@@ -3,7 +3,7 @@ import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./EmFileListPage.css";
 import PropTypes from "prop-types";
-import { useTheme, } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -35,7 +35,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import Tooltip from "@mui/material/Tooltip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -43,11 +43,11 @@ import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import { useQuery, useQueryClient } from "react-query";
-import { API_URL } from "../../constants";
+import { API_URL, queryKeys } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 import noFiles from "../../resources/no_files_found.png";
 import { useUser } from "../../contexts/UserContext";
-
+import { getEmRawDetails } from "../../services/fileManage";
 
 const baseURL1 = API_URL + "/em_data_records";
 const baseURL2 = API_URL + "/delete_file";
@@ -83,8 +83,6 @@ const sxStyle = {
   },
 };
 
-
-
 function EmFileListPage() {
   const theme = useTheme();
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
@@ -95,28 +93,8 @@ function EmFileListPage() {
   const [fileId, setFileId] = useState();
   const [searchText, setSearchText] = useState("");
   const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const queryClient = useQueryClient();
   const { user } = useUser();
-
-
-  useEffect(() => {
-    
-    const userId = user["userData"].user_id;
-    axios.get(baseURL1, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': userId,
-      },
-    })
-      .then((response) => {
-        console.log("--- file list ---");
-        console.log(response.data.em_raw_files);
-        setEMData(response.data.em_raw_files);
-        setEMDataInTable(response.data.em_raw_files);
-      })
-      .catch((error) => {
-        console.error('There was a problem with Axios request:', error);
-      });
-  }, []);
 
   const navigate = useNavigate();
   const navigateToUploadForm = () => {
@@ -202,8 +180,6 @@ function EmFileListPage() {
     }
   };
 
-
-
   // function deleteRecord(id) {
   //   console.log(id);
   //   axios
@@ -221,7 +197,6 @@ function EmFileListPage() {
   //       }
   //     });
   // }
-
 
   function bytesToSize(bytes) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -246,7 +221,9 @@ function EmFileListPage() {
         if (response.data.status == 200) {
           // alert('File is successfully deleted.');
           setDeactivateModalStatus(false);
-          const updatedData = emDataInTable.filter((file) => file.em_raw_file_id !== fileId);
+          const updatedData = emDataInTable.filter(
+            (file) => file.em_raw_file_id !== fileId
+          );
           setEMData(updatedData);
           setEMDataInTable(updatedData);
           toast.success("File is Deleted Successfully", {
@@ -274,7 +251,7 @@ function EmFileListPage() {
         }
       });
   };
-  
+
   const handleSearch = (event) => {
     setSearchText(event.target.value);
     const searchText = event.target.value.toLowerCase();
@@ -285,13 +262,32 @@ function EmFileListPage() {
     setEMDataInTable(filteredFiles);
   };
 
+  const {
+    data: emDataFile,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getEmRawDetails"]],
+    queryFn: () => getEmRawDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
+        getEmRawDetails(user)
+      );
+    }
+  }, [user]);
+
   return (
     <>
       <DeactivateModal
         open={deactivateModalStatus}
         name="Do you really want to delete this file?"
         onClose={() => setDeactivateModalStatus(false)}
-        deactivateButtonName = "Yes"
+        deactivateButtonName="Yes"
         handleBanStatusChange={deleteRecord}
       />
       <ToastContainer
@@ -303,7 +299,8 @@ function EmFileListPage() {
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover />
+        pauseOnHover
+      />
 
       <div>
         <Dialog
@@ -318,102 +315,109 @@ function EmFileListPage() {
       </div>
 
       <div className="maindiv">
-        <Container >
+        <Container>
           <Typography
             variant="h4"
             color="textPrimary"
             align="center"
             gutterBottom
-
           >
             File Manage
           </Typography>
-          
-          <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Grid container alignItems="left" justifyContent="left">
-            <Grid item xs={12} md={12}>
-              <TextField
-                id="search"
-                label={searchText === "" ? "Search" : ""}
-                sx={{ ...sxStyle }}
-                InputLabelProps={{
-                  shrink: false,
-                }}
-                value={searchText}
-                onChange={handleSearch}
-                variant="outlined"
-                style={{
-                  width: "80%",
-                  marginTop: "40px",
-                  backgroundColor: "white",
-                  borderRadius: 4,
-                }}
-                InputProps={{
-                  endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Box sx={{ mt: "42px" }}>
-            <Tooltip title={lessThanMd ? "Upload" : null}>
-              <Button
-                variant="contained"
-                onClick={navigateToUploadForm}
-                sx={{
-                  pl: 4,
-                  pr: 4,
-                  height: 50,
-                  width: lessThanMd ? "50px" : "100px",
-                  bgcolor: "#00245A",
-                  color: "white",
-                  "&:hover": {
-                    bgcolor: "rgba(0, 36, 90, 0.8)",
-                  },
-                }}
-              >
-                {lessThanMd ? <CloudUploadIcon /> : "Upload"}
-              </Button>
-            </Tooltip>
-          </Box>
-        </Box>
 
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emDataInTable.length > 5 ? "scroll" : "hidden" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Grid container alignItems="left" justifyContent="left">
+              <Grid item xs={12} md={12}>
+                <TextField
+                  id="search"
+                  label={searchText === "" ? "Search" : ""}
+                  sx={{ ...sxStyle }}
+                  InputLabelProps={{
+                    shrink: false,
+                  }}
+                  value={searchText}
+                  onChange={handleSearch}
+                  variant="outlined"
+                  style={{
+                    width: "80%",
+                    marginTop: "40px",
+                    backgroundColor: "white",
+                    borderRadius: 4,
+                  }}
+                  InputProps={{
+                    endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box sx={{ mt: "42px" }}>
+              <Tooltip title={lessThanMd ? "Upload" : null}>
+                <Button
+                  variant="contained"
+                  onClick={navigateToUploadForm}
+                  sx={{
+                    pl: 4,
+                    pr: 4,
+                    height: 50,
+                    width: lessThanMd ? "50px" : "100px",
+                    bgcolor: "#00245A",
+                    color: "white",
+                    "&:hover": {
+                      bgcolor: "rgba(0, 36, 90, 0.8)",
+                    },
+                  }}
+                >
+                  {lessThanMd ? <CloudUploadIcon /> : "Upload"}
+                </Button>
+              </Tooltip>
+            </Box>
+          </Box>
+
+          <TableContainer
+            component={Paper}
+            style={{ marginTop: "20px" }}
+            sx={{
+              maxHeight: "70vh",
+              overflowY: emDataFile?.length > 5 ? "scroll" : "hidden",
+            }}
+          >
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
-                <TableRow >
+                <TableRow>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       File Name
                     </Typography>
                   </TableCell>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Size
                     </Typography>
                   </TableCell>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Created Date
                     </Typography>
                   </TableCell>
                   <TableCell scope="row" align="center">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Status
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Action
                     </Typography>
                   </TableCell>
                 </TableRow>
-                {emDataInTable?.map((data) => (
+
+                {emDataFile?.map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
                     <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
@@ -426,44 +430,54 @@ function EmFileListPage() {
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell >
+                    <TableCell>
                       {bytesToSize(data.em_raw_cfile_file_size)}
                     </TableCell>
-                    <TableCell >
-                      {data.file_upload_timestamp}
-                    </TableCell>
+                    <TableCell>{data.file_upload_timestamp}</TableCell>
                     {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
-                    <TableCell align="center" >
+                    <TableCell align="center">
                       {data.em_raw_upload_status === "processing" && (
                         <Chip
-                          sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                          sx={{
+                            background: "#FFF4E0",
+                            color: "orange",
+                            mt: "10px",
+                          }}
                           label={"processing"}
                         />
                       )}
                       {data.em_raw_upload_status === "processed" && (
                         <Chip
-                          sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
+                          sx={{
+                            background: "#ECFDF3",
+                            color: "green",
+                            mt: "10px",
+                          }}
                           label={"processed"}
                         />
                       )}
-                      {(data.em_raw_upload_status === "failed" || data.em_raw_upload_status === "faild") && (
+                      {(data.em_raw_upload_status === "failed" ||
+                        data.em_raw_upload_status === "faild") && (
                         <Chip
-                          sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                          sx={{
+                            background: "#FFF2F2",
+                            color: "red",
+                            mt: "10px",
+                          }}
                           label={"failed"}
                         />
                       )}
                     </TableCell>
                     <TableCell align="center">
                       <Box
-
                         //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
                         sx={{
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "center",
-                          '& > Button': {
+                          "& > Button": {
                             marginRight: 2, // Adjust the value as needed
-                          }
+                          },
                         }}
                       >
                         <Button
@@ -485,10 +499,10 @@ function EmFileListPage() {
                         </Button>
                         <Button
                           variant="outlined"
-                          style={{ color: "#00245A", }}
+                          style={{ color: "#00245A" }}
                           sx={{
                             borderColor: "rgba(0, 36, 90, 0.4)",
-                            '&:hover': {
+                            "&:hover": {
                               borderColor: "#00245A", // Change to the desired hover color
                             },
                           }}
@@ -500,7 +514,7 @@ function EmFileListPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {emDataInTable.length == 0 && (
+                {emDataFile?.length == 0 && (
                   <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
                       <Typography variant="h4" sx={{ color: "#00245A" }}>
@@ -512,7 +526,7 @@ function EmFileListPage() {
                           height: 200,
                           width: 200,
                           mt: 2,
-                          ml: 2
+                          ml: 2,
                         }}
                         src={noFiles}
                       />

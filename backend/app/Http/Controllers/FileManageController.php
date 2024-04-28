@@ -25,6 +25,7 @@ class FileManageController extends Controller
 {
     public function index(Request $request)
     {
+
         $userId = $request->header('user_id');
 
         $emDataRecords = EmDataFile::where('user_id', $userId)
@@ -35,7 +36,7 @@ class FileManageController extends Controller
         $responseData = [
             'em_raw_files' => $emDataRecords,
         ];
-
+        info($responseData);
         return $responseData;
     }
 
@@ -63,14 +64,14 @@ class FileManageController extends Controller
             $emdata = EmDataFile::find($request->file_id);
             info($emdata->em_raw_file_name);
             info($emdata->em_preprocess_file_name);
-           
+
             if ($emdata->delete()) {
-                if ($emdata->em_raw_upload_status == "processed"){
-                    unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata-> em_preprocess_file_name);
-                }else{
+                if ($emdata->em_raw_upload_status == "processed") {
+                    unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata->em_preprocess_file_name);
+                } else {
                     unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata->em_raw_file_name);
                 }
-                
+
                 return response()->json([
                     'status' => 200
                 ]);
@@ -287,7 +288,7 @@ class FileManageController extends Controller
         // $secretValue = $data['secrets'][0]['version']['value'];
         // info($secretValue);
 
-      
+
 
 
         function convertFileName($inputString)
@@ -410,12 +411,17 @@ class FileManageController extends Controller
 
                 $h5FileName = convertFileName($item['em_raw_file_name']) . ".h5";
                 $h5FilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $h5FileName;
-                
+
                 $encrptH5FilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $h5FileName . ".enc";
                 info($encrptH5FilePath);
                 $getKey = env('APP_KEY');
-                $output = execute_python_script(env("CFILE_TO_H5_FILE_PATH"), $decompressedFilePath, $h5FilePath,
-                                               $getKey, $encrptH5FilePath);
+                $output = execute_python_script(
+                    env("CFILE_TO_H5_FILE_PATH"),
+                    $decompressedFilePath,
+                    $h5FilePath,
+                    $getKey,
+                    $encrptH5FilePath
+                );
                 info($output->status);
                 if ($output->status == 200) {
 
