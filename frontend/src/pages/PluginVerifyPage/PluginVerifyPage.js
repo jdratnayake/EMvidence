@@ -40,6 +40,7 @@ const PluginVerifyPage = () => {
   // Filter variables
   const { pluginId } = useParams();
   const { user } = useUser();
+  const [userObject, setUserObject] = useState(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   // Loading related features
@@ -260,14 +261,6 @@ const PluginVerifyPage = () => {
     enabled: false,
   });
 
-  useEffect(() => {
-    if (user) {
-      queryClient.prefetchQuery([queryKeys["getPluginFullDetails"]], () =>
-        getPluginFullDetails(user, pluginId)
-      );
-    }
-  }, [user]);
-
   const rejectUploadedPlugin = () => {
     const headers = {
       "Content-Type": "application/json",
@@ -334,20 +327,94 @@ const PluginVerifyPage = () => {
       });
   };
 
+  const sendPluginForApproval = async () => {
+    const response = await fetch(API_URL + "/plugin/compatibility-verify", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        analysis_plugin_id: pluginId,
+        compatibility_status: "pending",
+      },
+    });
+
+    setActivateModalStatus(false);
+    setDeactivateModalStatus(false);
+
+    toast.success("Plugin Sent for Approval Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+    setTimeout(() => {
+      navigate("/plugin-upload-list");
+    }, 5000);
+  };
+
+  const deletePlugin = async () => {
+    const response = await fetch(API_URL + "/plugin", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        plugin_id: pluginId,
+      },
+    });
+
+    setActivateModalStatus(false);
+    setDeactivateModalStatus(false);
+
+    toast.success("Plugin Deleted Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+    setTimeout(() => {
+      navigate("/plugin-upload-list");
+    }, 5000);
+  };
+
+  useEffect(() => {
+    if (user) {
+      setUserObject(user["userData"]);
+      queryClient.prefetchQuery([queryKeys["getPluginFullDetails"]], () =>
+        getPluginFullDetails(user, pluginId)
+      );
+    }
+  }, [user]);
+
+  const ActivateModalFunction =
+    userObject?.user_type === "admin"
+      ? acceptUploadedPlugin
+      : sendPluginForApproval;
+
+  const DeactivateModalFunction =
+    userObject?.user_type === "admin" ? rejectUploadedPlugin : deletePlugin;
+
   return (
     <>
       <ActivateModal
         open={activateModalStatus}
         name={activateModalMessage}
         onClose={() => setActivateModalStatus(false)}
-        handleBanStatusChange={acceptUploadedPlugin}
+        handleBanStatusChange={ActivateModalFunction}
         activateButtonName={activateModalButtonMessage}
       />
       <DeactivateModal
         open={deactivateModalStatus}
         name={deactivateModalMessage}
         onClose={() => setDeactivateModalStatus(false)}
-        handleBanStatusChange={rejectUploadedPlugin}
+        handleBanStatusChange={DeactivateModalFunction}
         deactivateButtonName={deactivateModalButtonMessage}
       />
 
@@ -854,24 +921,26 @@ const PluginVerifyPage = () => {
               flexDirection: "row",
             }}
           >
-            <LoadingButton
-              sx={{
-                mt: 3,
-                mb: 3,
-                backgroundColor: "#00245A",
-                color: "#ffffff",
-                width: "200px",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-              disabled={isDependencyInstallationFetching}
-              onClick={executeDependencyInstallation}
-              loading={loadingDependencyInstallation}
-            >
-              Install Dependencies
-            </LoadingButton>
+            {userObject?.user_type === "admin" && (
+              <LoadingButton
+                sx={{
+                  mt: 3,
+                  mb: 3,
+                  backgroundColor: "#00245A",
+                  color: "#ffffff",
+                  width: "200px",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                  },
+                }}
+                variant="contained"
+                disabled={isDependencyInstallationFetching}
+                onClick={executeDependencyInstallation}
+                loading={loadingDependencyInstallation}
+              >
+                Install Dependencies
+              </LoadingButton>
+            )}
 
             <LoadingButton
               sx={{
@@ -969,44 +1038,95 @@ const PluginVerifyPage = () => {
             mt: 5,
           }}
         >
-          <Button
-            sx={{
-              backgroundColor: "green",
-              color: "#ffffff",
-              width: "100px",
-              "&:hover": {
-                backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
-              },
-            }}
-            variant="contained"
-            onClick={() => {
-              setActivateModalMessage("Do you want to accept the plugin?");
-              setActivateModalButtonMessage("Accept");
-              setActivateModalStatus(true);
-            }}
-          >
-            Accept
-          </Button>
+          {userObject?.user_type === "admin" && (
+            <Button
+              sx={{
+                backgroundColor: "green",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setActivateModalMessage("Do you want to accept the plugin?");
+                setActivateModalButtonMessage("Accept");
+                setActivateModalStatus(true);
+              }}
+            >
+              Accept
+            </Button>
+          )}
 
-          <Button
-            sx={{
-              ml: 2,
-              backgroundColor: "red",
-              color: "#ffffff",
-              width: "100px",
-              "&:hover": {
-                backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
-              },
-            }}
-            variant="contained"
-            onClick={() => {
-              setDeactivateModalMessage("Do you want to reject the plugin?");
-              setDeactivateModalButtonMessage("Reject");
-              setDeactivateModalStatus(true);
-            }}
-          >
-            Reject
-          </Button>
+          {userObject?.user_type === "admin" && (
+            <Button
+              sx={{
+                ml: 2,
+                backgroundColor: "red",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setDeactivateModalMessage("Do you want to reject the plugin?");
+                setDeactivateModalButtonMessage("Reject");
+                setDeactivateModalStatus(true);
+              }}
+            >
+              Reject
+            </Button>
+          )}
+
+          {userObject?.user_type === "developer" && (
+            <Button
+              sx={{
+                backgroundColor: "green",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setActivateModalMessage(
+                  "Are you sure you want to verify the plugin?"
+                );
+                setActivateModalButtonMessage("Verify");
+                setActivateModalStatus(true);
+              }}
+            >
+              Verify
+            </Button>
+          )}
+
+          {userObject?.user_type === "developer" && (
+            <Button
+              sx={{
+                ml: 2,
+                backgroundColor: "red",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setDeactivateModalMessage(
+                  "Are you sure you want to delete the plugin?"
+                );
+                setDeactivateModalButtonMessage("Delete");
+                setDeactivateModalStatus(true);
+              }}
+            >
+              Delete
+            </Button>
+          )}
         </Box>
       </Box>
     </>
