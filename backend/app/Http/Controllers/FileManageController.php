@@ -176,6 +176,7 @@ class FileManageController extends Controller
     {
 
         try {
+            $userid = $request->input('user_id');
             $name = $request->input('name');
             $size = $request->input('size');
             $fileUniqueName = $request->input('unique_name');
@@ -194,7 +195,7 @@ class FileManageController extends Controller
             $formattedDateTime = $localDateTime->format("Y-m-d H:i:s");
 
             $query = EmDataFile::create([
-                'user_id' => 1,
+                'user_id' =>  $userid,
                 'em_raw_file_name' => $fileUniqueName,
                 'em_raw_file_visible_name' => $name,
                 'device_id' => $deviceId,

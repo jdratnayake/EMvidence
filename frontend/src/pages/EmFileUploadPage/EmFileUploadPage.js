@@ -41,6 +41,8 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { notifyManager } from "react-query";
 import { API_URL } from "../../constants";
+import { useUser } from "../../contexts/UserContext";
+
 
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -98,6 +100,7 @@ function EmFileUploadPage() {
   const baseURL2 = API_URL + "/send_to_database";
   const baseURL3 = API_URL + "/process_file";
 
+  const { user } = useUser();
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(0);
@@ -125,9 +128,6 @@ function EmFileUploadPage() {
   const [startTime, setStartTime] = useState(0);
   const [finishTime, setFinishTime] = useState(0);
   const [uploadTime, setUploadTime] = useState(0);
-
-  const abortController = new AbortController();
-  const [cancelToken, setCancelToken] = useState(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const confirmCancel = () => {
@@ -424,8 +424,9 @@ function EmFileUploadPage() {
       let dif = ((nowtime - startTime) / 1000).toFixed(2);
       console.log("time to take for upload : ", dif, " sec");
       setUploadTime(dif);
-
+      const userId = user["userData"].user_id;
       axios.post(baseURL2, {
+          user_id: userId,
           name: fileName,
           size: fileSize,
           unique_name: fileUniqueName,

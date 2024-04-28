@@ -24,7 +24,7 @@ import Stack from "@mui/material/Stack";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
-import { Grid, Card, CardContent, Chip } from "@mui/material";
+import { Grid, Card, CardContent, Chip, TextField } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import Divider from "@mui/material/Divider";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -36,6 +36,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from "@mui/icons-material/Search";
+import Tooltip from "@mui/material/Tooltip";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import { useQuery, useQueryClient } from "react-query";
 import { API_URL } from "../../constants";
@@ -43,79 +48,42 @@ import "react-toastify/dist/ReactToastify.css";
 import noFiles from "../../resources/no_files_found.png";
 import { useUser } from "../../contexts/UserContext";
 
+
 const baseURL1 = API_URL + "/em_data_records";
 const baseURL2 = API_URL + "/delete_file";
 
-
-function TablePaginationActions(props) {
-  const theme = useTheme();
-
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
+const sxStyle = {
+  "&:hover": {
+    "&& fieldset": {
+      border: "2px solid #00245A",
+    },
+  },
+  "& .MuiInputLabel-outlined": {
+    color: "grey", // Initial color
+    "&.Mui-focused": {
+      color: "#00245A", // Color when focused
+    },
+  },
+  color: "#00245A",
+  "& .MuiOutlinedInput-root": {
+    "&.Mui-focused": {
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#00245A",
+        borderWidth: "2px",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "#2e2e2e",
+      fontWeight: "bold",
+      "&.Mui-focused": {
+        color: "secondary.main",
+        fontWeight: "bold",
+      },
+    },
+  },
 };
+
+
 
 function EmFileListPage() {
   const theme = useTheme();
@@ -123,19 +91,27 @@ function EmFileListPage() {
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   const lessThanLg = useMediaQuery(theme.breakpoints.down("lg"));
   const [emData, setEMData] = useState([]);
+  const [emDataInTable, setEMDataInTable] = useState([]);
+  const [fileId, setFileId] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const { user } = useUser();
 
 
   useEffect(() => {
+    
+    const userId = user["userData"].user_id;
     axios.get(baseURL1, {
       headers: {
         'Content-Type': 'application/json',
-        'user_id': 1,
+        'user_id': userId,
       },
     })
       .then((response) => {
         console.log("--- file list ---");
         console.log(response.data.em_raw_files);
         setEMData(response.data.em_raw_files);
+        setEMDataInTable(response.data.em_raw_files);
       })
       .catch((error) => {
         console.error('There was a problem with Axios request:', error);
@@ -228,23 +204,23 @@ function EmFileListPage() {
 
 
 
-  function deleteRecord(id) {
-    console.log(id);
-    axios
-      .post(baseURL2, {
-        file_id: id,
-      })
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 200) {
-          // alert('File is successfully deleted.');
-          window.location.reload();
-        } else {
-          alert("An Error occured when deleting the file.");
-          window.location.reload();
-        }
-      });
-  }
+  // function deleteRecord(id) {
+  //   console.log(id);
+  //   axios
+  //     .post(baseURL2, {
+  //       file_id: id,
+  //     })
+  //     .then((response) => {
+  //       console.log(response.status);
+  //       if (response.status == 200) {
+  //         // alert('File is successfully deleted.');
+  //         //window.location.reload();
+  //       } else {
+  //         alert("An Error occured when deleting the file.");
+  //         //window.location.reload();
+  //       }
+  //     });
+  // }
 
 
   function bytesToSize(bytes) {
@@ -259,11 +235,65 @@ function EmFileListPage() {
 
   const notify = () => toast("File upload successfully");
 
-
+  const deleteRecord = async () => {
+    console.log(fileId);
+    axios
+      .post(baseURL2, {
+        file_id: fileId,
+      })
+      .then((response) => {
+        console.log(response.status);
+        if (response.data.status == 200) {
+          // alert('File is successfully deleted.');
+          setDeactivateModalStatus(false);
+          const updatedData = emDataInTable.filter((file) => file.em_raw_file_id !== fileId);
+          setEMData(updatedData);
+          setEMDataInTable(updatedData);
+          toast.success("File is Deleted Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          //window.location.reload();
+        } else {
+          setDeactivateModalStatus(false);
+          toast.error("Faild to Delete the File", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          //window.location.reload();
+        }
+      });
+  };
+  
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+    const searchText = event.target.value.toLowerCase();
+    console.log(searchText);
+    const filteredFiles = emData.filter((file) =>
+      file.em_raw_file_visible_name.toLowerCase().includes(searchText)
+    );
+    setEMDataInTable(filteredFiles);
+  };
 
   return (
     <>
-
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name="Do you really want to delete this file?"
+        onClose={() => setDeactivateModalStatus(false)}
+        deactivateButtonName = "Yes"
+        handleBanStatusChange={deleteRecord}
+      />
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -298,25 +328,62 @@ function EmFileListPage() {
           >
             File Manage
           </Typography>
-          <Stack direction="row" spacing={2} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              onClick={navigateToUploadForm}
-              sx={{
-                pl: 4,
-                pr: 4,
-                bgcolor: "#00245A",
-                color: "white",
-                "&:hover": {
-                  bgcolor: "rgba(0, 36, 90, 0.8)",
-                },
-              }}
-            >
-              upload
-            </Button>
-          </Stack>
+          
+          <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Grid container alignItems="left" justifyContent="left">
+            <Grid item xs={12} md={12}>
+              <TextField
+                id="search"
+                label={searchText === "" ? "Search" : ""}
+                sx={{ ...sxStyle }}
+                InputLabelProps={{
+                  shrink: false,
+                }}
+                value={searchText}
+                onChange={handleSearch}
+                variant="outlined"
+                style={{
+                  width: "80%",
+                  marginTop: "40px",
+                  backgroundColor: "white",
+                  borderRadius: 4,
+                }}
+                InputProps={{
+                  endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Box sx={{ mt: "42px" }}>
+            <Tooltip title={lessThanMd ? "Upload" : null}>
+              <Button
+                variant="contained"
+                onClick={navigateToUploadForm}
+                sx={{
+                  pl: 4,
+                  pr: 4,
+                  height: 50,
+                  width: lessThanMd ? "50px" : "100px",
+                  bgcolor: "#00245A",
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: "rgba(0, 36, 90, 0.8)",
+                  },
+                }}
+              >
+                {lessThanMd ? <CloudUploadIcon /> : "Upload"}
+              </Button>
+            </Tooltip>
+          </Box>
+        </Box>
 
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emData.length > 5 ? "scroll" : "hidden" }}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emDataInTable.length > 5 ? "scroll" : "hidden" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow >
@@ -346,7 +413,7 @@ function EmFileListPage() {
                     </Typography>
                   </TableCell>
                 </TableRow>
-                {emData?.map((data) => (
+                {emDataInTable?.map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
                     <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
@@ -403,12 +470,14 @@ function EmFileListPage() {
                           variant="outlined"
                           color="error"
                           onClick={() => {
-                            const confirmBox = window.confirm(
-                              "Do you really want to delete this file?"
-                            );
-                            if (confirmBox === true) {
-                              deleteRecord(data.em_raw_file_id);
-                            }
+                            // const confirmBox = window.confirm(
+                            //   "Do you really want to delete this file?"
+                            // );
+                            // if (confirmBox === true) {
+                            //   deleteRecord(data.em_raw_file_id);
+                            // }
+                            setFileId(data.em_raw_file_id);
+                            setDeactivateModalStatus(true);
                           }}
                         >
                           <DeleteIcon sx={{ ml: -1, mr: 1 }} />
@@ -431,10 +500,10 @@ function EmFileListPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {emData.length == 0 && (
+                {emDataInTable.length == 0 && (
                   <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
-                      <Typography variant="h4" sx={{color:"#00245A"}}>
+                      <Typography variant="h4" sx={{ color: "#00245A" }}>
                         No files found
                       </Typography>
                       <Box
@@ -442,8 +511,8 @@ function EmFileListPage() {
                         sx={{
                           height: 200,
                           width: 200,
-                          mt:2,
-                          ml:2
+                          mt: 2,
+                          ml: 2
                         }}
                         src={noFiles}
                       />
