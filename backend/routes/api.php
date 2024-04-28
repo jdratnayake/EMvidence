@@ -64,6 +64,7 @@ Route::prefix("v1/auth")->group(function () {
 
 Route::prefix("v1/user")->group(function () {
     Route::get('/', [UserController::class, 'index'])->middleware('jwt');
+    Route::get('/admin-stat', [UserController::class, 'getAdminStat'])->middleware('jwt');
     Route::put('/ban-status-change', [UserController::class, 'changeBanStatus'])->middleware('jwt');
 });
 

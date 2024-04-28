@@ -11,4 +11,5 @@ export const queryKeys = {
   getDeveloperPluginDetails: "developerPluginDetails",
   getVerifiedPluginDetails: "verifiedPluginDetails",
   getCompatiblePluginDetails: "compatiblePluginDetails",
+  getAdminStatDetails: "adminStatDetails",
 };
