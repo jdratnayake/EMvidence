@@ -4,7 +4,7 @@ export const getVerifiedPluginDetails = async (userData) => {
   const token = userData["userData"]["token"];
 
   try {
-    const response = await fetch(API_URL + "/plugin/pending", {
+    const response = await fetch(API_URL + "/plugin/verified", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export const getVerifiedPluginDetails = async (userData) => {
 
     const data = await response.json();
 
-    return data["pendingPlugins"];
+    return data["verifiedPlugins"];
   } catch (error) {
     throw error;
   }
