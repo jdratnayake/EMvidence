@@ -128,7 +128,7 @@ function SignUpPage() {
         if (userData.user_type === "admin") {
           navigate("/admin");
         } else if (userData.user_type === "investigator") {
-          navigate("/investigation");
+          navigate("/report");
         } else if (userData.user_type === "developer") {
           navigate("/plugin-upload-list");
         } else {
@@ -214,7 +214,7 @@ function SignUpPage() {
       register(userData);
     }
   };
-  const sxStyle ={
+  const sxStyle = {
     // "&:hover": {
     //   "&& fieldset": {
     //     border: "2px solid gray",
@@ -223,12 +223,11 @@ function SignUpPage() {
     "& .MuiInputLabel-outlined": {
       color: "grey", // Initial color
       "&.Mui-focused": {
-          color: "#00245A", // Color when focused
+        color: "#00245A", // Color when focused
       },
-  },
-    color:"#00245A",
+    },
+    color: "#00245A",
     "& .MuiOutlinedInput-root": {
-     
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -244,7 +243,7 @@ function SignUpPage() {
         },
       },
     },
-  }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -314,7 +313,7 @@ function SignUpPage() {
                       error={firstnameError !== ""}
                       helperText={firstnameError}
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                     />
                   </Grid>
@@ -328,7 +327,7 @@ function SignUpPage() {
                       error={lastnameError !== ""}
                       helperText={lastnameError}
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                       onChange={(event) => setLastname(event.target.value)}
                     />
@@ -343,7 +342,7 @@ function SignUpPage() {
                       error={emailError !== ""}
                       helperText={emailError}
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                       onChange={(event) => setEmail(event.target.value)}
                     />
@@ -352,7 +351,7 @@ function SignUpPage() {
                     <FormControl
                       fullWidth
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                     >
                       <InputLabel id="demo-simple-select-label">
@@ -367,7 +366,7 @@ function SignUpPage() {
                         error={roleError !== ""}
                       >
                         <MenuItem value={"developer"}>Developer</MenuItem>
-                        <MenuItem value={"invesigator"}>Invesigator</MenuItem>
+                        <MenuItem value={"investigator"}>Invesigator</MenuItem>
                       </Select>
                       {roleError !== "" && (
                         <FormHelperText error>{roleError}</FormHelperText>
@@ -379,7 +378,7 @@ function SignUpPage() {
                       fullWidth
                       variant="outlined"
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                     >
                       <InputLabel htmlFor="outlined-adornment-password">
@@ -418,7 +417,7 @@ function SignUpPage() {
                       fullWidth
                       variant="outlined"
                       sx={{
-                        ...sxStyle
+                        ...sxStyle,
                       }}
                     >
                       <InputLabel htmlFor="outlined-adornment-password">

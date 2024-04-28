@@ -29,7 +29,13 @@ const DeactivateCancelButton = styled(Button)(() => ({
   margin: "10px",
 }));
 
-function ActivateModal({ open, name, onClose, handleBanStatusChange }) {
+function ActivateModal({
+  open,
+  name,
+  onClose,
+  handleBanStatusChange,
+  activateButtonName = "Activate",
+}) {
   const handleCancel = () => {
     onClose();
   };
@@ -44,7 +50,7 @@ function ActivateModal({ open, name, onClose, handleBanStatusChange }) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Are you sure you want to activate {name} ?
+            {name}
           </Typography>
           <ButtonBox>
             <DeactivateCancelButton
@@ -59,7 +65,7 @@ function ActivateModal({ open, name, onClose, handleBanStatusChange }) {
               color="success"
               onClick={handleBanStatusChange}
             >
-              Activate
+              {activateButtonName}
             </DeactivateButton>
           </ButtonBox>
         </Box>

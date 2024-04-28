@@ -1,80 +1,230 @@
-import { CssBaseline, Typography } from "@mui/material";
-import { Container, width } from "@mui/system";
-import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import NavBar from "../../components/NavBar/NavBar";
-import { Grid, Card, CardContent, Chip } from "@mui/material";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import Divider from "@mui/material/Divider";
-import CardActions from "@mui/material/CardActions";
-import logo from "../PluginsPage/p4.png";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Button from "@mui/material/Button";
+import {
+  Box,
+  FormControl,
+  Grid,
+  Typography,
+  InputLabel,
+  MenuItem,
+  Select,
+  CardContent,
+  Card,
+} from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
 import DialogTitle from "@mui/material/DialogTitle";
-import DeleteIcon from '@mui/icons-material/Delete';
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
+import { API_URL, queryKeys } from "../../constants";
+import { useUser } from "../../contexts/UserContext";
+import { getPluginFullDetails } from "../../services/pluginService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import Tooltip from '@mui/material/Tooltip';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import RuleIcon from '@mui/icons-material/Rule';
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Input,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
-import { List } from "@mui/material";
+import "./PluginVerifyPage.css";
+import { getFullName, bytesToMB } from "../../helper";
 
-import "./PluginVerifyPage.css"
+const PluginVerifyPage = () => {
+  const blackHeader = "#00245A";
+  const containerColor = "#FFFFFF";
+  const buttonColor = "#525252";
 
-function PluginVerifyPage() {
-
-
-  const [searchText, setSearchText] = useState("");
-
-  const handleSearch = (event) => {
-    setSearchText(event.target.value);
-  };
+  // Filter variables
+  const { pluginId } = useParams();
+  const { user } = useUser();
+  const [userObject, setUserObject] = useState(null);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const navigateToPluginList = () => {
-    navigate("/plugin-list");
+  // Loading related features
+  const [isPreprocessingFetching, setIsPreprocessingFetching] = useState(false);
+  const [isAnalysisFetching, setIsAnalysisFetching] = useState(false);
+  const [
+    isDependencyInstallationFetching,
+    setIsDependencyInstallationFetching,
+  ] = useState(false);
+  const [loadingPreprocessing, setLoadingPreprocessing] = React.useState(false);
+  const [loadingAnalyse, setLoadingAnalyse] = React.useState(false);
+  const [loadingDependencyInstallation, setLoadingDependencyInstallation] =
+    React.useState(false);
+  const [analysisResults, setAnalysisResults] = useState([]);
+  // Preprocessing features
+  const [downSamplingIndex, setDownSamplingIndex] = useState(0);
+  const [fftSizeIndex, setFftSizeIndex] = useState(0);
+  const [overLapPercentageIndex, setOverLapPercentageIndex] = useState(0);
+  const [sampleSelectionIndex, setSampleSelectionIndex] = useState(0);
+  // Modal related features
+  const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
+    useState(false);
+  // Popup related features
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const [activateModalMessage, setActivateModalMessage] = useState("");
+  const [deactivateModalMessage, setDeactivateModalMessage] = useState("");
+  const [activateModalButtonMessage, setActivateModalButtonMessage] =
+    useState("");
+  const [deactivateModalButtonMessage, setDeactivateModalButtonMessage] =
+    useState("");
+
+  const executePreprocessingPlugin = () => {
+    setLoadingPreprocessing(true);
+    console.log("Down Sampling Index: " + downSamplingIndex);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: data?.emFile.em_raw_file_id,
+      down_sampling_index: downSamplingIndex,
+      fft_size_index: fftSizeIndex,
+      overlap_percentage_index: overLapPercentageIndex,
+      sample_selection_index: sampleSelectionIndex,
+    };
+
+    axios
+      .get(API_URL + "/plugin/preprocessing", { headers })
+      .then((response) => {
+        // console.log(response.data);
+        console.log(response.data);
+
+        toast.success("Pre-Processing Done Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setIsPreprocessingFetching(false);
+        setLoadingPreprocessing(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Preprocessing Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setLoadingPreprocessing(false);
+      });
   };
-  const theme = useTheme();
-  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
-  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const executeAnalysisPlugin = () => {
+    setLoadingAnalyse(true);
+    setIsAnalysisFetching(true);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      em_raw_file_id: data?.emFile.em_raw_file_id,
+      analysis_plugin_id: data?.plugin.plugin_id,
+    };
+
+    axios
+      .get(API_URL + "/plugin/analysis", { headers })
+      .then((response) => {
+        console.log(response);
+        const analysisResultObjects = Object.entries(
+          response.data["output"]
+        ).map(([key, value]) => ({
+          action: key,
+          probability: value,
+        }));
+
+        // console.log(analysisResultObjects);
+
+        toast.success("Analysis Done Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        // setAnalysisResults(response.data["output"]);
+        setAnalysisResults(analysisResultObjects);
+        setIsAnalysisFetching(false);
+        setLoadingAnalyse(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Analysis Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setLoadingAnalyse(false);
+        setIsAnalysisFetching(false);
+      });
+  };
+
+  const executeDependencyInstallation = () => {
+    setLoadingDependencyInstallation(true);
+    setIsDependencyInstallationFetching(true);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+    };
+
+    axios
+      .get(API_URL + "/plugin/dependency", { headers })
+      .then((response) => {
+        console.log(response);
+
+        toast.success("Dependency Installation Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setIsDependencyInstallationFetching(false);
+        setLoadingDependencyInstallation(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+
+        toast.error("Dependency Installation Failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setLoadingDependencyInstallation(false);
+        setIsDependencyInstallationFetching(false);
+      });
+  };
 
   const sxStyle = {
+    width: "100%",
     "&:hover": {
       "&& fieldset": {
         border: "2px solid #00245A",
@@ -88,7 +238,6 @@ function PluginVerifyPage() {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -104,276 +253,884 @@ function PluginVerifyPage() {
         },
       },
     },
-  }
+  };
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getPluginFullDetails"]],
+    queryFn: () => getPluginFullDetails(user, pluginId),
+    enabled: false,
+  });
+
+  const rejectUploadedPlugin = () => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+      compatibility_status: "incompatible",
+    };
+
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        console.log(response);
+
+        setActivateModalStatus(false);
+        setDeactivateModalStatus(false);
+
+        toast.success("Plugin Rejection Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setTimeout(() => {
+          navigate("/plugin-verify-list");
+        }, 5000);
+      });
+  };
+
+  const acceptUploadedPlugin = () => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+      compatibility_status: "compatible",
+    };
+
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        console.log(response);
+
+        setActivateModalStatus(false);
+        setDeactivateModalStatus(false);
+
+        toast.success("Plugin Acceptance Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        setTimeout(() => {
+          navigate("/plugin-verify-list");
+        }, 5000);
+      });
+  };
+
+  const sendPluginForApproval = async () => {
+    const response = await fetch(API_URL + "/plugin/compatibility-verify", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        analysis_plugin_id: pluginId,
+        compatibility_status: "pending",
+      },
+    });
+
+    setActivateModalStatus(false);
+    setDeactivateModalStatus(false);
+
+    toast.success("Plugin Sent for Approval Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+    setTimeout(() => {
+      navigate("/plugin-upload-list");
+    }, 5000);
+  };
+
+  const deletePlugin = async () => {
+    const response = await fetch(API_URL + "/plugin", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        plugin_id: pluginId,
+      },
+    });
+
+    setActivateModalStatus(false);
+    setDeactivateModalStatus(false);
+
+    toast.success("Plugin Deleted Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+    setTimeout(() => {
+      navigate("/plugin-upload-list");
+    }, 5000);
+  };
+
+  useEffect(() => {
+    if (user) {
+      setUserObject(user["userData"]);
+      queryClient.prefetchQuery([queryKeys["getPluginFullDetails"]], () =>
+        getPluginFullDetails(user, pluginId)
+      );
+    }
+  }, [user]);
+
+  const ActivateModalFunction =
+    userObject?.user_type === "admin"
+      ? acceptUploadedPlugin
+      : sendPluginForApproval;
+
+  const DeactivateModalFunction =
+    userObject?.user_type === "admin" ? rejectUploadedPlugin : deletePlugin;
 
   return (
     <>
-      <Container >
+      <ActivateModal
+        open={activateModalStatus}
+        name={activateModalMessage}
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={ActivateModalFunction}
+        activateButtonName={activateModalButtonMessage}
+      />
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name={deactivateModalMessage}
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={DeactivateModalFunction}
+        deactivateButtonName={deactivateModalButtonMessage}
+      />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <AnalysisPluginModal
+        id={data?.plugin.plugin_id}
+        name={data?.plugin.plugin_name}
+        description={data?.plugin.plugin_description}
+        author={getFullName(data?.plugin.first_name, data?.plugin.last_name)}
+        iconPath={data?.plugin.icon_filepath}
+        open={isAnalysisPluginModalOpen}
+        onClose={() => setIsAnalysisPluginModalOpen(false)}
+        modifyChecked={() => {}}
+      />
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mb: 6,
+        }}
+      >
         <Typography
           variant="h4"
-          color="textPrimary"
-          align="center"
+          sx={{
+            fontFamily: "roboto",
+            fontStyle: "normal",
+            fontWeight: 400,
+            mt: 2,
+          }}
           gutterBottom
-
         >
-          Verify Plugins
+          Verify Plugin
         </Typography>
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-          <Grid container alignItems="left" justifyContent="left" >
-            <Grid item xs={12} md={12}>
-              <TextField
-                id="search"
-                label={searchText === "" ? "Search" : ""}
-                sx={{ ...sxStyle }}
-                InputLabelProps={{
-                  shrink: false,
-                }}
-                value={searchText}
-                onChange={handleSearch}
-                variant="outlined"
-                style={{ width: "80%", marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
-                InputProps={{
-                  endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
-                }}
-              />
-            </Grid>
-          </Grid>
-          <Box sx={{ mt: "42px" }}>
-            <Tooltip title={lessThanMd ? "All Plugin" : null}>
-              <Button
-                variant="contained"
-                onClick={navigateToPluginList}
-                sx={{
-                  pl: 4,
-                  pr: 4,
-                  height: 50,
-                  width: lessThanMd ? "50px" : "170px",
-                  bgcolor: "#00245A",
-                  color: "white",
-                  "&:hover": {
-                    bgcolor: "rgba(0, 36, 90, 0.8)",
-                  },
-                }}
-              >
-                {lessThanMd ? <OpenInNewIcon /> : 'All Plugins'}
-              </Button>
-            </Tooltip>
+      </Box>
 
+      <Box className="file_selection">
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: "24px",
+              fontStyle: "normal",
+              fontWeight: 400,
+              lineHeight: "normal",
+              color: "#FFFFFF",
+              mb: 0,
+              pl: 3,
+            }}
+            gutterBottom
+          >
+            File Selection
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: containerColor,
+            display: "flex",
+            flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <Box
+            sx={{
+              mt: "0px",
+              width: "50%",
+              mb: "40px",
+              p: "20px",
+              border: "2px solid #00245A",
+              borderRadius: "5px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              backgroundColor: "#E8E8E8",
+            }}
+          >
+            <InsertDriveFileIcon sx={{ fontSize: "75px", color: "#00245A" }} />
+
+            <Typography variant="h5" sx={{ mb: "10px" }}>
+              <strong>{data?.emFile.em_raw_file_visible_name}</strong>
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} Hz
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Center Frequency:</strong>{" "}
+                {data?.emFile.center_frequency} Hz
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Device Name:</strong> {data?.emFile.device_name}
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>File Size:</strong>{" "}
+                {bytesToMB(data?.emFile.em_raw_cfile_file_size) + " MB"}
+              </Typography>
+            </Box>
           </Box>
         </Box>
-        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-          <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-            <TableBody>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
-                    Plugin Name
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary" >
-                    Created Date
-                  </Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Typography variant="h6" color="textPrimary" >
-                    Action
-                  </Typography>
-                </TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    plugin 1
-                  </Typography>
-                </TableCell>
-                
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
+      </Box>
 
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      '& > Button': {
-                        marginRight: 2, // Adjust the value as needed
-                      }
-                    }}
+      <Box className="pre_processing" style={{ marginTop: "40px" }}>
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: "24px",
+              fontStyle: "normal",
+              fontWeight: 400,
+              lineHeight: "normal",
+              color: "#FFFFFF",
+              mb: 0,
+              pl: 3,
+            }}
+            gutterBottom
+          >
+            Pre-processing Plugins
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: containerColor,
+            display: "flex",
+            flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              mt: 3,
+              alignItems: "left",
+              alignContent: "left",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Down-sampling
+            </Typography>
+
+            <FormControl
+              fullWidth
+              style={{ marginBottom: "20px", textAlign: "left" }}
+              required
+              sx={{
+                ...sxStyle,
+              }}
+            >
+              <Select
+                id="downSamplingIndex"
+                defaultValue={0}
+                value={downSamplingIndex}
+                onChange={(event) => setDownSamplingIndex(event.target.value)}
+                style={{ borderColor: "#525252" }}
+              >
+                <MenuItem value={0}>Not down-sampled</MenuItem>
+                <MenuItem value={1}>To 10MHz</MenuItem>
+                <MenuItem value={2}>To 8MHz</MenuItem>
+                <MenuItem value={3}>To 4MHz</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              alignItems: "left",
+              alignContent: "left",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Short term fourier transformation
+            </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: "20px",
+                mb: "20px",
+              }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <FormControl
+                  fullWidth
+                  style={{ textAlign: "left", width: "200px" }}
+                  required
+                  sx={{
+                    ...sxStyle,
+                  }}
+                >
+                  <InputLabel id="dropdown-label-1">FFT Size</InputLabel>
+                  <Select
+                    labelId="dropdown-label-1"
+                    id="dropdown-1"
+                    value={fftSizeIndex}
+                    onChange={(event) => setFftSizeIndex(event.target.value)}
+                    label="FFT Size"
+                    style={{ borderColor: "#525252" }}
                   >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A", }}
-                        sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
-                        }}
-                        onClick={() => { }}
-                      >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+                    <MenuItem value={0}>2048</MenuItem>
+                    <MenuItem value={1} disabled></MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
 
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
-                      <Button
-                       variant="outlined"
-                       style={{ color: "#00245A", }}
-                       sx={{
-                         borderColor: "rgba(0, 36, 90, 0.4)",
-                         '&:hover': {
-                           borderColor: "#00245A", // Change to the desired hover color
-                         },
-                       }}
-                       onClick={() => { }}
-                      >
-                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <RuleIcon /> : 'Verify'}
-
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    plugin 2
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      '& > Button': {
-                        marginRight: 2, // Adjust the value as needed
-                      }
-                    }}
+              <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <FormControl
+                  fullWidth
+                  style={{ textAlign: "left", width: "200px" }}
+                  required
+                  sx={{
+                    ...sxStyle,
+                  }}
+                >
+                  <InputLabel id="dropdown-label-overLapPercentageIndex">
+                    Overlap Size
+                  </InputLabel>
+                  <Select
+                    labelId="dropdown-label-overLapPercentageIndex"
+                    id="overLapPercentageIndex"
+                    value={overLapPercentageIndex}
+                    onChange={(event) =>
+                      setOverLapPercentageIndex(event.target.value)
+                    }
+                    label="Overlap Size"
+                    style={{ borderColor: "#525252" }}
                   >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A", }}
-                        sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
-                        }}
-                        onClick={() => { }}
-                      >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+                    <MenuItem value={0}>10%</MenuItem>
+                    <MenuItem value={1}>20%</MenuItem>
+                    <MenuItem value={2} disabled></MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column", // Horizontal layout
+              width: "50%",
+              alignItems: "left",
+              alignContent: "left",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: "18px",
+                fontStyle: "normal",
+                fontWeight: 400,
+                lineHeight: "normal",
+                color: "black",
+                mb: "5px",
+              }}
+              gutterBottom
+            >
+              Sample Selection
+            </Typography>
 
-                      </Button>
-                    </Tooltip>
+            <FormControl
+              fullWidth
+              style={{ marginBottom: "20px", textAlign: "left" }}
+              required
+              sx={{
+                ...sxStyle,
+              }}
+            >
+              <Select
+                id="sampleSelectionIndex"
+                value={sampleSelectionIndex}
+                onChange={(event) =>
+                  setSampleSelectionIndex(event.target.value)
+                }
+                style={{ borderColor: "#525252" }}
+              >
+                <MenuItem value={0}>All Samples</MenuItem>
+                <MenuItem value={1}>First 20000 Samples</MenuItem>
+                <MenuItem value={2}>
+                  Samples selected from 1/4 to 3/4 of the file
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <FormControl>
+            <LoadingButton
+              sx={{
+                mb: "20px",
+                backgroundColor: "#00245A",
+                width: "130px",
+                color: "#ffffff",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              disabled={isPreprocessingFetching}
+              onClick={executePreprocessingPlugin}
+              loading={loadingPreprocessing}
+            >
+              Pre-process
+            </LoadingButton>
+          </FormControl>
+        </Box>
+        {/* starting the old version */}
+      </Box>
 
-                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
-                      <Button
-                       variant="outlined"
-                       style={{ color: "#00245A", }}
-                       sx={{
-                         borderColor: "rgba(0, 36, 90, 0.4)",
-                         '&:hover': {
-                           borderColor: "#00245A", // Change to the desired hover color
-                         },
-                       }}
-                       onClick={() => { }}
-                      >
-                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <RuleIcon /> : 'Verify'}
-
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
-              <TableRow hover>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    plugin 3
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary" >
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      '& > Button': {
-                        marginRight: 2, // Adjust the value as needed
-                      }
-                    }}
+      <Box className="analysis" style={{ marginTop: "40px" }}>
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: "24px",
+              fontStyle: "normal",
+              fontWeight: 400,
+              lineHeight: "normal",
+              color: "#FFFFFF",
+              mb: 0,
+              pl: 3,
+            }}
+            gutterBottom
+          >
+            Analysis Plugins
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: containerColor,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+          }}
+        >
+          <Box sx={{ display: "flex", width: "100%" }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              marginTop={0}
+              sx={{
+                display: "flex",
+                alignItems: "left",
+                justifyContent: "center",
+                maxHeight: "300px",
+                width: "100%",
+                overflow: "scroll",
+                overflowX: "hidden",
+              }}
+            >
+              <Grid
+                item
+                xs={5}
+                sm={5}
+                md={3}
+                marginTop={8}
+                m={2}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    minWidth: 200,
+                    maxWidth: 200,
+                    boxShadow:
+                      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+                    borderRadius: "6px",
+                    "&:hover": {
+                      boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
+                    },
+                  }}
+                >
+                  <Card
+                    sx={{ height: 200 }}
+                    onClick={() => setIsAnalysisPluginModalOpen(true)}
                   >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A", }}
-                        sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          '&:hover': {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
-                        }}
-                        onClick={() => { }}
+                    <CardContent>
+                      <Grid
+                        container
+                        alignItems="center"
+                        justifyContent="center"
                       >
-                        {lessThanMd ? null : <VisibilityIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <VisibilityIcon /> : ' View'}
+                        <img
+                          src={data?.plugin.icon_filepath}
+                          alt="Logo"
+                          style={{
+                            width: "70px",
+                            height: "70px",
+                            alignContent: "center",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Grid>
 
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
-                      <Button
-                       variant="outlined"
-                       style={{ color: "#00245A", }}
-                       sx={{
-                         borderColor: "rgba(0, 36, 90, 0.4)",
-                         '&:hover': {
-                           borderColor: "#00245A", // Change to the desired hover color
-                         },
-                       }}
-                       onClick={() => { }}
+                      <Typography
+                        sx={{ fontSize: 16 }}
+                        color="text.primary"
+                        gutterBottom
+                        align="center"
+                        marginTop={2}
                       >
-                        {lessThanMd ? null : <RuleIcon sx={{ ml: -1, mr: 1 }} />}
-                        {lessThanMd ? <RuleIcon /> : 'Verify'}
+                        {data?.plugin.plugin_name}
+                      </Typography>
 
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
+                      {/* <Typography color="text.secondary" marginTop={2} align="center">
+              1.5k
+            </Typography> */}
+                    </CardContent>{" "}
+                  </Card>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            {userObject?.user_type === "admin" && (
+              <LoadingButton
+                sx={{
+                  mt: 3,
+                  mb: 3,
+                  backgroundColor: "#00245A",
+                  color: "#ffffff",
+                  width: "200px",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                  },
+                }}
+                variant="contained"
+                disabled={isDependencyInstallationFetching}
+                onClick={executeDependencyInstallation}
+                loading={loadingDependencyInstallation}
+              >
+                Install Dependencies
+              </LoadingButton>
+            )}
 
-            </TableBody>
-            <TableFooter>
+            <LoadingButton
+              sx={{
+                ml: 2,
+                mt: 3,
+                mb: 3,
+                backgroundColor: "#00245A",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              disabled={isAnalysisFetching}
+              onClick={executeAnalysisPlugin}
+              loading={loadingAnalyse}
+            >
+              Analyze
+            </LoadingButton>
+          </Box>
+        </Box>
+      </Box>
 
-            </TableFooter>
-          </Table>
-        </TableContainer>
-      </Container>
+      <Box className="analysis_summary" sx={{ mt: "40px", pb: "40px" }}>
+        <Box
+          sx={{
+            bgcolor: blackHeader,
+            height: "10vh",
+            display: "flex",
+            justifyContent: "left",
+            alignItems: "center",
+            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "5px",
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: "24px",
+              fontStyle: "normal",
+              fontWeight: 400,
+              lineHeight: "normal",
+              color: "#FFFFFF",
+              mb: 0,
+              pl: 3,
+            }}
+            gutterBottom
+          >
+            Analysis Summary
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: containerColor,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            borderEndStartRadius: "5px",
+            borderEndEndRadius: "5px",
+          }}
+        >
+          <Box
+            sx={{
+              mt: "30px",
+              width: "50%",
+              mb: "30px",
+              p: "20px",
+              border: "2px solid #00245A",
+              borderRadius: "5px",
+              backgroundColor: "#E8E8E8",
+            }}
+          >
+            <Typography variant="h5" sx={{ mb: "30px" }}>
+              Result
+            </Typography>
+
+            {analysisResults.map((result, index) => (
+              <Typography key={index} variant="body1">
+                <strong style={{ display: "inline-block", width: "200px" }}>
+                  {result.action}:
+                </strong>{" "}
+                <span>{result.probability}%</span>
+              </Typography>
+            ))}
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            mt: 5,
+          }}
+        >
+          {userObject?.user_type === "admin" && (
+            <Button
+              sx={{
+                backgroundColor: "green",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setActivateModalMessage("Do you want to accept the plugin?");
+                setActivateModalButtonMessage("Accept");
+                setActivateModalStatus(true);
+              }}
+            >
+              Accept
+            </Button>
+          )}
+
+          {userObject?.user_type === "admin" && (
+            <Button
+              sx={{
+                ml: 2,
+                backgroundColor: "red",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setDeactivateModalMessage("Do you want to reject the plugin?");
+                setDeactivateModalButtonMessage("Reject");
+                setDeactivateModalStatus(true);
+              }}
+            >
+              Reject
+            </Button>
+          )}
+
+          {userObject?.user_type === "developer" && (
+            <Button
+              sx={{
+                backgroundColor: "green",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setActivateModalMessage(
+                  "Are you sure you want to verify the plugin?"
+                );
+                setActivateModalButtonMessage("Verify");
+                setActivateModalStatus(true);
+              }}
+            >
+              Verify
+            </Button>
+          )}
+
+          {userObject?.user_type === "developer" && (
+            <Button
+              sx={{
+                ml: 2,
+                backgroundColor: "red",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                setDeactivateModalMessage(
+                  "Are you sure you want to delete the plugin?"
+                );
+                setDeactivateModalButtonMessage("Delete");
+                setDeactivateModalStatus(true);
+              }}
+            >
+              Delete
+            </Button>
+          )}
+        </Box>
+      </Box>
     </>
   );
-}
+};
 
 export default PluginVerifyPage;

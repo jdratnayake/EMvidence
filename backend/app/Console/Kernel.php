@@ -13,7 +13,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('process:compressed-file3')->everyFiveSeconds()->withoutOverlapping();
+        $schedule->command('process:compressed-file1')->everyMinute()->withoutOverlapping();
+        // $schedule->call(function () {
+        //     info("schedule 5 sec");
+          
+        // })->everyFiveSeconds();
     }
 
     /**
@@ -21,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
