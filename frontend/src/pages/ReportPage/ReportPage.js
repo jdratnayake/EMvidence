@@ -51,6 +51,7 @@ import Tooltip from "@mui/material/Tooltip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 import {
   FormControl,
@@ -68,6 +69,7 @@ import { List } from "@mui/material";
 
 import "./ReportPage.css";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 
 const style = {
   position: "absolute",
@@ -94,8 +96,13 @@ function ReportPage() {
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [open, setOpen] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const deletePlugin = async () => {
+    
+  };
 
   const button_component_properties = {
     width: "300px",
@@ -135,60 +142,13 @@ function ReportPage() {
   };
   return (
     <>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Grid container spacing={2} align="left">
-            <Grid item xs={12}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Create Investigation
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Name"
-                id="fullWidth"
-                onChange={() => {}}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                maxRows={4}
-                label="Description"
-                id="fullWidth"
-                onChange={() => {}}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography align="right">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    marginTop: "10px",
-                    width: "200px",
-                    backgroundColor: "#00245A",
-                    color: "white",
-                    marginLeft: "0px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  Upload
-                </Button>
-              </Typography>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
+     <DeactivateModal
+        open={deactivateModalStatus}
+        name="Are you sure you want to delete the report?"
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={deletePlugin}
+        deactivateButtonName="Delete"
+      />
 
       <Container>
         <Typography
@@ -197,118 +157,9 @@ function ReportPage() {
           align="center"
           gutterBottom
         >
-          Investigation
+          Analysis Report
         </Typography>
-        <Typography
-          sx={{ fontSize: 25, mt: 5 }}
-          color="text.secondary"
-          gutterBottom
-        >
-          Recenty Accessed
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: lessThanMd ? "column" : "row",
-            justifyContent: lessThanSm ? "center" : "space-between",
-            alignContent: "center",
-            alignItems: lessThanMd ? null : null,
-            // mt: lessThanMd ? 5 : 0,
-          }}
-        >
-          <Card
-            sx={{
-              minWidth: 300,
-              "&:hover": {
-                backgroundColor: "rgba(0,36,90,0.2)",
-                cursor: "pointer",
-                "& .MuiTypography-root": {
-                  color: "white", // Change this to the desired color for Typography
-                },
-              },
-            }}
-          >
-            <CardContent
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mt: 1,
-              }}
-            >
-              <Typography
-                sx={{ fontSize: 20 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                Investigation 1
-              </Typography>
-            </CardContent>
-          </Card>
-          <span style={{ marginLeft: "10px" }}> </span>
-          <Card
-            sx={{
-              minWidth: 300,
-              mt: lessThanMd ? 2 : 0,
-              "&:hover": {
-                backgroundColor: "rgba(0,36,90,0.2)",
-                cursor: "pointer",
-                "& .MuiTypography-root": {
-                  color: "white", // Change this to the desired color for Typography
-                },
-              },
-            }}
-          >
-            <CardContent
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mt: 1,
-              }}
-            >
-              <Typography
-                sx={{ fontSize: 20 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                Investigation 2
-              </Typography>
-            </CardContent>
-          </Card>
-          <span style={{ marginLeft: "10px" }}> </span>
-          <Card
-            sx={{
-              minWidth: 300,
-              mt: lessThanMd ? 2 : 0,
-              "&:hover": {
-                backgroundColor: "rgba(0,36,90,0.2)",
-                cursor: "pointer",
-                "& .MuiTypography-root": {
-                  color: "white", // Change this to the desired color for Typography
-                },
-              },
-            }}
-          >
-            <CardContent
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mt: 1,
-              }}
-            >
-              <Typography
-                sx={{ fontSize: 20, "&:hover": { font: "white" } }}
-                color="text.secondary"
-                gutterBottom
-              >
-                Investigation 3
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-
+        
         <Box
           sx={{
             display: "flex",
@@ -341,7 +192,7 @@ function ReportPage() {
             </Grid>
           </Grid>
           <Box sx={{ mt: "42px" }}>
-            <Tooltip title={lessThanMd ? " Create Investigation" : null}>
+            <Tooltip title={lessThanMd ? "Analysis" : null}>
               <Button
                 variant="contained"
                 onClick={handleOpen}
@@ -357,7 +208,7 @@ function ReportPage() {
                   },
                 }}
               >
-                {lessThanMd ? <CreateNewFolderIcon /> : " Create "}
+                {lessThanMd ? <EqualizerIcon /> : "Analysis"}
               </Button>
             </Tooltip>
           </Box>
@@ -368,32 +219,25 @@ function ReportPage() {
               <TableRow>
                 <TableCell component="th" scope="row">
                   <Typography
-                    variant={lessThanMd ? "h7" : "h6"}
+                    variant={lessThanMd ? "h6" : "h6"}
                     color="textPrimary"
                   >
-                    Investigation
+                    Report
                   </Typography>
                 </TableCell>
 
                 <TableCell component="th" scope="row">
                   <Typography
-                    variant={lessThanMd ? "h7" : "h6"}
+                    variant={lessThanMd ? "h6" : "h6"}
                     color="textPrimary"
                   >
                     Created Date
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Typography
-                    variant={lessThanMd ? "h7" : "h6"}
-                    color="textPrimary"
-                  >
-                    Status
-                  </Typography>
-                </TableCell>
+                
                 <TableCell align="center">
                   <Typography
-                    variant={lessThanMd ? "h7" : "h6"}
+                    variant={lessThanMd ? "h6" : "h6"}
                     color="textPrimary"
                   >
                     Action
@@ -403,7 +247,7 @@ function ReportPage() {
               <TableRow>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary">
-                    Investigation 1
+                    Report 1
                   </Typography>
                 </TableCell>
 
@@ -412,12 +256,7 @@ function ReportPage() {
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-                    label={"archived"}
-                  />
-                </TableCell>
+                
                 <TableCell align="center">
                   <Box
                     sx={{
@@ -453,11 +292,7 @@ function ReportPage() {
                         variant="outlined"
                         color="error"
                         onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
+                          setDeactivateModalStatus(true);
                         }}
                       >
                         {lessThanMd ? null : (
@@ -472,7 +307,7 @@ function ReportPage() {
               <TableRow>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary">
-                    Investigation 2
+                    Report 2
                   </Typography>
                 </TableCell>
 
@@ -481,12 +316,7 @@ function ReportPage() {
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
-                    label={"closed"}
-                  />
-                </TableCell>
+                
                 <TableCell align="center">
                   <Box
                     sx={{
@@ -522,11 +352,7 @@ function ReportPage() {
                         variant="outlined"
                         color="error"
                         onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
+                          setDeactivateModalStatus(true);
                         }}
                       >
                         {lessThanMd ? null : (
@@ -541,7 +367,7 @@ function ReportPage() {
               <TableRow>
                 <TableCell component="th" scope="row">
                   <Typography variant="h7" color="textPrimary">
-                    Investigation 3
+                    Report 3
                   </Typography>
                 </TableCell>
 
@@ -550,18 +376,7 @@ function ReportPage() {
                     2024-04-03 20:56:53
                   </Typography>
                 </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h7" color="textPrimary">
-                    <Chip
-                      sx={{
-                        background: "#FFF4E0",
-                        color: "orange",
-                        mt: "10px",
-                      }}
-                      label={"ongoing"}
-                    />
-                  </Typography>
-                </TableCell>
+                
                 <TableCell align="center">
                   <Box
                     sx={{
@@ -597,11 +412,7 @@ function ReportPage() {
                         variant="outlined"
                         color="error"
                         onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
+                          setDeactivateModalStatus(true);
                         }}
                       >
                         {lessThanMd ? null : (
