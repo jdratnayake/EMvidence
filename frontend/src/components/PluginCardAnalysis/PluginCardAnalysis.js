@@ -1,6 +1,5 @@
 import { Card, CardContent, Checkbox, Grid, Typography } from "@mui/material";
 import React from "react";
-import plugin from "./../../resources/plugins.png";
 import { Box } from "@mui/system";
 
 function PluginCardAnalysis({
@@ -10,13 +9,16 @@ function PluginCardAnalysis({
   isChecked,
   modifyChecked,
   handleClicked,
+  firstName,
+  lastName,
+  imageUrl,
 }) {
   const handleChange = () => {
     modifyChecked(id);
   };
 
   const handleClick = () => {
-    handleClicked(id, name, description);
+    handleClicked(id, name, description, firstName, lastName, imageUrl);
   };
 
   return (
@@ -37,15 +39,19 @@ function PluginCardAnalysis({
           checked={isChecked}
           onChange={handleChange}
           inputProps={{ "aria-label": "controlled" }}
-          sx={{ marginLeft: "80%", marginBottom: "-5%", "& .MuiSvgIcon-root": {
-            fill: "#00245A",
-          }, }}
+          sx={{
+            marginLeft: "80%",
+            marginBottom: "-5%",
+            "& .MuiSvgIcon-root": {
+              fill: "#00245A",
+            },
+          }}
         />
         <Card sx={{ height: 200 }} onClick={handleClick}>
           <CardContent>
             <Grid container alignItems="center" justifyContent="center">
               <img
-                src={plugin}
+                src={imageUrl}
                 alt="Logo"
                 style={{
                   width: "70px",

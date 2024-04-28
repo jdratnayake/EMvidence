@@ -17,4 +17,16 @@ class DeviceController extends Controller
 
         return response()->json($responseData);
     }
+
+    public function getDevice(Request $request)
+    {
+        $deviceId = $request->header("device_id");
+        $device = Device::where('device_id', $deviceId)->get();
+
+        $responseData = [
+            'device' => $device[0],
+        ];
+
+        return response()->json($responseData);
+    }
 }

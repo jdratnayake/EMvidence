@@ -9,6 +9,8 @@ use Symfony\Component\Process\Process;
 use App\Models\AnalysisPlugin;
 use App\Models\EmDataFile;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Dompdf\Dompdf;
 
 function execute_python_script($path, ...$variables)
 {
@@ -19,65 +21,240 @@ function execute_python_script($path, ...$variables)
         $process->mustRun();
         return json_decode($process->getOutput());
     } catch (ProcessFailedException $exception) {
-        return $exception->getMessage();
+        throw new \Exception($exception->getMessage(), $exception->getCode(), $exception);
     }
 }
 
 class PluginController extends Controller
 {
+    public function index()
+    {
+        $plugins = AnalysisPlugin::all();
+
+        $responseData = [
+            'plugins' => $plugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function deletePlugin(Request $request)
+    {
+        $pluginId = $request->header("plugin_id");
+        $plugin = AnalysisPlugin::where('plugin_id', $pluginId)->delete();
+
+        $responseData = [
+            'success' => "Plugin deleted successfully",
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getDeveloperPlugins(Request $request)
+    {
+        $userId = $request->header("user_id");
+        $plugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')
+            ->where('user_id', $userId)
+            ->get();
+
+        $responseData = [
+            'plugins' => $plugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getPlugin(Request $request)
+    {
+        $pluginId = $request->header("plugin_id");
+        $plugin = AnalysisPlugin::where('plugin_id', $pluginId)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->get();
+
+        $responseData = [
+            'plugin' => $plugin[0],
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getFilteredPlugin(Request $request)
+    {
+        $emRawFileId = $request->header('em_raw_file_id');
+        $fftSize = $request->header('fft_size');
+
+        $plugin = EmDataFile::where('em_raw_file_id', $emRawFileId)
+            ->select('center_frequency', 'sampling_rate')
+            ->get();
+        $centerFrequency = $plugin[0]->center_frequency;
+        $samplingRate = $plugin[0]->sampling_rate;
+
+
+        $responseData = AnalysisPlugin::where('center_frequency', $centerFrequency)
+            ->where('sampling_rate', $samplingRate)
+            ->where('fft_size', $fftSize)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->get();
+
+        return response()->json(["filteredPluginData" => $responseData]);
+    }
+
+    public function getPendingPlugins()
+    {
+        $initialPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')->where('compatibility_status', 'pending')->get();
+
+        $responseData = [
+            'pendingPlugins' => $initialPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getVerifiedPlugins()
+    {
+        $verifiedPlugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')
+            ->whereIn('compatibility_status', ['compatible', 'incompatible'])
+            ->get();
+
+        $responseData = [
+            'verifiedPlugins' => $verifiedPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getPluginIcon(Request $request)
+    {
+        $filename = $request->header("icon_filename");
+
+        $path = env("PLUGIN_ICON_DIRECTORY_PATH") . $filename;
+
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            $defaultImagePath = env("PLUGIN_ICON_DIRECTORY_PATH") . "default.png";
+            return response()->file($defaultImagePath);
+        }
+    }
+
     public function executePreprocessingPlugin(Request $request)
     {
-        // Header parameters
-        $emRawFileName = $request->header("em_raw_file_name");
-        $preprocessingPluginName = $request->header("preprocessing_plugin_name");
-        $downSamplingIndex = $request->header("down_sampling_index");
-        $fftSizeIndex = $request->header("fft_size_index");
-        $overlapPercentageIndex = $request->header("overlap_percentage_index");
-        $sampleSelectionIndex = $request->header("sample_selection_index");
+        try {
+            // Header parameters
+            $preprocessingPluginName = "basic.py";
+            $downSamplingIndex = $request->header("down_sampling_index");
+            $fftSizeIndex = $request->header("fft_size_index");
+            $overlapPercentageIndex = $request->header("overlap_percentage_index");
+            $sampleSelectionIndex = $request->header("sample_selection_index");
+            $emRawFileId = $request->header("em_raw_file_id");
 
-        // Set path variables
-        $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
-        $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
-        $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
+            // Retrieve EM raw file record
+            $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId)->firstOrFail();
+            $emRawFileName = $emRawFileRecord->em_raw_file_name;
 
-        // $output = execute_python_script($preprocessingPluginPath, $emRawFilePath, $emPreprocessedDirectoryPath);
+            // Set path variables
+            $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
+            $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
+            $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
 
-        $output = execute_python_script(
-            $preprocessingPluginPath,
-            $emRawFilePath,
-            $emPreprocessedDirectoryPath,
-            $downSamplingIndex,
-            $fftSizeIndex,
-            $overlapPercentageIndex,
-            $sampleSelectionIndex
-        );
+            // Execute Python script
+            $output = execute_python_script(
+                $preprocessingPluginPath,
+                $emRawFilePath,
+                $emPreprocessedDirectoryPath,
+                $downSamplingIndex,
+                $fftSizeIndex,
+                $overlapPercentageIndex,
+                $sampleSelectionIndex
+            );
 
-        return response()->json(["output" => $output]);
+            // Update EM preprocess file name
+            $emPreprocessFileName = explode(".", $emRawFileName)[0] . ".npy";
+            EmDataFile::where('em_raw_file_id', $emRawFileId)->update(['em_preprocess_file_name' => $emPreprocessFileName]);
+
+            return response()->json(["output" => $output]);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
 
     public function executeAnalysisPlugin(Request $request)
     {
-        $emRawFileID = $request->header("em_raw_file_id");
-        $analysisPluginID = $request->header("analysis_plugin_id");
+        try {
+            $emRawFileID = $request->header("em_raw_file_id");
+            $analysisPluginID = $request->header("analysis_plugin_id");
 
-        $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID);
-        $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID);
+            $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID)->firstOrFail();
+            $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
 
-        $emPreprocessingFileName = $emRawFileRecord->value('em_preprocess_file_name');
-        $analysisPluginName = $analysisPluginRecord->value('plugin_script_filename');
-        $analysisPluginMlModelName = $analysisPluginRecord->value('ml_model_filename');
+            $emPreprocessingFileName = $emRawFileRecord->em_preprocess_file_name;
+            $analysisPluginName = $analysisPluginRecord->plugin_script_filename;
+            $analysisPluginMlModelName = $analysisPluginRecord->ml_model_filename;
 
-        // Set em preprocessing path
-        $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
+            // Set em preprocessing path
+            $emPreprocessingFilePath = env("EM_PREPROCESSED_DIRECTORY_PATH") . "/" . $emPreprocessingFileName;
 
-        // Set path variables
-        $analysisPluginPath = env("ANALYSIS_PLUGIN_DIRECTORY_PATH") . "/" . $analysisPluginName;
-        $analysisPluginMlModelPath = env("ML_MODEL_DIRECTORY_PATH") . "/" . $analysisPluginMlModelName;
+            // Set path variables
+            $analysisPluginPath = env("ANALYSIS_PLUGIN_DIRECTORY_PATH") . "/" . $analysisPluginName;
+            $analysisPluginMlModelPath = env("ML_MODEL_DIRECTORY_PATH") . "/" . $analysisPluginMlModelName;
 
-        $output = execute_python_script($analysisPluginPath, $emPreprocessingFilePath, $analysisPluginMlModelPath);
+            $output = execute_python_script($analysisPluginPath, $emPreprocessingFilePath, $analysisPluginMlModelPath);
 
-        return response()->json(["output" => $output]);
+            return response()->json(["output" => $output]);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
+
+    function installPipLibrariesFromFile(Request $request)
+    {
+        try {
+            // Retrieve analysis plugin ID from request header
+            $analysisPluginID = $request->header("analysis_plugin_id");
+
+            // Retrieve analysis plugin record from the database
+            $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
+
+            // Get the dependency filename from the analysis plugin record
+            $dependencyFilename = $analysisPluginRecord->dependency_filename;
+
+            // Get the full path to the dependency file
+            $filePath = env("DEPENDENCY_DIRECTORY_PATH") . $dependencyFilename;
+
+            // Check if the dependency file exists
+            if (!file_exists($filePath)) {
+                throw new \Exception("Dependency file not found: $dependencyFilename");
+            }
+
+            // Read the contents of the dependency file
+            $fileContents = file_get_contents($filePath);
+
+            // Split the contents into an array of libraries
+            $pipLibraries = explode("\n", $fileContents);
+
+            // Install each pip library
+            foreach ($pipLibraries as $library) {
+                $process = new Process(['pip', 'install', $library]);
+                $process->run();
+
+                // Check if the installation process failed
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+            }
+
+            // Return success response
+            return response()->json(["success" => 'Pip libraries installed successfully.']);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+    }
+
 
     public function uploadPlugin(Request $request)
     {
@@ -142,5 +319,66 @@ class PluginController extends Controller
         $plugin->save();
 
         return response()->json(["success" => 'Plugin uploaded successfully.'], 200);
+    }
+
+    public function updatePluginCompatibilityStatus(Request $request)
+    {
+        $userId = $request->header("user_id");
+        $analysisPluginID = $request->header("analysis_plugin_id");
+        $compatibilityStatus = $request->header("compatibility_status");
+
+        $analysisPluginUpdateStatus = AnalysisPlugin::where('plugin_id', $analysisPluginID)
+            ->update([
+                'compatibility_status' => $compatibilityStatus,
+                "plugin_compatibility_verified_timestamp" => now(),
+                "compatibility_check_admin_id" => $userId
+            ]);
+
+        return response()->json(["success" => $analysisPluginUpdateStatus]);
+    }
+
+    public function changePluginCompatibilityStatusToVerify(Request $request)
+    {
+        $analysisPluginID = $request->header("analysis_plugin_id");
+        $compatibilityStatus = $request->header("compatibility_status");
+
+        $analysisPluginUpdateStatus = AnalysisPlugin::where('plugin_id', $analysisPluginID)
+            ->update([
+                'compatibility_status' => $compatibilityStatus,
+                "plugin_compatibility_verified_timestamp" => now(),
+            ]);
+
+        return response()->json(["success" => $analysisPluginUpdateStatus]);
+    }
+
+    public function generateAnalysisReport(Request $request)
+    {
+        // Initialize Dompdf
+        $dompdf = new Dompdf();
+
+        // Generate PDF content
+        $html = '<html><body>';
+        $html .= '<h1>PDF Report</h1>';
+        // Add content based on the provided data
+        $html .= '<p>User: ' . "Janitha" . '</p>';
+        $html .= '<p>Date: ' . "Today" . '</p>';
+        // Add more content as needed
+        $html .= '</body></html>';
+
+        // Load HTML content into Dompdf
+        $dompdf->loadHtml($html);
+
+        // Render PDF
+        $dompdf->render();
+
+        // Generate a unique filename for the PDF
+        $pdfFilename = 'report_' . time() . '.pdf';
+
+        // Store PDF in the storage directory
+        $pdfContent = $dompdf->output();
+        Storage::put('pdf/' . $pdfFilename, $pdfContent);
+
+        // Return the filename of the stored PDF
+        return $pdfFilename;
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { borderRadius, Box, Container, styled } from "@mui/system";
+import { Box, styled } from "@mui/system";
 import {
   Button,
   Chip,
@@ -9,31 +9,18 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
-import OfflinePinIcon from '@mui/icons-material/OfflinePin';
-import UnpublishedIcon from '@mui/icons-material/Unpublished';
-import ChecklistRtlIcon from '@mui/icons-material/ChecklistRtl';
-import Tooltip from '@mui/material/Tooltip';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import RuleIcon from '@mui/icons-material/Rule';
+import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
+import OfflinePinIcon from "@mui/icons-material/OfflinePin";
+import UnpublishedIcon from "@mui/icons-material/Unpublished";
+import Tooltip from "@mui/material/Tooltip";
 import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import CircleIcon from "@mui/icons-material/Circle";
-
-const columns = [
-  { id: "plugin", label: "Plugin Name", midWidth: 150 },
-  { id: "status", label: "Status", midWidth: 150 },
-  { id: "actions", label: "Actions", midWidth: 300 },
-];
 
 const ContainerBox = styled(Box)(() => ({
   display: "flex",
@@ -112,32 +99,35 @@ const TableCellBlue = styled(TableCell)(() => ({
 }));
 
 function PluginManagePage() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchText, setSearchText] = useState("");
 
   const theme = useTheme();
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
 
-
   const handleSearch = (event) => {
     setSearchText(event.target.value);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
   const rows = [
-    { id: 1, plugin: "Firmware Version Detection", status: "Inactive", actions: "1" },
-    { id: 2, plugin: "Firmware Version Detection", status: "Active", actions: "2" },
-    { id: 3, plugin: "Firmware Version Detection", status: "Active", actions: "3" },
+    {
+      id: 1,
+      plugin: "Firmware Version Detection",
+      status: "Inactive",
+      actions: "1",
+    },
+    {
+      id: 2,
+      plugin: "Firmware Version Detection",
+      status: "Active",
+      actions: "2",
+    },
+    {
+      id: 3,
+      plugin: "Firmware Version Detection",
+      status: "Active",
+      actions: "3",
+    },
   ];
 
   function getStatusByActions(actionsValue) {
@@ -149,75 +139,6 @@ function PluginManagePage() {
     return null;
   }
 
-  function getActions(value) {
-    return (
-      <TableCell align="center">
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-          <Button
-            variant="outlined"
-            sx={{
-              color: "#00245A", cursor: "pointer", borderColor: "rgba(0, 36, 90, 0.4)",
-              '&:hover': {
-                borderColor: "#00245A", // Change to the desired hover color
-              },
-            }}
-            onClick={() => { }}
-          >
-            {/* <VisibilityIcon sx={{ ml: -1, mr: 1 }} /> */}
-            Test
-          </Button>
-          <span style={{ marginLeft: "10px" }}>{"\u00A0"}</span>
-
-          {getStatusByActions(value) === "Active" ? (
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => { }}
-            >
-              {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
-              Deactivate
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              sx={{
-                color: "green", cursor: "pointer", borderColor: "rgba(0, 128, 0, 0.4)", pl: 3, pr: 3,
-                '&:hover': {
-                  borderColor: "green",
-                },
-              }}
-              onClick={() => { }}
-            >
-              {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
-              Activate
-            </Button>
-          )}
-        </Box>
-      </TableCell>
-    );
-  }
-
-  function getStatus(value) {
-    if (value === "Active") {
-      return (
-        <TableCell align="center">
-          <Chip
-            sx={{ background: "#ECFDF3", color: "#037847", mt: "10px", ml: "4px" }}
-            label={"Active"}
-          />
-        </TableCell>
-      );
-    } else {
-      return (
-        <TableCell>
-          <Chip
-            sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-            label={"Inactive"}
-          />
-        </TableCell>
-      );
-    }
-  }
   const sxStyle = {
     "&:hover": {
       "&& fieldset": {
@@ -232,7 +153,6 @@ function PluginManagePage() {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -248,17 +168,21 @@ function PluginManagePage() {
         },
       },
     },
-  }
+  };
 
   return (
     <>
       <ContainerBox>
-
         <Typography variant="h4" gutterBottom sx={{ mb: -1 }}>
           Plugins
         </Typography>
 
-        <Grid container alignItems="center" justifyContent="center" sx={{ mb: 4 }}>
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mb: 4 }}
+        >
           <TextField
             id="search"
             label={searchText === "" ? "Search" : ""}
@@ -269,7 +193,13 @@ function PluginManagePage() {
             value={searchText}
             onChange={handleSearch}
             variant="outlined"
-            style={{ minWidth: "400px", width: "50%" ,   marginTop: "40px", backgroundColor: "white", borderRadius: 4 }}
+            style={{
+              minWidth: "400px",
+              width: "50%",
+              marginTop: "40px",
+              backgroundColor: "white",
+              borderRadius: 4,
+            }}
             InputProps={{
               endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
             }}
@@ -282,17 +212,17 @@ function PluginManagePage() {
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableCell>
-                      <Typography variant="h6" color="textPrimary" >
+                      <Typography variant="h6" color="textPrimary">
                         Plugin Name
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="h6" color="textPrimary" >
+                      <Typography variant="h6" color="textPrimary">
                         Status
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="h6" color="textPrimary" >
+                      <Typography variant="h6" color="textPrimary">
                         Action
                       </Typography>
                     </TableCell>
@@ -300,19 +230,21 @@ function PluginManagePage() {
                   <TableBody>
                     <TableRow hover>
                       <TableCell scope="row">
-                        <Typography variant="h7" color="textPrimary" >
+                        <Typography variant="h7" color="textPrimary">
                           plugin 1
                         </Typography>
                       </TableCell>
 
                       <TableCell scope="row" align="center">
-
                         <Chip
-                          sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                          sx={{
+                            background: "#FFF2F2",
+                            color: "red",
+                            mt: "10px",
+                          }}
                           label={"Inactive"}
                         />
                       </TableCell>
-
 
                       <TableCell align="center">
                         <Box
@@ -320,46 +252,48 @@ function PluginManagePage() {
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "center",
-                            '& > Button': {
+                            "& > Button": {
                               marginRight: 2, // Adjust the value as needed
-                            }
+                            },
                           }}
                         >
                           <Tooltip title={lessThanMd ? "Test" : null}>
                             <Button
                               variant="outlined"
-                              style={{ color: "#00245A", }}
+                              style={{ color: "#00245A" }}
                               sx={{
                                 borderColor: "rgba(0, 36, 90, 0.4)",
-                                '&:hover': {
+                                "&:hover": {
                                   borderColor: "#00245A", // Change to the desired hover color
                                 },
                               }}
-                              onClick={() => { }}
+                              onClick={() => {}}
                             >
-                              {lessThanMd ? null : <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />}
-                              {lessThanMd ? <DeveloperModeIcon /> : 'Test'}
-
+                              {lessThanMd ? null : (
+                                <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
+                              )}
+                              {lessThanMd ? <DeveloperModeIcon /> : "Test"}
                             </Button>
                           </Tooltip>
 
                           <Tooltip title={lessThanMd ? "Activate" : null}>
                             <Button
                               variant="outlined"
-                              style={{ color: "#00245A", }}
+                              style={{ color: "#00245A" }}
                               sx={{
                                 borderColor: "rgba(0, 36, 90, 0.4)",
-                                '&:hover': {
+                                "&:hover": {
                                   borderColor: "#00245A", // Change to the desired hover color
                                 },
                                 pl: lessThanMd ? 0 : 3,
-                                pr:lessThanMd ? 0 :3,
+                                pr: lessThanMd ? 0 : 3,
                               }}
-                              onClick={() => { }}
+                              onClick={() => {}}
                             >
-                              {lessThanMd ? null : <OfflinePinIcon sx={{ ml: -1, mr: 1 }} />}
-                              {lessThanMd ? <OfflinePinIcon /> : 'Activate'}
-
+                              {lessThanMd ? null : (
+                                <OfflinePinIcon sx={{ ml: -1, mr: 1 }} />
+                              )}
+                              {lessThanMd ? <OfflinePinIcon /> : "Activate"}
                             </Button>
                           </Tooltip>
                         </Box>
@@ -367,18 +301,22 @@ function PluginManagePage() {
                     </TableRow>
                     <TableRow hover>
                       <TableCell scope="row">
-                        <Typography variant="h7" color="textPrimary" >
+                        <Typography variant="h7" color="textPrimary">
                           plugin 2
                         </Typography>
                       </TableCell>
 
                       <TableCell scope="row" align="center">
                         <Chip
-                          sx={{ background: "#ECFDF3", color: "#037847", mt: "10px", ml: "4px" }}
+                          sx={{
+                            background: "#ECFDF3",
+                            color: "#037847",
+                            mt: "10px",
+                            ml: "4px",
+                          }}
                           label={"Active"}
                         />
                       </TableCell>
-
 
                       <TableCell align="center">
                         <Box
@@ -386,26 +324,27 @@ function PluginManagePage() {
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "center",
-                            '& > Button': {
+                            "& > Button": {
                               marginRight: 2, // Adjust the value as needed
-                            }
+                            },
                           }}
                         >
                           <Tooltip title={lessThanMd ? "Test" : null}>
                             <Button
                               variant="outlined"
-                              style={{ color: "#00245A", }}
+                              style={{ color: "#00245A" }}
                               sx={{
                                 borderColor: "rgba(0, 36, 90, 0.4)",
-                                '&:hover': {
+                                "&:hover": {
                                   borderColor: "#00245A", // Change to the desired hover color
                                 },
                               }}
-                              onClick={() => { }}
+                              onClick={() => {}}
                             >
-                              {lessThanMd ? null : <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />}
-                              {lessThanMd ? <DeveloperModeIcon /> : 'Test'}
-
+                              {lessThanMd ? null : (
+                                <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
+                              )}
+                              {lessThanMd ? <DeveloperModeIcon /> : "Test"}
                             </Button>
                           </Tooltip>
 
@@ -413,11 +352,12 @@ function PluginManagePage() {
                             <Button
                               variant="outlined"
                               color="error"
-                              onClick={() => { }}
+                              onClick={() => {}}
                             >
-                              {lessThanMd ? null : <UnpublishedIcon sx={{ ml: -1, mr: 1 }} />}
-                              {lessThanMd ? <UnpublishedIcon  /> : 'Deactivate'}
-
+                              {lessThanMd ? null : (
+                                <UnpublishedIcon sx={{ ml: -1, mr: 1 }} />
+                              )}
+                              {lessThanMd ? <UnpublishedIcon /> : "Deactivate"}
                             </Button>
                           </Tooltip>
                         </Box>
