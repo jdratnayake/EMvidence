@@ -19,6 +19,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
 import DialogTitle from "@mui/material/DialogTitle";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import AnalysisPluginModal from "../../components/AnalysisPluginModal/AnalysisPluginModal";
@@ -60,6 +62,15 @@ const PluginVerifyPage = () => {
   // Modal related features
   const [isAnalysisPluginModalOpen, setIsAnalysisPluginModalOpen] =
     useState(false);
+  // Popup related features
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const [activateModalMessage, setActivateModalMessage] = useState("");
+  const [deactivateModalMessage, setDeactivateModalMessage] = useState("");
+  const [activateModalButtonMessage, setActivateModalButtonMessage] =
+    useState("");
+  const [deactivateModalButtonMessage, setDeactivateModalButtonMessage] =
+    useState("");
 
   const executePreprocessingPlugin = () => {
     setLoadingPreprocessing(true);
@@ -257,152 +268,89 @@ const PluginVerifyPage = () => {
     }
   }, [user]);
 
-  const [showAcceptDialog, setShowAceptDialog] = useState(false);
-  const [showCancelDialog, setShowRejectDialog] = useState(false);
-
-  const acceptPlugin = () => {
-    setShowAceptDialog(true);
-  };
-  const rejectPlugin = () => {
-    setShowRejectDialog(true);
-  };
-
-  const handleCloseAcceptDialog = (confirmed) => {
-    setShowAceptDialog(false);
-    if (confirmed) {
-      // Perform accept action
-    }
-  };
-
-  const handleCloseRejectDialog = (confirmed) => {
-    setShowRejectDialog(false);
-    if (confirmed) {
-      // Perform cancel action
-    }
-  };
-
-  // for accepting the plugin
-  function AcceptDialog({ open, onClose }) {
-    const handleClose = () => {
-      console.log("accept click no");
-      onClose(false); // User chose to cancel
+  const rejectUploadedPlugin = () => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+      compatibility_status: "incompatible",
     };
 
-    const handleConfirm = () => {
-      console.log("accept click yes");
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        console.log(response);
 
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: user["userData"]["token"],
-        user_id: user["userData"]["user_id"],
-        analysis_plugin_id: data?.plugin.plugin_id,
-        compatibility_status: "compatible",
-      };
+        setActivateModalStatus(false);
+        setDeactivateModalStatus(false);
 
-      axios
-        .get(API_URL + "/plugin/compatibility", { headers })
-        .then((response) => {
-          console.log(response);
-
-          toast.success("Plugin Acceptance Successful", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-
-          setTimeout(() => {
-            navigate("/plugin-verify-list");
-          }, 5000);
+        toast.success("Plugin Rejection Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
         });
 
-      onClose(true); // User chose to confirm
+        setTimeout(() => {
+          navigate("/plugin-verify-list");
+        }, 5000);
+      });
+  };
+
+  const acceptUploadedPlugin = () => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: data?.plugin.plugin_id,
+      compatibility_status: "compatible",
     };
 
-    return (
-      <Dialog open={open} onClose={handleClose}>
-        <DialogContent>
-          <DialogContentText>
-            Do you want to Accept the plugin?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            No
-          </Button>
-          <Button onClick={handleConfirm} color="primary" autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        console.log(response);
 
-  // for rejecting the plugin
-  function RejectDialog({ open, onClose }) {
-    const handleClose = () => {
-      console.log("reject click no");
-      onClose(false); // User chose to cancel
-    };
+        setActivateModalStatus(false);
+        setDeactivateModalStatus(false);
 
-    const handleConfirm = () => {
-      console.log("reject click yes");
-
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: user["userData"]["token"],
-        user_id: user["userData"]["user_id"],
-        analysis_plugin_id: data?.plugin.plugin_id,
-        compatibility_status: "incompatible",
-      };
-
-      axios
-        .get(API_URL + "/plugin/compatibility", { headers })
-        .then((response) => {
-          console.log(response);
-
-          toast.success("Plugin Rejection Successful", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-
-          setTimeout(() => {
-            navigate("/plugin-verify-list");
-          }, 5000);
+        toast.success("Plugin Acceptance Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
         });
 
-      onClose(true); // User chose to confirm
-    };
-
-    return (
-      <Dialog open={open} onClose={handleClose}>
-        <DialogContent>
-          <DialogContentText>
-            Do you want to reject the plugin?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            No
-          </Button>
-          <Button onClick={handleConfirm} color="primary" autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
+        setTimeout(() => {
+          navigate("/plugin-verify-list");
+        }, 5000);
+      });
+  };
 
   return (
     <>
+      <ActivateModal
+        open={activateModalStatus}
+        name={activateModalMessage}
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={acceptUploadedPlugin}
+        activateButtonName={activateModalButtonMessage}
+      />
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name={deactivateModalMessage}
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={rejectUploadedPlugin}
+        deactivateButtonName={deactivateModalButtonMessage}
+      />
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -1031,14 +979,14 @@ const PluginVerifyPage = () => {
               },
             }}
             variant="contained"
-            onClick={acceptPlugin}
+            onClick={() => {
+              setActivateModalMessage("Do you want to accept the plugin?");
+              setActivateModalButtonMessage("Accept");
+              setActivateModalStatus(true);
+            }}
           >
             Accept
           </Button>
-          <AcceptDialog
-            open={showAcceptDialog}
-            onClose={handleCloseAcceptDialog}
-          />
 
           <Button
             sx={{
@@ -1051,15 +999,14 @@ const PluginVerifyPage = () => {
               },
             }}
             variant="contained"
-            onClick={rejectPlugin}
+            onClick={() => {
+              setDeactivateModalMessage("Do you want to reject the plugin?");
+              setDeactivateModalButtonMessage("Reject");
+              setDeactivateModalStatus(true);
+            }}
           >
             Reject
           </Button>
-
-          <RejectDialog
-            open={showCancelDialog}
-            onClose={handleCloseRejectDialog}
-          />
         </Box>
       </Box>
     </>

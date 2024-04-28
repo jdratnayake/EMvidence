@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { Container } from "@mui/system";
 import {
@@ -349,7 +349,8 @@ function PluginUploadListPage() {
                               borderColor: "#00245A", // Change to the desired hover color
                             },
                           }}
-                          onClick={() => {}}
+                          component={Link}
+                          to={`/plugin-verify/${plugin.plugin_id}`}
                         >
                           {lessThanMd ? null : (
                             <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
