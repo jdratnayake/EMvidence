@@ -18,10 +18,10 @@ import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
 const pages = ["Dashboard", "Users", "Plugins"];
-const pageLinks = ["/admin", "/user-list", "/plugin-list"];
+const pageLinks = ["/admin", "/user-list", "/plugin-verify-list"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-function NavBarAdmin(pageName) {
+function NavBarAdmin({ pageName }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const { removeUser } = useUser();
@@ -138,10 +138,7 @@ function NavBarAdmin(pageName) {
                   my: 2,
                   color: "#000000",
                   display: "block",
-                  borderBottom:
-                    pageName.page == "analysis" && page == "Analysis"
-                      ? "2px solid black"
-                      : "none",
+                  borderBottom: page === pageName ? "2px solid black" : "none",
                 }}
                 component={Link}
                 to={pageLinks[i]}
