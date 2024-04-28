@@ -42,7 +42,6 @@ function Copyright(props) {
   );
 }
 
-
 const defaultTheme = createTheme();
 
 export default function SignInPage() {
@@ -83,7 +82,7 @@ export default function SignInPage() {
         if (userData.user_type === "admin") {
           navigate("/admin");
         } else if (userData.user_type === "investigator") {
-          navigate("/investigation");
+          navigate("/report");
         } else if (userData.user_type === "developer") {
           navigate("/plugin-upload-list");
         } else {
@@ -135,30 +134,28 @@ export default function SignInPage() {
     <span className="sign-in-pages">
       <ThemeProvider theme={defaultTheme}>
         <Grid container spacing={0} style={{ height: "100vh" }}>
-          <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A",}}>
-           
+          <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
+            <Box
+              marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
+              marginBottom={lessThanSm ? 1 : 0}
+              //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
+              sx={{
+                display: "flex",
+                flexDirection: lessThanSm ? "row" : "column",
+                alignItems: "center",
+                justifyContent: "center",
+                marginLeft: 0,
+              }}
+            >
               <Box
-                marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
-                marginBottom={lessThanSm ? 1 : 0}
-                //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
+                component="img"
                 sx={{
-                  display: "flex",
-                  flexDirection: lessThanSm ? "row" : "column",
-                  alignItems: "center",
-                  justifyContent : "center",
-                  marginLeft: 0,
+                  maxHeight: { xs: 300, sm: 350, md: 630 },
+                  maxWidth: { xs: 300, sm: 350, md: 500 },
                 }}
-              >
-                <Box
-                  component="img"
-                  sx={{
-                    
-                    maxHeight: { xs: 300, sm: 350, md: 630 },
-                    maxWidth: { xs: 300, sm: 350, md: 500 },
-                  }}
-                  src={lessThanSm ? logo2 : logo}
-                />
-                {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
+                src={lessThanSm ? logo2 : logo}
+              />
+              {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
                   paddingBottom: 4,
                   marginTop: lessThanSm ? 4 : 2,
                   marginLeft: lessThanSm ? '20px' : 0,
@@ -166,8 +163,7 @@ export default function SignInPage() {
                   }}>
                   EMvidence
                 </Typography> */}
-              </Box>
-           
+            </Box>
           </Grid>
           <Grid xs={12} sm={6} sx={{ backgroundColor: "white" }}>
             <Container component="main" maxWidth="xs">
@@ -276,7 +272,7 @@ export default function SignInPage() {
                   </Grid>
                 </Box>
               </Box>
-              <Copyright sx={{ mt: 5 }}/>
+              <Copyright sx={{ mt: 5 }} />
               {/* <h1>{catData?.fact}</h1> */}
             </Container>
           </Grid>

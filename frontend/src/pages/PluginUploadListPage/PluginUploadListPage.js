@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "react-query";
 import { Container } from "@mui/system";
 import {
   Typography,
@@ -21,17 +22,43 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
+import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
+import { API_URL, queryKeys } from "../../constants";
 import { useUser } from "../../contexts/UserContext";
+import { getDeveloperPluginDetails } from "../../services/pluginService";
+import { getDate } from "../../helper";
 import "./PluginUploadListPage.css";
 
 function PluginUploadListPage() {
   const [searchText, setSearchText] = useState("");
-  const { user, addUser } = useUser();
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const [selectedPluginId, setSelectedPluginId] = useState(null);
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
+    const searchTerm = event.target.value;
+    setSearchText(searchTerm);
+
+    // console.log(searchTerm);
+    if (!searchTerm) {
+      queryClient.prefetchQuery([queryKeys["getDeveloperPluginDetails"]], () =>
+        getDeveloperPluginDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((plugin) => {
+        return plugin.plugin_name.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(queryKeys["getDeveloperPluginDetails"], newData);
+    }
   };
   const navigate = useNavigate();
   const theme = useTheme();
@@ -69,8 +96,95 @@ function PluginUploadListPage() {
     },
   };
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getDeveloperPluginDetails"]],
+    queryFn: () => getDeveloperPluginDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getDeveloperPluginDetails"]], () =>
+        getDeveloperPluginDetails(user)
+      );
+    }
+  }, [user]);
+
+  const sendPluginForApproval = async () => {
+    const response = await fetch(API_URL + "/plugin/compatibility-verify", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        analysis_plugin_id: selectedPluginId,
+        compatibility_status: "pending",
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.hasOwnProperty("success")) {
+      const newData = data.map((plugin) => {
+        if (plugin.plugin_id === selectedPluginId) {
+          return { ...plugin, compatibility_status: "pending" };
+        } else {
+          return plugin;
+        }
+      });
+
+      queryClient.setQueryData(queryKeys["getDeveloperPluginDetails"], newData);
+
+      setActivateModalStatus(false);
+      setDeactivateModalStatus(false);
+    } else {
+      console.log("Error");
+    }
+  };
+
+  const deletePlugin = async () => {
+    const response = await fetch(API_URL + "/plugin", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        plugin_id: selectedPluginId,
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.hasOwnProperty("success")) {
+      const newData = data.filter(
+        (plugin) => plugin.plugin_id !== selectedPluginId
+      );
+
+      queryClient.setQueryData(queryKeys["getDeveloperPluginDetails"], newData);
+
+      setActivateModalStatus(false);
+      setDeactivateModalStatus(false);
+    } else {
+      console.log("Error");
+    }
+  };
+
   return (
     <>
+      <ActivateModal
+        open={activateModalStatus}
+        name="Are you sure you want to verify the plugin?"
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={sendPluginForApproval}
+        activateButtonName="Verify"
+      />
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name="Are you sure you want to delete the plugin?"
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={deletePlugin}
+        deactivateButtonName="Delete"
+      />
+
       <Container>
         <Typography
           variant="h4"
@@ -144,11 +258,6 @@ function PluginUploadListPage() {
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <Typography variant="h6" color="textPrimary">
-                    Size
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h6" color="textPrimary">
                     Created Date
                   </Typography>
                 </TableCell>
@@ -163,231 +272,128 @@ function PluginUploadListPage() {
                   </Typography>
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    plugin 1
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    10 MB
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-                    label={"failed"}
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      "& > Button": {
-                        marginRight: 2, // Adjust the value as needed
-                      },
-                    }}
-                  >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A" }}
-                        sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          "&:hover": {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
-                        }}
-                        onClick={() => {}}
-                      >
-                        {lessThanMd ? null : (
-                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <VisibilityIcon /> : " View"}
-                      </Button>
-                    </Tooltip>
 
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
-                        }}
-                      >
-                        {lessThanMd ? null : (
-                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <DeleteIcon /> : "Delete"}
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    plugin 2
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    20 MB
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Chip
-                    sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
-                    label={"Active"}
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      "& > Button": {
-                        marginRight: 2, // Adjust the value as needed
-                      },
-                    }}
-                  >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A" }}
+              {data?.map((plugin) => (
+                <TableRow key={plugin.plugin_id}>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h7" color="textPrimary">
+                      {plugin.plugin_name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="h7" color="textPrimary">
+                      {getDate(plugin.plugin_upload_timestamp)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell component="th" scope="row" align="center">
+                    {plugin.compatibility_status === "initial" && (
+                      <Chip
                         sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          "&:hover": {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
+                          background: "#FFFAF2 ",
+                          color: "black",
+                          mt: "10px",
                         }}
-                        onClick={() => {}}
-                      >
-                        {lessThanMd ? null : (
-                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <VisibilityIcon /> : " View"}
-                      </Button>
-                    </Tooltip>
-
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
+                        label={"Initial"}
+                      />
+                    )}
+                    {plugin.compatibility_status === "pending" && (
+                      <Chip
+                        sx={{
+                          background: "#FFF4E0",
+                          color: "orange",
+                          mt: "10px",
                         }}
-                      >
-                        {lessThanMd ? null : (
-                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <DeleteIcon /> : "Delete"}
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    plugin 3
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    30 MB
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  <Typography variant="h7" color="textPrimary">
-                    2024-04-03 20:56:53
-                  </Typography>
-                </TableCell>
-                <TableCell component="th" scope="row" align="center">
-                  <Typography variant="h7" color="textPrimary">
-                    <Chip
+                        label={"Pending"}
+                      />
+                    )}
+                    {plugin.compatibility_status === "incompatible" && (
+                      <Chip
+                        sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
+                        label={"Failed"}
+                      />
+                    )}
+                    {plugin.compatibility_status === "compatible" && (
+                      <Chip
+                        sx={{
+                          background: "#ECFDF3",
+                          color: "green",
+                          mt: "10px",
+                        }}
+                        label={"Active"}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Box
                       sx={{
-                        background: "#FFF4E0",
-                        color: "orange",
-                        mt: "10px",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        "& > Button": {
+                          marginRight: 2, // Adjust the value as needed
+                        },
                       }}
-                      label={"pending"}
-                    />
-                  </Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      "& > Button": {
-                        marginRight: 2, // Adjust the value as needed
-                      },
-                    }}
-                  >
-                    <Tooltip title={lessThanMd ? "View" : null}>
-                      <Button
-                        variant="outlined"
-                        style={{ color: "#00245A" }}
-                        sx={{
-                          borderColor: "rgba(0, 36, 90, 0.4)",
-                          "&:hover": {
-                            borderColor: "#00245A", // Change to the desired hover color
-                          },
-                        }}
-                        onClick={() => {}}
-                      >
-                        {lessThanMd ? null : (
-                          <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <VisibilityIcon /> : " View"}
-                      </Button>
-                    </Tooltip>
+                    >
+                      <Tooltip title={lessThanMd ? "Verify" : null}>
+                        <Button
+                          variant="outlined"
+                          style={{ color: "#00245A" }}
+                          sx={{
+                            borderColor: "rgba(0, 36, 90, 0.4)",
+                            "&:hover": {
+                              borderColor: "#00245A", // Change to the desired hover color
+                            },
+                          }}
+                          onClick={() => {
+                            setSelectedPluginId(plugin.plugin_id);
+                            setActivateModalStatus(true);
+                          }}
+                        >
+                          {lessThanMd ? null : (
+                            <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                          )}
+                          {lessThanMd ? <VisibilityIcon /> : " Verify"}
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title={lessThanMd ? "Test" : null}>
+                        <Button
+                          variant="outlined"
+                          style={{ color: "#00245A" }}
+                          sx={{
+                            borderColor: "rgba(0, 36, 90, 0.4)",
+                            "&:hover": {
+                              borderColor: "#00245A", // Change to the desired hover color
+                            },
+                          }}
+                          component={Link}
+                          to={`/plugin-verify/${plugin.plugin_id}`}
+                        >
+                          {lessThanMd ? null : (
+                            <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
+                          )}
+                          {lessThanMd ? <DeveloperModeIcon /> : "Test"}
+                        </Button>
+                      </Tooltip>
 
-                    <Tooltip title={lessThanMd ? "Delete" : null}>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => {
-                          const confirmBox = window.confirm(
-                            "Do you want to delete this plugin?"
-                          );
-                          if (confirmBox === true) {
-                          }
-                        }}
-                      >
-                        {lessThanMd ? null : (
-                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
-                        )}
-                        {lessThanMd ? <DeleteIcon /> : "Delete"}
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </TableCell>
-              </TableRow>
+                      <Tooltip title={lessThanMd ? "Delete" : null}>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => {
+                            setSelectedPluginId(plugin.plugin_id);
+                            setDeactivateModalStatus(true);
+                          }}
+                        >
+                          {lessThanMd ? null : (
+                            <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                          )}
+                          {lessThanMd ? <DeleteIcon /> : "Delete"}
+                        </Button>
+                      </Tooltip>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
             <TableFooter></TableFooter>
           </Table>
