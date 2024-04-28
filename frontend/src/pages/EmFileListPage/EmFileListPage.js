@@ -40,6 +40,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { useQuery, useQueryClient } from "react-query";
 import { API_URL } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
+import noFiles from "../../resources/no_files_found.png";
+import { useUser } from "../../contexts/UserContext";
 
 const baseURL1 = API_URL + "/em_data_records";
 const baseURL2 = API_URL + "/delete_file";
@@ -130,14 +132,14 @@ function EmFileListPage() {
         'user_id': 1,
       },
     })
-    .then((response) => {
-      console.log("--- file list ---");
-      console.log(response.data.em_raw_files);
-      setEMData(response.data.em_raw_files);
-    })
-    .catch((error) => {
-      console.error('There was a problem with Axios request:', error);
-    });
+      .then((response) => {
+        console.log("--- file list ---");
+        console.log(response.data.em_raw_files);
+        setEMData(response.data.em_raw_files);
+      })
+      .catch((error) => {
+        console.error('There was a problem with Axios request:', error);
+      });
   }, []);
 
   const navigate = useNavigate();
@@ -314,7 +316,7 @@ function EmFileListPage() {
             </Button>
           </Stack>
 
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emData.length > 5 ? "scroll" : "hidden"}}>
+          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emData.length > 5 ? "scroll" : "hidden" }}>
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
                 <TableRow >
@@ -432,9 +434,19 @@ function EmFileListPage() {
                 {emData.length == 0 && (
                   <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
-                      <Typography variant="h6">
+                      <Typography variant="h4" sx={{color:"#00245A"}}>
                         No files found
                       </Typography>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 200,
+                          width: 200,
+                          mt:2,
+                          ml:2
+                        }}
+                        src={noFiles}
+                      />
                     </TableCell>
                   </TableRow>
                 )}
