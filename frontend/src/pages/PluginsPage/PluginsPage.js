@@ -1,125 +1,74 @@
-import { CssBaseline, Typography } from "@mui/material";
-import { Container, width } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import "./PluginsPage.css";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Resumable from "resumablejs";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import NavBar from "../../components/NavBar/NavBar";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
+import { useQuery, useQueryClient } from "react-query";
+import {
+  Typography,
+  Box,
+  TextField,
+  Grid,
+  Card,
+  CardContent,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
+import { Container } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import logo from "../PluginsPage/p4.png";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { queryKeys } from "../../constants";
+import { getCompatiblePluginDetails } from "../../services/pluginService";
+import { useUser } from "../../contexts/UserContext";
+import { getFullName } from "../../helper";
+import "./PluginsPage.css";
 
 function PluginsPage() {
   const containerStyle = {
-    // backgroundColor: "white", 
+    // backgroundColor: "white",
     padding: "0px",
     borderRadius: "8px",
     marginTop: "0px",
   };
   const [searchText, setSearchText] = useState("");
 
+  const [open, setOpen] = useState(false);
+  const [icon, setIcon] = useState("");
+  const [pluginName, setPluginName] = useState("");
+  const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+
   const handleSearch = (event) => {
+    const searchTerm = event.target.value;
     setSearchText(event.target.value);
+
+    if (!searchTerm) {
+      queryClient.prefetchQuery([queryKeys["getCompatiblePluginDetails"]], () =>
+        getCompatiblePluginDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
+
+      const newData = data.filter((plugin) => {
+        return plugin.plugin_name.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(
+        queryKeys["getCompatiblePluginDetails"],
+        newData
+      );
+    }
   };
 
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
+  const handleClickOpen = (plugin) => {
+    setIcon(plugin.icon_filepath);
+    setPluginName(plugin.plugin_name);
+    setAuthor(getFullName(plugin.first_name, plugin.last_name));
+    setDescription(plugin.plugin_description);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
-
-  const card1 = (
-    <React.Fragment>
-      <CardContent>
-        <Grid container alignItems="center" justifyContent="center">
-          <img
-            src={logo}
-            alt="Logo"
-            style={{
-              width: "70px",
-              height: "70px",
-              alignContent: "center",
-              borderRadius: "50%",
-            }}
-          />
-        </Grid>
-
-        <Typography
-          sx={{ fontSize: 16 }}
-          color="text.primary"
-          gutterBottom
-          align="center"
-          marginTop={2}
-        >
-          Apple iphone X
-        </Typography>
-
-        <Typography color="text.secondary" marginTop={2} align="center">
-          1.5k
-        </Typography>
-      </CardContent>
-      {/* <CardActions>
-                <Grid container alignItems="center" justifyContent="center">
-                    <Button size="medium">use</Button>
-                </Grid>
-
-            </CardActions> */}
-    </React.Fragment>
-  );
-
-  const card2 = (
-    <React.Fragment>
-      <CardContent>
-        <Grid container alignItems="center" justifyContent="center">
-          <img
-            src={logo}
-            alt="Logo"
-            style={{
-              width: "70px",
-              height: "70px",
-              alignContent: "center",
-              borderRadius: "50%",
-            }}
-          />
-        </Grid>
-
-        <Typography
-          sx={{ fontSize: 16 }}
-          color="text.primary"
-          gutterBottom
-          align="center"
-          marginTop={2}
-        >
-          Apple iphone X
-        </Typography>
-        <Typography color="text.secondary" marginTop={2} align="center">
-          Maintained by Sherlock Holmes
-        </Typography>
-        <Typography color="text.secondary" marginTop={2} align="left">
-          In computing, a plug-in (or plugin, add-in, addin, add-on, or addon)
-          is a software component that adds a specific feature to an existing
-          computer program. When a program supports plug-ins, it enables
-          customization.
-        </Typography>
-      </CardContent>
-    </React.Fragment>
-  );
 
   const sxStyle = {
     "&:hover": {
@@ -135,7 +84,6 @@ function PluginsPage() {
     },
     color: "#00245A",
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -151,11 +99,24 @@ function PluginsPage() {
         },
       },
     },
-  }
+  };
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getCompatiblePluginDetails"]],
+    queryFn: () => getCompatiblePluginDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getCompatiblePluginDetails"]], () =>
+        getCompatiblePluginDetails(user)
+      );
+    }
+  }, [user]);
 
   return (
-   <>
+    <>
       <div className="popup">
         <Dialog
           open={open}
@@ -165,7 +126,44 @@ function PluginsPage() {
           fullWidth
         >
           <DialogContent>
-            <Card variant="outlined">{card2} </Card>
+            <Card variant="outlined">
+              <React.Fragment>
+                <CardContent>
+                  <Grid container alignItems="center" justifyContent="center">
+                    <img
+                      src={icon}
+                      alt="Logo"
+                      style={{
+                        width: "70px",
+                        height: "70px",
+                        alignContent: "center",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  </Grid>
+
+                  <Typography
+                    sx={{ fontSize: 16 }}
+                    color="text.primary"
+                    gutterBottom
+                    align="center"
+                    marginTop={2}
+                  >
+                    {pluginName}
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    marginTop={2}
+                    align="center"
+                  >
+                    Maintained by {author}
+                  </Typography>
+                  <Typography color="text.secondary" marginTop={2} align="left">
+                    {description}
+                  </Typography>
+                </CardContent>
+              </React.Fragment>{" "}
+            </Card>
           </DialogContent>
         </Dialog>
       </div>
@@ -191,9 +189,13 @@ function PluginsPage() {
             onChange={handleSearch}
             variant="outlined"
             sx={{ ...sxStyle }}
-            style={{ width: "600px", marginTop: "40px", backgroundColor: "white" }}
+            style={{
+              width: "600px",
+              marginTop: "40px",
+              backgroundColor: "white",
+            }}
             InputProps={{
-              endAdornment: <SearchIcon sx={{fontSize: 30}}/>,
+              endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
             }}
           />
         </Grid>
@@ -202,196 +204,77 @@ function PluginsPage() {
           spacing={0}
           alignItems="center"
           justifyContent="center"
-          sx={{backgroundColor: "white", pt: 5, pb: 5, borderRadius: "10px"}}
+          sx={{ backgroundColor: "white", pt: 5, pb: 5, borderRadius: "10px" }}
           marginTop={4}
         >
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
+          {data?.map((plugin) => (
+            <Grid
+              key={plugin.plugin_id}
+              xs={5}
+              sm={5}
+              md={3}
+              marginTop={8}
+              m={2}
             >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
-          <Grid xs={5} sm={5} md={3} marginTop={8} m={2}>
-            <Box
-              sx={{
-                minWidth: 200,
-                maxWidth: 200,
-                boxShadow: 4,
-                borderRadius: "6px",
-                "&:hover": {
-                  boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
-                },
-              }}
-            >
-              <Card variant="outlined" onClick={handleClickOpen}>
-                {card1}{" "}
-              </Card>
-            </Box>
-          </Grid>
+              <Box
+                sx={{
+                  minWidth: 200,
+                  maxWidth: 200,
+                  boxShadow: 4,
+                  borderRadius: "6px",
+                  "&:hover": {
+                    boxShadow: "0px 0px 10px rgba(0,36,90, 1)",
+                  },
+                }}
+              >
+                <Card
+                  variant="outlined"
+                  onClick={() => {
+                    handleClickOpen(plugin);
+                  }}
+                >
+                  <React.Fragment>
+                    <CardContent>
+                      <Grid
+                        container
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <img
+                          src={plugin.icon_filepath}
+                          alt="Logo"
+                          style={{
+                            width: "70px",
+                            height: "70px",
+                            alignContent: "center",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      </Grid>
+
+                      <Typography
+                        sx={{ fontSize: 16 }}
+                        color="text.primary"
+                        gutterBottom
+                        align="center"
+                        marginTop={2}
+                      >
+                        {plugin.plugin_name}
+                      </Typography>
+
+                      <Typography
+                        color="text.secondary"
+                        marginTop={2}
+                        align="center"
+                      >
+                        {plugin.number_of_usage_times}
+                      </Typography>
+                    </CardContent>
+                  </React.Fragment>
+                </Card>
+              </Box>
+            </Grid>
+          ))}
         </Grid>
       </Container>
     </>

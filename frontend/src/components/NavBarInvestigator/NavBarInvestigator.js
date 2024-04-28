@@ -17,8 +17,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
-const pages = ["Analysis", "Upload File", "Settings"];
-const pageLinks = ["/report", "/file-list", "/profile"];
+const pages = ["Plugin", "Analysis", "Upload File", "Settings"];
+const pageLinks = ["/plugin", "/report", "/file-list", "/profile"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarInvestigator({ pageName }) {

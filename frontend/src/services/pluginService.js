@@ -1,5 +1,44 @@
 import { API_URL } from "../constants";
 
+export const getCompatiblePluginDetails = async (userData) => {
+  const token = userData["userData"]["token"];
+
+  try {
+    const response = await fetch(API_URL + "/plugin/compatible", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    });
+
+    const data = await response.json();
+
+    const resultData = data["compatiblePlugins"];
+
+    for (const plugin of resultData) {
+      // Fetch plugin icon
+      const pluginIconResponse = await fetch(API_URL + "/plugin/icon", {
+        method: "GET",
+        headers: {
+          Authorization: token,
+          icon_filename: plugin["icon_filename"],
+        },
+      });
+
+      // Get plugin icon as blob
+      const pluginIcon = await pluginIconResponse.blob();
+
+      // Store the location of the plugin icon in the relevant object
+      plugin["icon_filepath"] = URL.createObjectURL(pluginIcon);
+    }
+    console.log(resultData);
+    return resultData;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getVerifiedPluginDetails = async (userData) => {
   const token = userData["userData"]["token"];
 
@@ -149,7 +188,6 @@ export const getFilteredPluginDetails = async (
       plugin["icon_filepath"] = URL.createObjectURL(pluginIcon);
     }
 
-    console.log(resultData);
     return resultData;
   } catch (error) {
     throw error;

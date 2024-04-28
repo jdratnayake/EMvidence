@@ -125,6 +125,21 @@ class PluginController extends Controller
         return response()->json($responseData);
     }
 
+    public function getCompatiblePlugins()
+    {
+        $verifiedPlugins = AnalysisPlugin::orderBy('number_of_usage_times', 'desc')
+            ->where('compatibility_status', 'compatible')
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->get();
+
+        $responseData = [
+            'compatiblePlugins' => $verifiedPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
     public function getPluginIcon(Request $request)
     {
         $filename = $request->header("icon_filename");
@@ -186,6 +201,8 @@ class PluginController extends Controller
         try {
             $emRawFileID = $request->header("em_raw_file_id");
             $analysisPluginID = $request->header("analysis_plugin_id");
+
+            AnalysisPlugin::where('plugin_id', $analysisPluginID)->increment('number_of_usage_times');
 
             $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID)->firstOrFail();
             $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
