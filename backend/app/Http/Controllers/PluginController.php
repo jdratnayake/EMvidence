@@ -38,6 +38,32 @@ class PluginController extends Controller
         return response()->json($responseData);
     }
 
+    public function deletePlugin(Request $request)
+    {
+        $pluginId = $request->header("plugin_id");
+        $plugin = AnalysisPlugin::where('plugin_id', $pluginId)->delete();
+
+        $responseData = [
+            'success' => "Plugin deleted successfully",
+        ];
+
+        return response()->json($responseData);
+    }
+
+    public function getDeveloperPlugins(Request $request)
+    {
+        $userId = $request->header("user_id");
+        $plugins = AnalysisPlugin::orderBy('plugin_upload_timestamp', 'asc')
+            ->where('user_id', $userId)
+            ->get();
+
+        $responseData = [
+            'plugins' => $plugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
     public function getPlugin(Request $request)
     {
         $pluginId = $request->header("plugin_id");
@@ -293,6 +319,20 @@ class PluginController extends Controller
                 'compatibility_status' => $compatibilityStatus,
                 "plugin_compatibility_verified_timestamp" => now(),
                 "compatibility_check_admin_id" => $userId
+            ]);
+
+        return response()->json(["success" => $analysisPluginUpdateStatus]);
+    }
+
+    public function changePluginCompatibilityStatusToVerify(Request $request)
+    {
+        $analysisPluginID = $request->header("analysis_plugin_id");
+        $compatibilityStatus = $request->header("compatibility_status");
+
+        $analysisPluginUpdateStatus = AnalysisPlugin::where('plugin_id', $analysisPluginID)
+            ->update([
+                'compatibility_status' => $compatibilityStatus,
+                "plugin_compatibility_verified_timestamp" => now(),
             ]);
 
         return response()->json(["success" => $analysisPluginUpdateStatus]);

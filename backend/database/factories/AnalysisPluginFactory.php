@@ -75,7 +75,7 @@ class AnalysisPluginFactory extends Factory
             'dependency_filename' => $dependency_filename,
             'plugin_description' => $this->faker->sentence(5),
             'plugin_upload_timestamp' => $this->faker->dateTimeThisYear(),
-            'compatibility_status' => $this->faker->randomElement(['initial', 'compatible', 'incompatible']),
+            'compatibility_status' => $this->faker->randomElement(['initial', 'pending', 'compatible', 'incompatible']),
             'plugin_compatibility_verified_timestamp' => $this->faker->optional()->dateTimeThisYear(),
             'number_of_usage_times' => $this->faker->numberBetween(0, 100),
             'fft_size' => $this->faker->numberBetween(0, 100),

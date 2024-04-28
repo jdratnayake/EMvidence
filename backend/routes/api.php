@@ -38,6 +38,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::prefix("v1/plugin")->group(function () {
     Route::get("/", [PluginController::class, "index"])->middleware('jwt');
+    Route::delete("/", [PluginController::class, "deletePlugin"])->middleware('jwt');
+    Route::get("/developer", [PluginController::class, "getDeveloperPlugins"])->middleware('jwt');
     Route::get("/single", [PluginController::class, "getPlugin"])->middleware('jwt');
     Route::get("/filter", [PluginController::class, "getFilteredPlugin"])->middleware('jwt');
     Route::get("/initial", [PluginController::class, "getInitialPlugins"])->middleware('jwt');
@@ -47,6 +49,7 @@ Route::prefix("v1/plugin")->group(function () {
     Route::get("/icon", [PluginController::class, "getPluginIcon"])->middleware('jwt');
     Route::get("/dependency", [PluginController::class, "installPipLibrariesFromFile"])->middleware('jwt');
     Route::get("/compatibility", [PluginController::class, "updatePluginCompatibilityStatus"])->middleware('jwt');
+    Route::get("/compatibility-verify", [PluginController::class, "changePluginCompatibilityStatusToVerify"])->middleware('jwt');
     Route::post("/analysis-report", [PluginController::class, "generateAnalysisReport"])->middleware('jwt');
 });
 

@@ -20,6 +20,28 @@ export const getInitialPluginDetails = async (userData) => {
   }
 };
 
+export const getDeveloperPluginDetails = async (userData) => {
+  const userId = userData["userData"]["user_id"];
+  const token = userData["userData"]["token"];
+
+  try {
+    const response = await fetch(API_URL + "/plugin/developer", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        user_id: userId,
+      },
+    });
+
+    const data = await response.json();
+    console.log(data["plugins"]);
+    return data["plugins"];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getPluginFullDetails = async (userData, pluginId) => {
   const token = userData["userData"]["token"];
 

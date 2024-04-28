@@ -8,4 +8,5 @@ export const queryKeys = {
   getInitialPluginDetails: "initialPluginDetails",
   getPluginFullDetails: "pluginFullDetails",
   getFilteredPluginDetails: "filteredPluginDetails",
+  getDeveloperPluginDetails: "developerPluginDetails",
 };

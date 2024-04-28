@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('plugin_script_filename', 128)->nullable(false)->unique();
             $table->string('ml_model_filename', 128)->nullable(false)->unique();
             // initial
+            // pending
             // compatible
             // incompatible
             $table->string('compatibility_status', 16)->nullable(false)->default('initial');
