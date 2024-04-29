@@ -50,6 +50,9 @@ Route::prefix("v1/plugin")->group(function () {
     Route::get("/analysis", [PluginController::class, "executeAnalysisPlugin"])->middleware('jwt');
     Route::post("/upload", [PluginController::class, "uploadPlugin"])->middleware('jwt');
     Route::get("/icon", [PluginController::class, "getPluginIcon"])->middleware('jwt');
+    Route::get("/report-details", [PluginController::class, "getReportDetails"])->middleware('jwt');
+    Route::get("/report", [PluginController::class, "getAnalysisReport"])->middleware('jwt');
+    Route::delete("/report", [PluginController::class, "deleteReport"])->middleware('jwt');
     Route::get("/dependency", [PluginController::class, "installPipLibrariesFromFile"])->middleware('jwt');
     Route::get("/compatibility", [PluginController::class, "updatePluginCompatibilityStatus"])->middleware('jwt');
     Route::get("/compatibility-verify", [PluginController::class, "changePluginCompatibilityStatusToVerify"])->middleware('jwt');

@@ -12,6 +12,8 @@ use App\Models\Report;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 function execute_python_script($path, ...$variables)
 {
@@ -49,6 +51,25 @@ class PluginController extends Controller
         ];
 
         return response()->json($responseData);
+    }
+
+    public function deleteReport(Request $request)
+    {
+        $reportId = $request->header("report_id");
+
+        $reportRecord = Report::where('report_id', $reportId)->firstOrFail();
+        $filePath = env("REPORTS_DIRECTORY_PATH") . $reportRecord->report_file_name;
+
+        if (File::exists($filePath)) {
+            File::delete($filePath);
+            $report = Report::where('report_id', $reportId)->delete();
+            $responseData = [
+                'success' => "Report deleted successfully",
+            ];
+            return response()->json($responseData);
+        } else {
+            return response()->json(['error' => 'Report deletion failed.'], 500);
+        }
     }
 
     public function getDeveloperPlugins(Request $request)
@@ -153,6 +174,33 @@ class PluginController extends Controller
             $defaultImagePath = env("PLUGIN_ICON_DIRECTORY_PATH") . "default.png";
             return response()->file($defaultImagePath);
         }
+    }
+
+    public function getAnalysisReport(Request $request)
+    {
+        $filename = $request->header("report_filename");
+
+        $path = env("REPORTS_DIRECTORY_PATH") . $filename;
+
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            return response()->json(['error' => 'Report do not exist.'], 500);
+        }
+    }
+
+    public function getReportDetails(Request $request)
+    {
+        $userId = $request->header("user_id");
+
+        $reports = Report::orderBy('created_date', 'asc')
+            ->where('user_id', $userId)->get();
+
+        $responseData = [
+            'reports' => $reports,
+        ];
+
+        return response()->json($responseData);
     }
 
     public function executePreprocessingPlugin(Request $request)
@@ -454,8 +502,8 @@ class PluginController extends Controller
             </style>
         </head>
         <body>
-            <h1>Report Name</h1>
-            <h2>Date: 09.04.2024</h2>
+            <h1>' . $reportVisibleName . '</h1>
+            <h2>Date: ' . Carbon::today()->format('Y-m-d') . '</h2>
         
             <h2>File Details:</h2>
             <table>

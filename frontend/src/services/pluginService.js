@@ -1,5 +1,59 @@
 import { API_URL } from "../constants";
 
+export const getReportDetails = async (userData) => {
+  const userId = userData["userData"]["user_id"];
+  const token = userData["userData"]["token"];
+
+  try {
+    const response = await fetch(API_URL + "/plugin/report-details", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        user_id: userId,
+      },
+    });
+
+    const data = await response.json();
+
+    const resultData = data["reports"];
+
+    try {
+      for (const report of resultData) {
+        // Fetch report file
+        const reportResponse = await fetch(API_URL + "/plugin/report", {
+          method: "GET",
+          headers: {
+            Authorization: token,
+            report_filename: report["report_file_name"],
+          },
+        });
+
+        // Check if fetch request was successful
+        if (!reportResponse.ok) {
+          throw new Error(
+            `Failed to fetch report: ${report["report_file_name"]}`
+          );
+        }
+
+        // Get report file as blob
+        const reportPDF = await reportResponse.blob();
+
+        // Store the location of the report file in the relevant object
+        report["report_filepath"] = URL.createObjectURL(reportPDF);
+      }
+    } catch (error) {
+      console.error("Error fetching report:", error);
+      // Handle error as needed
+    }
+
+    console.log(resultData);
+    return resultData;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getCompatiblePluginDetails = async (userData) => {
   const token = userData["userData"]["token"];
 
