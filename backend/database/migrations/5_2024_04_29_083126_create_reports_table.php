@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id('report_id');
+            $table->string('report_visible_name', 128)->nullable(false);
             $table->string('report_file_name', 128)->unique()->nullable(false);
             $table->timestamp('created_date')->default(now())->nullable(false);
             $table->foreignId('user_id');

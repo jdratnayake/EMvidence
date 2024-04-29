@@ -8,6 +8,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use App\Models\AnalysisPlugin;
 use App\Models\EmDataFile;
+use App\Models\Report;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
@@ -370,6 +371,53 @@ class PluginController extends Controller
 
     public function generateAnalysisReport(Request $request)
     {
+        $userId = $request->header("user_id");
+        $reportVisibleName = $request->input('report_visible_name');
+        $emFileId = $request->input('em_file_id');
+        $pluginId = $request->input('plugin_id');
+        $downSamplingIndex = $request->input('down_sampling_index');
+        $fftSizeIndex = $request->input('fft_size_index');
+        $overlapSizeIndex = $request->input('overlap_size_index');
+        $sampleSelectionIndex = $request->input('sample_selection_index');
+        $pluginResponse = $request->input('plugin_response');
+
+        $emFileRecord = EmDataFile::where('em_raw_file_id', $emFileId)
+            ->join('devices', 'em_data_files.device_id', '=', 'devices.device_id')
+            ->select('em_data_files.*', 'devices.device_name')
+            ->firstOrFail();
+        $pluginRecord = AnalysisPlugin::where('plugin_id', $pluginId)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->firstOrFail();
+
+        if ($downSamplingIndex == "0") {
+            $downSamplingText = "Not down-sampled";
+        } elseif ($downSamplingIndex == "1") {
+            $downSamplingText = "To 10MHz";
+        } elseif ($downSamplingIndex == "2") {
+            $downSamplingText = "To 8MHz";
+        } elseif ($downSamplingIndex == "3") {
+            $downSamplingText = "To 4MHz";
+        }
+
+        if ($fftSizeIndex == "2048") {
+            $fftSizeText = "2048";
+        }
+
+        if ($overlapSizeIndex == "0") {
+            $overlapSizeText = "10%";
+        } elseif ($overlapSizeIndex == "1") {
+            $overlapSizeText = "20%";
+        }
+
+        if ($sampleSelectionIndex == "0") {
+            $sampleSelectionText = "All Samples";
+        } elseif ($sampleSelectionIndex == "1") {
+            $sampleSelectionText = "First 20000 Samples";
+        } elseif ($sampleSelectionIndex == "2") {
+            $sampleSelectionText = "Samples selected from 1/4 to 3/4 of the file";
+        }
+
         // Initialize Dompdf
         $dompdf = new Dompdf();
 
@@ -413,27 +461,27 @@ class PluginController extends Controller
             <table>
                 <tr>
                     <th>File Name:</th>
-                    <td>Test.cfile</td>
+                    <td>' . $emFileRecord->em_raw_file_visible_name . '</td>
                 </tr>
                 <tr>
                     <th>Sampling Rate:</th>
-                    <td>500 Hz</td>
+                    <td>' . $emFileRecord->sampling_rate . ' Hz</td>
                 </tr>
                 <tr>
                     <th>Center Frequency:</th>
-                    <td>50 Hz</td>
+                    <td>' . $emFileRecord->center_frequency . ' Hz</td>
                 </tr>
                 <tr>
                     <th>Device Name:</th>
-                    <td>iPhone 4s</td>
+                    <td>' . $emFileRecord->device_name . '</td>
                 </tr>
                 <tr>
                     <th>File Size:</th>
-                    <td>4.77 MB</td>
+                    <td>' . round(($emFileRecord->em_raw_cfile_file_size) / (1024.0 * 1024), 2) . ' MB</td>
                 </tr>
                 <tr>
                     <th>File Hash:</th>
-                    <td>hvbnsidvsvhiushvuhsuodvnshdvjsd@vysd+</td> 
+                    <td>' . $emFileRecord->em_raw_cfile_hash . '</td> 
                 </tr>
             </table>
         
@@ -441,19 +489,19 @@ class PluginController extends Controller
             <table>
                 <tr>
                     <th>Down-sampling:</th>
-                    <td>10Mhz</td> 
+                    <td>' . $downSamplingText . '</td> 
                 </tr>
                 <tr>
                     <th>FFT Size:</th>
-                    <td>20</td>
+                    <td>' . $fftSizeText . '</td>
                 </tr>
                 <tr>
                     <th>Overlap Size:</th>
-                    <td>30</td> 
+                    <td>' . $overlapSizeText . '</td> 
                 </tr>
                 <tr>
                     <th>Sample Selection:</th>
-                    <td>not selected</td> 
+                    <td>' . $sampleSelectionText . '</td> 
                 </tr>
             </table>
         
@@ -461,40 +509,18 @@ class PluginController extends Controller
             <table>
                 <tr>
                     <th>Plugin Name:</th>
-                    <td>Iphone 4s analysis</td> 
+                    <td>' . $pluginRecord->plugin_name . '</td> 
                 </tr>
                 <tr>
                     <th>Plugin Author:</th>
-                    <td>steave pops</td> 
+                    <td>' . $pluginRecord->first_name . ' ' . $pluginRecord->last_name . '</td> 
                 </tr>
             </table>
-        
+        <br/>
+        <br/>
             <h2>Results:</h2>
             <table>
-                <tr>
-                    <th>Using Gallary App:</th>
-                    <td>62.6%</td>
-                </tr>
-                <tr>
-                    <th>Using SMS App:</th>
-                    <td>36.62%</td>
-                </tr>
-                <tr>
-                    <th>Using Email App:</th>
-                    <td>0.36%</td>
-                </tr>
-                <tr>
-                    <th>In Home Screen:</th>
-                    <td>0.25%</td>
-                </tr>
-                <tr>
-                    <th>Using Calendar App:</th>
-                    <td>0.11%</td>
-                </tr>
-                <tr>
-                    <th>Idle:</th>
-                    <td>0.06%</td>
-                </tr>
+                ' . $pluginResponse . '
             </table>
         </body>
         </html>
@@ -513,7 +539,12 @@ class PluginController extends Controller
         $pdfContent = $dompdf->output();
         file_put_contents(env("REPORTS_DIRECTORY_PATH") . $pdfFilename, $pdfContent);
 
-        // Return the filename of the stored PDF
-        return $pdfFilename;
+        $report = new Report();
+        $report->report_visible_name = $reportVisibleName;
+        $report->report_file_name = $pdfFilename;
+        $report->user_id = $userId;
+        $report->save();
+
+        return response()->json(["success" => $pdfFilename]);
     }
 }
