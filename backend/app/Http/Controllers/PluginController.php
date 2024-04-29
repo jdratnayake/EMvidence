@@ -374,13 +374,131 @@ class PluginController extends Controller
         $dompdf = new Dompdf();
 
         // Generate PDF content
-        $html = '<html><body>';
-        $html .= '<h1>PDF Report</h1>';
-        // Add content based on the provided data
-        $html .= '<p>User: ' . "Janitha" . '</p>';
-        $html .= '<p>Date: ' . "Today" . '</p>';
-        // Add more content as needed
-        $html .= '</body></html>';
+        $html = '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }
+                h1, h2 {
+                    text-align: center;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+        
+                }
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                    border: 1px solid #dddddd;
+                }
+                th {
+                    background-color: #f2f2f2;
+                    width: 35%;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Report Name</h1>
+            <h2>Date: 09.04.2024</h2>
+        
+            <h2>File Details:</h2>
+            <table>
+                <tr>
+                    <th>File Name:</th>
+                    <td>Test.cfile</td>
+                </tr>
+                <tr>
+                    <th>Sampling Rate:</th>
+                    <td>500 Hz</td>
+                </tr>
+                <tr>
+                    <th>Center Frequency:</th>
+                    <td>50 Hz</td>
+                </tr>
+                <tr>
+                    <th>Device Name:</th>
+                    <td>iPhone 4s</td>
+                </tr>
+                <tr>
+                    <th>File Size:</th>
+                    <td>4.77 MB</td>
+                </tr>
+                <tr>
+                    <th>File Hash:</th>
+                    <td>hvbnsidvsvhiushvuhsuodvnshdvjsd@vysd+</td> 
+                </tr>
+            </table>
+        
+            <h2>Pre-processing Plugin Details:</h2>
+            <table>
+                <tr>
+                    <th>Down-sampling:</th>
+                    <td>10Mhz</td> 
+                </tr>
+                <tr>
+                    <th>FFT Size:</th>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <th>Overlap Size:</th>
+                    <td>30</td> 
+                </tr>
+                <tr>
+                    <th>Sample Selection:</th>
+                    <td>not selected</td> 
+                </tr>
+            </table>
+        
+            <h2>Analysis Plugin Details:</h2>
+            <table>
+                <tr>
+                    <th>Plugin Name:</th>
+                    <td>Iphone 4s analysis</td> 
+                </tr>
+                <tr>
+                    <th>Plugin Author:</th>
+                    <td>steave pops</td> 
+                </tr>
+            </table>
+        
+            <h2>Results:</h2>
+            <table>
+                <tr>
+                    <th>Using Gallary App:</th>
+                    <td>62.6%</td>
+                </tr>
+                <tr>
+                    <th>Using SMS App:</th>
+                    <td>36.62%</td>
+                </tr>
+                <tr>
+                    <th>Using Email App:</th>
+                    <td>0.36%</td>
+                </tr>
+                <tr>
+                    <th>In Home Screen:</th>
+                    <td>0.25%</td>
+                </tr>
+                <tr>
+                    <th>Using Calendar App:</th>
+                    <td>0.11%</td>
+                </tr>
+                <tr>
+                    <th>Idle:</th>
+                    <td>0.06%</td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        ';
 
         // Load HTML content into Dompdf
         $dompdf->loadHtml($html);
@@ -393,7 +511,7 @@ class PluginController extends Controller
 
         // Store PDF in the storage directory
         $pdfContent = $dompdf->output();
-        Storage::put('pdf/' . $pdfFilename, $pdfContent);
+        file_put_contents(env("REPORTS_DIRECTORY_PATH") . $pdfFilename, $pdfContent);
 
         // Return the filename of the stored PDF
         return $pdfFilename;
