@@ -69,7 +69,7 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="user"
+        path="user/:selectedUserId"
         element={
           <AdminTemplate pageName="user" children={<ViewUserPage />} />
         }

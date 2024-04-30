@@ -22,9 +22,9 @@ import {
   FormHelperText,
 } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/system";
-import profImage from "./../../resources/profile.jpg";
+import defaultProfImage from "./../../resources/profile.jpg";
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -36,6 +36,24 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import DeleteIcon from '@mui/icons-material/Delete';
+import Popover from '@mui/material/Popover';
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+
+import { useUser } from "../../contexts/UserContext";
+import { useQuery, useQueryClient } from "react-query";
+import { API_URL, queryKeys } from "../../constants";
+import { getSingleUser } from "../../services/userService";
+import {
+  validateFirstName,
+  validateLastName,
+  validateEmail,
+  validateEmailExistence,
+  validateRole,
+  validatePassword,
+  validateConfirmPassword,
+} from "./Validation";
+
 
 const ContainerBox = styled(Box)(() => ({
   display: "flex",
@@ -92,37 +110,82 @@ const ImageBox = styled(Box)(() => ({
 
 
 function ProfilePage() {
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+
   const theme = useTheme();
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstname] = useState("");
+  const [lastName, setLastname] = useState();
+  const [email, setEmail] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
+  const [firstNameBackup, setFirstnameBackup] = useState("");
+  const [lastNameBackup, setLastnameBackup] = useState();
+  const [emailBackup, setEmailBackup] = useState();
+  const [phoneNumberBackup, setPhoneNumberBackup] = useState();
+  const [showPassword, setShowPassword] = useState();
+  const [password, setPassword] = useState();
+  const [newPassword, setNewPassword] = useState();
+  const [confirmPassword, setConfirmPassword] = useState();
+
   const [passwordError, setPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   const [firstnameError, setFirstnameError] = useState("");
-  const [lastnameError, setLastnameError] = useState("");
+  const [lastNameError, setLastnameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
 
-
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
+  const [image, setImage] = useState(null);
+  const [profImage, setProfImage] = useState(null);
+  const [imageName, setImageName] = useState(null);
+  const [isImageChange, setIsImageChnge] = useState(0);
+  const [imageBackup, setImageBackup] = useState(null);
 
-  const [image, setImage] = useState(profImage);
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getSingleUser"]],
+    queryFn: () => getSingleUser(user, user["userData"].user_id),
+    enabled: false,
+    onSuccess: (data) => {
+      setFirstname(data?.first_name);
+      setLastname(data?.last_name);
+      setEmail(data?.email);
+      setPhoneNumber(data?.phone_number);
+      setImage(data?.profile_image)
+      setFirstnameBackup(data?.first_name);
+      setLastnameBackup(data?.last_name);
+      setEmailBackup(data?.email);
+      setPhoneNumberBackup(data?.phone_number);
+      setImageBackup(data?.profile_image)
+    },
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery(
+        [queryKeys["getSingleUser"]],
+        () => getSingleUser(user, user["userData"].user_id)
+      );
+    }
+  }, [user]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    setProfImage(file);
     if (file) {
+      const fileName = file.name;
+      setImageName(fileName);
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result);
       };
       reader.readAsDataURL(file);
     }
+
   };
 
   function TabPanel(props) {
@@ -196,8 +259,184 @@ function ProfilePage() {
     },
   }
 
+  const handleFormSubmit = async (event) => {
+
+    const formData = new FormData();
+
+    formData.append('prof_img', profImage);
+    formData.append('user_id', user["userData"].user_id);
+    formData.append('img_name', imageName);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('phone_number', phoneNumber);
+    formData.append('email', email);
+    const token = user["userData"]["token"];
+    await axios.post(
+      API_URL + "/user/update-user",
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: token
+        },
+      }
+    ).then((response) => {
+      // console.log(response.data);
+      console.log(response.data);
+
+      toast.success("User Data Updated Successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+    }
+    ).catch((error) => {
+
+        toast.error("Faild to Update Details", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+
+
+  };
+
+  // validate phone number
+  function validatePhoneNumber(phoneNumber) {
+    // Regular expression to match a valid phone number
+    const phoneRegex = /^\d{10}$/; // Assumes a 10-digit phone number
+
+    return phoneRegex.test(phoneNumber);
+  }
+
+  const handlePassWordSubmit = async (e) => {
+    e.preventDefault();
+    let isValid = true;
+    // if (newPassword !== confirmPassword) {
+    //   setError('New password and confirm password must match.');
+    //   return;
+    // }
+    setPasswordError("");
+    setNewPasswordError("")
+    setConfirmPasswordError("");
+    const currentPasswordStatus = validatePassword(password);
+    if (currentPasswordStatus !== null) {
+      setPasswordError(currentPasswordStatus);
+      isValid = false;
+    }
+
+
+    const passwordStatus = validatePassword(newPassword);
+    if (passwordStatus !== null) {
+      setNewPasswordError(passwordStatus);
+      isValid = false;
+    }
+
+    const confirmPasswordStatus = validateConfirmPassword(
+      confirmPassword,
+      newPassword
+    );
+
+    if (confirmPasswordStatus !== null) {
+      setConfirmPasswordError(confirmPasswordStatus);
+      isValid = false;
+    }
+    if (isValid) {
+      const formData = new FormData();
+      formData.append('password', password);
+      formData.append('new_password', newPassword);
+      formData.append('user_id', user["userData"].user_id);
+
+      const token = user["userData"]["token"];
+
+      console.log(token);
+      await axios.post(API_URL + '/user/update-password',
+        formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: token
+        },
+      }
+      ).then((res) => {
+         console.log(res.data);
+         console.log(res.status);
+         if (res.data.status == 'match'){
+          toast.success("Password Updated Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+         } else if(res.data.status == 'not_match'){
+          toast.error("Password doesn't Match", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+       
+         } else{
+         
+          toast.error("Faild to Update Password", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+         }
+      }
+      ).catch((error) => {
+        
+         toast.error("Faild to Update Password", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+
+  };
+
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <ContainerBox>
         <HeadingBox>
           <Typography variant="h4" gutterBottom>
@@ -214,12 +453,12 @@ function ProfilePage() {
               scrollButtons="auto"
               TabIndicatorProps={{
                 hidden: 1,
-                sx: { backgroundColor: "#00245A", mt: 7, height: 5 },
+                sx: { mt: 7, height: 5 },
                 style: { // Override the style to force horizontal display
                   display: 'block',
                   width: '100%', // Ensure indicator spans the full width
                   height: '2px', // Set height as per your requirement
-                  backgroundColor: '#00245A',
+                  // backgroundColor: '#00245A',
                   display: 'none'
                   // Change indicator color if needed
                 }
@@ -264,7 +503,8 @@ function ProfilePage() {
                     height="200px"
                     style={{ borderRadius: "50%" }}
                   />
-                  <Tooltip title="Upload Image" placement="left-start">
+
+                  <Tooltip title="Edit Image" placement="left-start">
                     <UploadButton aria-label="upload">
                       <div sx={{ cursor: "pointer", }}>
                         <input
@@ -275,14 +515,15 @@ function ProfilePage() {
                           onChange={handleImageChange}
                         />
                         <label htmlFor="contained-button-file">
-
                           <CameraAltIcon sx={{ mt: 1, cursor: "pointer" }} />
-
                         </label>
                       </div>
 
                     </UploadButton >
                   </Tooltip>
+
+
+
                 </ImageBox>
 
                 <Tooltip title={lessThanMd ? "Delete Account" : null} >
@@ -296,7 +537,7 @@ function ProfilePage() {
                       bgcolor: 'red',
                       color: 'white',
                       pt: 0, pb: 0, ml: lessThanMd ? "0px" : 0,
-                      width: lessThanMd ? "50px" : "160px", height: "45px",
+                      width: lessThanMd ? "50px" : "200px", height: "45px",
                       '&:hover': {
                         bgcolor: 'rgba(255, 0, 0, 0.7)',
                       },
@@ -308,20 +549,25 @@ function ProfilePage() {
 
 
               </Box>
-              <Box component="form" onSubmit={{}}
+              <Box
                 sx={{ mt: 1, ml: lessThanMd ? -2 : 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", }}>
+
                 <Grid container spacing={2}>
 
                   <Grid item xs={12} md={12}>
 
                     <TextField
-                      autoComplete="given-name"
                       name="firstName"
                       fullWidth
                       id="firstName"
                       label="First Name"
-                      autoFocus
-                      onChange={(event) => setFirstname(event.target.value)}
+                      defaultValue={firstName}
+                      autoComplete="firstName"
+                      required
+                      onBlur={(event) => {
+                        setFirstname(event.target.value);
+                        console.log(event.target.value);
+                      }}
                       // error={firstnameError !== ""}
                       // helperText={firstnameError}
                       sx={{
@@ -338,13 +584,18 @@ function ProfilePage() {
                       id="lastName"
                       label="Last Name"
                       name="lastName"
-                      autoComplete="family-name"
-                      // error={lastnameError !== ""}
-                      // helperText={lastnameError}
+                      autoComplete="lastName"
+                      defaultValue={lastName}
+                      required
+                      // error={lastNameError !== ""}
+                      // helperText={lastNameError}
                       sx={{
                         ...sxStyle
                       }}
-                      onChange={(event) => setLastname(event.target.value)}
+                      onBlur={(event) => {
+                        setLastname(event.target.value);
+
+                      }}
                     />
                   </Grid>
 
@@ -356,13 +607,15 @@ function ProfilePage() {
                       id="email"
                       label="Email Address"
                       name="email"
+                      defaultValue={email}
                       autoComplete="email"
+                      required
                       // error={emailError !== ""}
                       // helperText={emailError}
                       sx={{
                         ...sxStyle,
                       }}
-                      onChange={(event) => { }}
+                      onBlur={(event) => setEmail(event.target.value)}
                     />
                   </Grid>
 
@@ -375,31 +628,43 @@ function ProfilePage() {
                       label="Phone Number"
                       name="phoneNum"
                       autoComplete="phoneNum"
+                      defaultValue={phoneNumber}
+
                       // error={PhoneNumberError !== ""}
                       // helperText={PhoneNumberError}
                       sx={{
                         ...sxStyle
                       }}
-                      onChange={(event) => setPhoneNumber(event.target.value)}
-                    />
-                  </Grid>
+                      onBlur={(event) => {
+                        setPhoneNumber(event.target.value);
+                        const inputValue = event.target.value;
+                        setPhoneNumber(inputValue);
+                        setIsValidPhoneNumber(validatePhoneNumber(inputValue));
 
+                      }}
+                    />
+                    {/* {!isValidPhoneNumber && <p style={{color:"red", marginTop: "-1px"}}> * Please enter a valid phone number.</p>} */}
+                  </Grid>
                 </Grid>
-                <span style={{ marginTop: "10px" }}>{"\u00A0"}</span>
+
                 <Button
                   type="submit"
                   variant="contained"
-                  onClick={{}}
+                  onClick={() => {
+                    console.log(firstName, lastName, email);
+                    handleFormSubmit();
+                  }}
                   sx={{
-                    mt: 0, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
+                    mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
                     '&:hover': {
                       bgcolor: 'rgba(0, 36, 90, 0.8)',
                     },
                   }}
                 >
-                  Update Profile
+                  Update
                 </Button>
               </Box>
+
             </TabPanel>
 
             <TabPanel value={value} index={1}>
@@ -409,6 +674,7 @@ function ProfilePage() {
                   <Grid item xs={12}>
                     <FormControl
                       fullWidth
+                      required
                       variant="outlined"
                       sx={{
                         ...sxStyle
@@ -418,8 +684,10 @@ function ProfilePage() {
                         Current Password
                       </InputLabel>
                       <OutlinedInput
-                        id="password"
+                        id="passwordCurrent"
                         type={showPassword ? "text" : "password"}
+                        defaultValue={password}
+
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
@@ -437,18 +705,19 @@ function ProfilePage() {
                           </InputAdornment>
                         }
                         label="Current Password"
-                        onChange={(event) => setCurrentPassword(event.target.value)}
-                      // error={passwordError !== ""}
+                        onBlur={(event) => setPassword(event.target.value)}
+                      error={passwordError !== ""}
                       />
-                      {/* {passwordError !== "" && (
+                      {passwordError !== "" && (
                         <FormHelperText error>{passwordError}</FormHelperText>
-                      )} */}
+                      )}
                     </FormControl>
                   </Grid>
 
                   <Grid item xs={12}>
                     <FormControl
                       fullWidth
+                      required
                       variant="outlined"
                       sx={{
                         ...sxStyle
@@ -458,8 +727,9 @@ function ProfilePage() {
                         New Password
                       </InputLabel>
                       <OutlinedInput
-                        id="password"
+                        id="passwordNew"
                         type={showPassword ? "text" : "password"}
+                        defaultValue={newPassword}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
@@ -476,18 +746,19 @@ function ProfilePage() {
                             </IconButton>
                           </InputAdornment>
                         }
-                        label=" New Password"
-                        onChange={(event) => setPassword(event.target.value)}
-                      // error={passwordError !== ""}
+                        label="New Password"
+                        onBlur={(event) => setNewPassword(event.target.value)}
+                        error={newPasswordError !== ""}
                       />
-                      {/* {passwordError !== "" && (
-                        <FormHelperText error>{passwordError}</FormHelperText>
-                      )} */}
+                      {newPasswordError !== "" && (
+                        <FormHelperText error>{newPasswordError}</FormHelperText>
+                      )}
                     </FormControl>
                   </Grid>
 
                   <Grid item xs={12}>
                     <FormControl
+                      required
                       fullWidth
                       variant="outlined"
                       sx={{
@@ -498,8 +769,9 @@ function ProfilePage() {
                         Confirm Password
                       </InputLabel>
                       <OutlinedInput
-                        id="password"
+                        id="passwordNewConfirm"
                         type={showPassword ? "text" : "password"}
+                        defaultValue={confirmPassword}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton
@@ -517,20 +789,22 @@ function ProfilePage() {
                           </InputAdornment>
                         }
                         label="Confirm Password"
-                        onChange={(event) => setConfirmPassword(event.target.value)}
-                      // error={passwordError !== ""}
+                        onBlur={(event) => setConfirmPassword(event.target.value)}
+                        error={confirmPasswordError !== ""}
                       />
-                      {/* {passwordError !== "" && (
-                        <FormHelperText error>{passwordError}</FormHelperText>
-                      )} */}
+                       {confirmPasswordError !== "" && (
+                        <FormHelperText error>
+                          {confirmPasswordError}
+                        </FormHelperText>
+                      )}
                     </FormControl>
                   </Grid>
                 </Grid>
                 <span style={{ marginTop: "10px" }}>{"\u00A0"}</span>
                 <Button
-                  type="submit"
+                 
                   variant="contained"
-                  onClick={{}}
+                  onClick={handlePassWordSubmit}
                   sx={{
                     mt: 0, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
                     '&:hover': {

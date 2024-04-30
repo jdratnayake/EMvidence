@@ -22,7 +22,7 @@ import {
     FormHelperText,
 } from "@mui/material";
 import Tooltip from '@mui/material/Tooltip';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/system";
 import profImage from "./../../resources/profile.jpg";
 import * as React from 'react';
@@ -39,7 +39,12 @@ import Stack from "@mui/material/Stack";
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useUser } from "../../contexts/UserContext";
+import { useQuery, useQueryClient } from "react-query";
+import { API_URL, queryKeys } from "../../constants";
+import { getSingleUser } from "../../services/userService";
+
 
 const ContainerBox = styled(Box)(() => ({
     display: "flex",
@@ -49,39 +54,6 @@ const ContainerBox = styled(Box)(() => ({
     padding: "0 0 3% 0",
 }));
 
-const HeadingBox = styled(Box)(() => ({
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: "3%",
-    marginBottom: "3%",
-}));
-
-const ContentBox = styled(Box)(() => ({
-    backgroundColor: "#FFFFFF",
-    borderRadius: "10px",
-    width: "100%",
-    marginLeft: "0",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "left",
-    alignItems: "flex-start",
-    height: "90vh",
-}));
-
-const UploadButton = styled(IconButton)(() => ({
-    background: "grey",
-    height: "40px",
-    width: "40px",
-    position: "absolute",
-    bottom: "3%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    // cursor: "pointer",
-    // '&:hover': {
-    //   cursor: 'pointer',
-    // },
-}));
 
 const ImageBox = styled(Box)(() => ({
     display: "flex",
@@ -96,6 +68,7 @@ const ImageBox = styled(Box)(() => ({
 
 
 function ViewUserPage() {
+    const { selectedUserId } = useParams();
     const theme = useTheme();
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
@@ -111,6 +84,25 @@ function ViewUserPage() {
     const [lastnameError, setLastnameError] = useState("");
     const [emailError, setEmailError] = useState("");
     const [phoneNumberError, setPhoneNumberError] = useState("");
+
+    const { user } = useUser();
+    const queryClient = useQueryClient();
+
+    const { data: selectedUser, error, isLoading } = useQuery({
+        queryKey: [queryKeys["getSingleUser"]],
+        queryFn: () => getSingleUser(user, selectedUserId),
+        enabled: false,
+    });
+
+    useEffect(() => {
+        // Enable the query when the user object becomes available
+        if (user) {
+            queryClient.prefetchQuery(
+                [queryKeys["getSingleUser"]],
+                () => getSingleUser(user, selectedUserId)
+            );
+        }
+    }, [user, selectedUserId]);
 
     const navigate = useNavigate();
 
@@ -218,6 +210,7 @@ function ViewUserPage() {
                         borderRadius: "10px",
                         mt: 2,
                         p: 2,
+                        pb:10,
                         flexDirection: "column",
                         justificontent: "center",
                         alignItems: "center",
@@ -233,7 +226,7 @@ function ViewUserPage() {
                         }}
 
                     >
-                        <Tooltip title={lessThanSm ? "Back" : null} >
+                        <Tooltip title={lessThanMd ? "Back" : null} >
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -260,7 +253,7 @@ function ViewUserPage() {
 
                     <ImageBox>
                         <img
-                            src={image}
+                            src={selectedUser?.profile_image}
                             alt="profile pic"
                             width="200px"
                             height="200px"
@@ -268,8 +261,8 @@ function ViewUserPage() {
                         />
 
                     </ImageBox>
-                    <Typography color="textPrimary" variant={lessThanSm ? "h4" : "h3"} fontWeight="bold">
-                        Emali perera
+                    <Typography color="textPrimary" variant={lessThanMd ? "h4" : "h3"} fontWeight="bold">
+                        {selectedUser?.first_name}  {selectedUser?.last_name}
                     </Typography>
                     <Box
                         sx={{
@@ -283,12 +276,20 @@ function ViewUserPage() {
                         }}
                     >
                         <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                            <Typography color="textPrimary" variant={lessThanSm ? "h6" : "h5"}  fontWeight="bold">
+                            <Typography color="textPrimary" variant={lessThanSm ? "h6" : "h5"} fontWeight="bold">
                                 User Type :
                             </Typography>
-                            <Typography variant={lessThanSm ? "h6" : "h5"}>
-                                Developer
-                            </Typography>
+                            {selectedUser?.user_type == "developer" && (
+                                <Typography variant={lessThanSm ? "h6" : "h5"}>
+                                    Developer
+                                </Typography>
+                            )}
+                            {selectedUser?.user_type == "investigator" && (
+                                <Typography variant={lessThanSm ? "h6" : "h5"}>
+                                    Investigator
+                                </Typography>
+                            )}
+
                         </Stack>
 
                         <Stack direction="row" spacing={1} sx={{ mt: 2 }} >
@@ -296,7 +297,7 @@ function ViewUserPage() {
                                 Email :
                             </Typography>
                             <Typography variant={lessThanSm ? "h6" : "h5"}>
-                                kksenalpunsara@gmail.com
+                                {selectedUser?.email}
                             </Typography>
                         </Stack>
 
@@ -304,36 +305,20 @@ function ViewUserPage() {
                             <Typography color="textPrimary" variant={lessThanSm ? "h6" : "h5"} fontWeight="bold">
                                 Account Status:
                             </Typography>
-                            <Typography variant={lessThanSm ? "h6" : "h5"} sx={{ color: "green" }}>
-                                Active
-                            </Typography>
+                            {selectedUser?.ban_status == "false" && (
+                                <Typography variant={lessThanSm ? "h6" : "h5"} sx={{ color: "green" }}>
+                                    Active
+                                </Typography>
+                            )}
+                            {selectedUser?.ban_status == "true" && (
+                                <Typography variant={lessThanSm ? "h6" : "h5"} sx={{ color: "red" }}>
+                                    Inactive
+                                </Typography>
+                            )}
+
                         </Stack>
                     </Box>
-                    <Tooltip title={lessThanMd ? "Deactivate Account" : null} >
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            // onClick={{}}
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                bgcolor: 'red',
-                                color: 'white',
-                                pt: 0, pb: 0, ml: lessThanMd ? "0px" : 0,
-                                width: lessThanMd ? "50px" : "200px", height: "45px",
-                                '&:hover': {
-                                    bgcolor: 'rgba(255, 0, 0, 0.7)',
-                                },
-                            }}
-                        >
-                            {lessThanMd ? <PersonOffIcon /> : 'Deactivate Account'}
-                        </Button>
-                    </Tooltip>
-
-
                 </Box>
-
-
             </ContainerBox>
         </>
     );

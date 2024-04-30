@@ -26,6 +26,7 @@ Route::post('/uploadChunk', [FileManageController::class, 'uploadChunk']);
 Route::post('/send_to_database_test', [FileManageController::class, 'sendRecordTest']);
 
 
+
 Route::post('v1/upload_data_file', [FileManageController::class, 'store']);
 Route::post('v1/send_to_database', [FileManageController::class, 'sendRecord']);
 Route::get("v1/em_data_records", [FileManageController::class, 'index']);
@@ -61,8 +62,15 @@ Route::prefix("v1/auth")->group(function () {
     Route::get('/check-email', [AuthController::class, 'checkEmail']);
 });
 
+
+Route::post('/v1/update-user', [UserController::class, 'updateUserInfo']);
+
 Route::prefix("v1/user")->group(function () {
     Route::get('/', [UserController::class, 'index'])->middleware('jwt');
+    Route::get('/get-user', [UserController::class, 'getUser'])->middleware('jwt');
+    Route::get('/user-profile-image', [UserController::class, 'getUserProfileImage'])->middleware('jwt');
+    Route::post('/update-user', [UserController::class, 'updateUserInfo'])->middleware('jwt');
+    Route::post('/update-password', [UserController::class, 'updatePassword'])->middleware('jwt');
     Route::put('/ban-status-change', [UserController::class, 'changeBanStatus'])->middleware('jwt');
 });
 
