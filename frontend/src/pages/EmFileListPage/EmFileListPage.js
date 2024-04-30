@@ -163,7 +163,7 @@ function EmFileListPage() {
               Created Date : {selectedFileData.file_upload_timestamp}
             </Typography>
             <Typography color="textSecondary" align="left">
-              Device : {selectedFileData.device_id}
+              Device : {selectedFileData.device_name}
             </Typography>
             <Typography color="textSecondary" align="left">
               Center Frequency : {selectedFileData.center_frequency} Hz
@@ -180,24 +180,6 @@ function EmFileListPage() {
     }
   };
 
-  // function deleteRecord(id) {
-  //   console.log(id);
-  //   axios
-  //     .post(baseURL2, {
-  //       file_id: id,
-  //     })
-  //     .then((response) => {
-  //       console.log(response.status);
-  //       if (response.status == 200) {
-  //         // alert('File is successfully deleted.');
-  //         //window.location.reload();
-  //       } else {
-  //         alert("An Error occured when deleting the file.");
-  //         //window.location.reload();
-  //       }
-  //     });
-  // }
-
   function bytesToSize(bytes) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
 
@@ -208,7 +190,28 @@ function EmFileListPage() {
     return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + " " + sizes[i];
   }
 
-  const notify = () => toast("File upload successfully");
+  const {
+    data: emDataFile,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getEmRawDetails"]],
+    queryFn: () => getEmRawDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
+        getEmRawDetails(user)
+      );
+    }
+    setEMData(emDataFile);
+    setEMDataInTable(emDataFile);
+  }, [user, emDataFile]);
+
+
 
   const deleteRecord = async () => {
     console.log(fileId);
@@ -221,7 +224,7 @@ function EmFileListPage() {
         if (response.data.status == 200) {
           // alert('File is successfully deleted.');
           setDeactivateModalStatus(false);
-          const updatedData = emDataInTable.filter(
+          const updatedData = emData.filter(
             (file) => file.em_raw_file_id !== fileId
           );
           setEMData(updatedData);
@@ -262,24 +265,7 @@ function EmFileListPage() {
     setEMDataInTable(filteredFiles);
   };
 
-  const {
-    data: emDataFile,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: [queryKeys["getEmRawDetails"]],
-    queryFn: () => getEmRawDetails(user),
-    enabled: false,
-  });
 
-  useEffect(() => {
-    // Enable the query when the user object becomes available
-    if (user) {
-      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
-        getEmRawDetails(user)
-      );
-    }
-  }, [user]);
 
   return (
     <>
@@ -384,7 +370,7 @@ function EmFileListPage() {
             style={{ marginTop: "20px" }}
             sx={{
               maxHeight: "70vh",
-              overflowY: emDataFile?.length > 5 ? "scroll" : "hidden",
+              overflowY: emDataInTable?.length > 5 ? "scroll" : "hidden",
             }}
           >
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
@@ -417,7 +403,7 @@ function EmFileListPage() {
                   </TableCell>
                 </TableRow>
 
-                {emDataFile?.map((data) => (
+                {emDataInTable?.map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
                     <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
@@ -458,15 +444,15 @@ function EmFileListPage() {
                       )}
                       {(data.em_raw_upload_status === "failed" ||
                         data.em_raw_upload_status === "faild") && (
-                        <Chip
-                          sx={{
-                            background: "#FFF2F2",
-                            color: "red",
-                            mt: "10px",
-                          }}
-                          label={"failed"}
-                        />
-                      )}
+                          <Chip
+                            sx={{
+                              background: "#FFF2F2",
+                              color: "red",
+                              mt: "10px",
+                            }}
+                            label={"failed"}
+                          />
+                        )}
                     </TableCell>
                     <TableCell align="center">
                       <Box
@@ -476,45 +462,50 @@ function EmFileListPage() {
                           flexDirection: "row",
                           justifyContent: "center",
                           "& > Button": {
-                            marginRight: 2, // Adjust the value as needed
+                            marginRight: 2, // Adjust the value as needed 
                           },
                         }}
                       >
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => {
-                            // const confirmBox = window.confirm(
-                            //   "Do you really want to delete this file?"
-                            // );
-                            // if (confirmBox === true) {
-                            //   deleteRecord(data.em_raw_file_id);
-                            // }
-                            setFileId(data.em_raw_file_id);
-                            setDeactivateModalStatus(true);
-                          }}
-                        >
-                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
-                          Delete
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A" }}
-                          sx={{
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            "&:hover": {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => handleClickOpen(data)}
-                        >
-                          More Details
-                        </Button>
+                        <Tooltip title={lessThanMd ? "Delete File" : null}>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => {
+
+                              setFileId(data.em_raw_file_id);
+                              setDeactivateModalStatus(true);
+                            }}
+                          >
+                            {lessThanMd ? null : (
+                              <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                            )}
+                            {lessThanMd ? <DeleteIcon /> : "Delete"}
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip title={lessThanMd ? "More Details" : null}>
+                          <Button
+                            variant="outlined"
+                            style={{ color: "#00245A" }}
+                            sx={{
+                              borderColor: "rgba(0, 36, 90, 0.4)",
+                              "&:hover": {
+                                borderColor: "#00245A", // Change to the desired hover color
+                              },
+                            }}
+                            onClick={() => handleClickOpen(data)}
+                          >
+                            {lessThanMd ? null : (
+                              <MoreVertIcon sx={{ ml: -1, mr: 1 }} />
+                            )}
+                            {lessThanMd ? <MoreVertIcon /> : "More"}
+                          </Button>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>
                 ))}
-                {emDataFile?.length == 0 && (
+                {emDataInTable?.length == 0 && (
                   <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
                       <Typography variant="h4" sx={{ color: "#00245A" }}>

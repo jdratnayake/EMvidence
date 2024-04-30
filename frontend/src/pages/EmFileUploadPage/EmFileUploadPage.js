@@ -64,7 +64,6 @@ const darkTheme = createTheme({
 });
 
 
-
 function ConfirmCancelDialog({ open, onClose }) {
   const handleClose = () => {
     onClose(false); // User chose to cancel
@@ -236,7 +235,7 @@ function EmFileUploadPage() {
       const chunkSize = 1024 * 1024 * 20; // 1 MB chunks
       const totalChunks = Math.ceil(selectedFile.size / chunkSize);
       let currentChunk = 0;
-      let hash = CryptoJS.algo.SHA256.create();
+      let hash = CryptoJS.algo.MD5.create();
 
       const reader = new FileReader();
 
