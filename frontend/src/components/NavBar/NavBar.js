@@ -79,7 +79,6 @@ function NavBar(pageName) {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2, mt:"4px",
               display: { xs: "none", md: "flex" },
@@ -133,7 +132,6 @@ function NavBar(pageName) {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
