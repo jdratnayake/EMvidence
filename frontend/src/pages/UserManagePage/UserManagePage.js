@@ -31,6 +31,7 @@ import { API_URL, queryKeys } from "../../constants";
 import { getInvestigatorDeveloperDetails } from "../../services/userService";
 import { useUser } from "../../contexts/UserContext";
 import { getFullName, capitalizeWords } from "../../helper";
+import { useNavigate } from "react-router-dom";
 
 function UserManagePage() {
   const [selectedUserId, setSelectedUserId] = useState(0);
@@ -42,6 +43,7 @@ function UserManagePage() {
   const [searchText, setSearchText] = useState("");
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const handleSearch = (event) => {
     const searchTerm = event.target.value;
@@ -254,7 +256,9 @@ function UserManagePage() {
                                   borderColor: "#00245A", // Change to the desired hover color
                                 },
                               }}
-                              onClick={() => {}}
+                              onClick={() => {
+                                navigate(`/user/${user.user_id}`)
+                              }}
                             >
                               <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
                               View

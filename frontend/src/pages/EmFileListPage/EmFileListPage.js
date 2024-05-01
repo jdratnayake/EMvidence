@@ -3,7 +3,7 @@ import { Container } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import "./EmFileListPage.css";
 import PropTypes from "prop-types";
-import { useTheme, } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -24,7 +24,7 @@ import Stack from "@mui/material/Stack";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
-import { Grid, Card, CardContent, Chip } from "@mui/material";
+import { Grid, Card, CardContent, Chip, TextField } from "@mui/material";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import Divider from "@mui/material/Divider";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -35,86 +35,52 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import Tooltip from "@mui/material/Tooltip";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import { useQuery, useQueryClient } from "react-query";
-import { API_URL } from "../../constants";
+import { API_URL, queryKeys } from "../../constants";
 import "react-toastify/dist/ReactToastify.css";
 import noFiles from "../../resources/no_files_found.png";
 import { useUser } from "../../contexts/UserContext";
+import { getEmRawDetails } from "../../services/fileManage";
 
 const baseURL1 = API_URL + "/em_data_records";
 const baseURL2 = API_URL + "/delete_file";
 
-
-function TablePaginationActions(props) {
-  const theme = useTheme();
-
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
+const sxStyle = {
+  "&:hover": {
+    "&& fieldset": {
+      border: "2px solid #00245A",
+    },
+  },
+  "& .MuiInputLabel-outlined": {
+    color: "grey", // Initial color
+    "&.Mui-focused": {
+      color: "#00245A", // Color when focused
+    },
+  },
+  color: "#00245A",
+  "& .MuiOutlinedInput-root": {
+    "&.Mui-focused": {
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: "#00245A",
+        borderWidth: "2px",
+      },
+    },
+    "& .MuiInputLabel-outlined": {
+      color: "#2e2e2e",
+      fontWeight: "bold",
+      "&.Mui-focused": {
+        color: "secondary.main",
+        fontWeight: "bold",
+      },
+    },
+  },
 };
 
 function EmFileListPage() {
@@ -123,24 +89,12 @@ function EmFileListPage() {
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   const lessThanLg = useMediaQuery(theme.breakpoints.down("lg"));
   const [emData, setEMData] = useState([]);
-
-
-  useEffect(() => {
-    axios.get(baseURL1, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': 1,
-      },
-    })
-      .then((response) => {
-        console.log("--- file list ---");
-        console.log(response.data.em_raw_files);
-        setEMData(response.data.em_raw_files);
-      })
-      .catch((error) => {
-        console.error('There was a problem with Axios request:', error);
-      });
-  }, []);
+  const [emDataInTable, setEMDataInTable] = useState([]);
+  const [fileId, setFileId] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
+  const queryClient = useQueryClient();
+  const { user } = useUser();
 
   const navigate = useNavigate();
   const navigateToUploadForm = () => {
@@ -209,7 +163,7 @@ function EmFileListPage() {
               Created Date : {selectedFileData.file_upload_timestamp}
             </Typography>
             <Typography color="textSecondary" align="left">
-              Device : {selectedFileData.device_id}
+              Device : {selectedFileData.device_name}
             </Typography>
             <Typography color="textSecondary" align="left">
               Center Frequency : {selectedFileData.center_frequency} Hz
@@ -226,27 +180,6 @@ function EmFileListPage() {
     }
   };
 
-
-
-  function deleteRecord(id) {
-    console.log(id);
-    axios
-      .post(baseURL2, {
-        file_id: id,
-      })
-      .then((response) => {
-        console.log(response.status);
-        if (response.status == 200) {
-          // alert('File is successfully deleted.');
-          window.location.reload();
-        } else {
-          alert("An Error occured when deleting the file.");
-          window.location.reload();
-        }
-      });
-  }
-
-
   function bytesToSize(bytes) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
 
@@ -257,13 +190,92 @@ function EmFileListPage() {
     return Math.round(100 * (bytes / Math.pow(1024, i))) / 100 + " " + sizes[i];
   }
 
-  const notify = () => toast("File upload successfully");
+  const {
+    data: emDataFile,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: [queryKeys["getEmRawDetails"]],
+    queryFn: () => getEmRawDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    // Enable the query when the user object becomes available
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getEmRawDetails"]], () =>
+        getEmRawDetails(user)
+      );
+    }
+    setEMData(emDataFile);
+    setEMDataInTable(emDataFile);
+  }, [user, emDataFile]);
+
+
+
+  const deleteRecord = async () => {
+    console.log(fileId);
+    axios
+      .post(baseURL2, {
+        file_id: fileId,
+      })
+      .then((response) => {
+        console.log(response.status);
+        if (response.data.status == 200) {
+          // alert('File is successfully deleted.');
+          setDeactivateModalStatus(false);
+          const updatedData = emData.filter(
+            (file) => file.em_raw_file_id !== fileId
+          );
+          setEMData(updatedData);
+          setEMDataInTable(updatedData);
+          toast.success("File is Deleted Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          //window.location.reload();
+        } else {
+          setDeactivateModalStatus(false);
+          toast.error("Faild to Delete the File", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          //window.location.reload();
+        }
+      });
+  };
+
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+    const searchText = event.target.value.toLowerCase();
+    console.log(searchText);
+    const filteredFiles = emData.filter((file) =>
+      file.em_raw_file_visible_name.toLowerCase().includes(searchText)
+    );
+    setEMDataInTable(filteredFiles);
+  };
 
 
 
   return (
     <>
-
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name="Do you really want to delete this file?"
+        onClose={() => setDeactivateModalStatus(false)}
+        deactivateButtonName="Yes"
+        handleBanStatusChange={deleteRecord}
+      />
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -273,7 +285,8 @@ function EmFileListPage() {
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover />
+        pauseOnHover
+      />
 
       <div>
         <Dialog
@@ -288,65 +301,109 @@ function EmFileListPage() {
       </div>
 
       <div className="maindiv">
-        <Container >
+        <Container>
           <Typography
             variant="h4"
             color="textPrimary"
             align="center"
             gutterBottom
-
           >
             File Manage
           </Typography>
-          <Stack direction="row" spacing={2} display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              onClick={navigateToUploadForm}
-              sx={{
-                pl: 4,
-                pr: 4,
-                bgcolor: "#00245A",
-                color: "white",
-                "&:hover": {
-                  bgcolor: "rgba(0, 36, 90, 0.8)",
-                },
-              }}
-            >
-              upload
-            </Button>
-          </Stack>
 
-          <TableContainer component={Paper} style={{ marginTop: "20px" }} sx={{ maxHeight: "70vh", overflowY: emData.length > 5 ? "scroll" : "hidden" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Grid container alignItems="left" justifyContent="left">
+              <Grid item xs={12} md={12}>
+                <TextField
+                  id="search"
+                  label={searchText === "" ? "Search" : ""}
+                  sx={{ ...sxStyle }}
+                  InputLabelProps={{
+                    shrink: false,
+                  }}
+                  value={searchText}
+                  onChange={handleSearch}
+                  variant="outlined"
+                  style={{
+                    width: "80%",
+                    marginTop: "40px",
+                    backgroundColor: "white",
+                    borderRadius: 4,
+                  }}
+                  InputProps={{
+                    endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box sx={{ mt: "42px" }}>
+              <Tooltip title={lessThanMd ? "Upload" : null}>
+                <Button
+                  variant="contained"
+                  onClick={navigateToUploadForm}
+                  sx={{
+                    pl: 4,
+                    pr: 4,
+                    height: 50,
+                    width: lessThanMd ? "50px" : "100px",
+                    bgcolor: "#00245A",
+                    color: "white",
+                    "&:hover": {
+                      bgcolor: "rgba(0, 36, 90, 0.8)",
+                    },
+                  }}
+                >
+                  {lessThanMd ? <CloudUploadIcon /> : "Upload"}
+                </Button>
+              </Tooltip>
+            </Box>
+          </Box>
+
+          <TableContainer
+            component={Paper}
+            style={{ marginTop: "20px" }}
+            sx={{
+              maxHeight: "70vh",
+              overflowY: emDataInTable?.length > 5 ? "scroll" : "hidden",
+            }}
+          >
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableBody>
-                <TableRow >
+                <TableRow>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       File Name
                     </Typography>
                   </TableCell>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Size
                     </Typography>
                   </TableCell>
                   <TableCell scope="row">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Created Date
                     </Typography>
                   </TableCell>
                   <TableCell scope="row" align="center">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Status
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography variant="h6" color="textPrimary" >
+                    <Typography variant="h6" color="textPrimary">
                       Action
                     </Typography>
                   </TableCell>
                 </TableRow>
-                {emData?.map((data) => (
+
+                {emDataInTable?.map((data) => (
                   <TableRow key={data.em_raw_file_id} hover={true}>
                     <TableCell scope="row">
                       <Stack direction="row" spacing={2}>
@@ -359,82 +416,99 @@ function EmFileListPage() {
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell >
+                    <TableCell>
                       {bytesToSize(data.em_raw_cfile_file_size)}
                     </TableCell>
-                    <TableCell >
-                      {data.file_upload_timestamp}
-                    </TableCell>
+                    <TableCell>{data.file_upload_timestamp}</TableCell>
                     {/* {if(data.em_raw_upload_status == "preprocessing"){}} */}
-                    <TableCell align="center" >
+                    <TableCell align="center">
                       {data.em_raw_upload_status === "processing" && (
                         <Chip
-                          sx={{ background: "#FFF4E0", color: "orange", mt: "10px" }}
+                          sx={{
+                            background: "#FFF4E0",
+                            color: "orange",
+                            mt: "10px",
+                          }}
                           label={"processing"}
                         />
                       )}
                       {data.em_raw_upload_status === "processed" && (
                         <Chip
-                          sx={{ background: "#ECFDF3", color: "green", mt: "10px" }}
+                          sx={{
+                            background: "#ECFDF3",
+                            color: "green",
+                            mt: "10px",
+                          }}
                           label={"processed"}
                         />
                       )}
-                      {(data.em_raw_upload_status === "failed" || data.em_raw_upload_status === "faild") && (
-                        <Chip
-                          sx={{ background: "#FFF2F2", color: "red", mt: "10px" }}
-                          label={"failed"}
-                        />
-                      )}
+                      {(data.em_raw_upload_status === "failed" ||
+                        data.em_raw_upload_status === "faild") && (
+                          <Chip
+                            sx={{
+                              background: "#FFF2F2",
+                              color: "red",
+                              mt: "10px",
+                            }}
+                            label={"failed"}
+                          />
+                        )}
                     </TableCell>
                     <TableCell align="center">
                       <Box
-
                         //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
                         sx={{
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "center",
-                          '& > Button': {
-                            marginRight: 2, // Adjust the value as needed
-                          }
+                          "& > Button": {
+                            marginRight: 2, // Adjust the value as needed 
+                          },
                         }}
                       >
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => {
-                            const confirmBox = window.confirm(
-                              "Do you really want to delete this file?"
-                            );
-                            if (confirmBox === true) {
-                              deleteRecord(data.em_raw_file_id);
-                            }
-                          }}
-                        >
-                          <DeleteIcon sx={{ ml: -1, mr: 1 }} />
-                          Delete
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A", }}
-                          sx={{
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            '&:hover': {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => handleClickOpen(data)}
-                        >
-                          More Details
-                        </Button>
+                        <Tooltip title={lessThanMd ? "Delete File" : null}>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => {
+
+                              setFileId(data.em_raw_file_id);
+                              setDeactivateModalStatus(true);
+                            }}
+                          >
+                            {lessThanMd ? null : (
+                              <DeleteIcon sx={{ ml: -1, mr: 1 }} />
+                            )}
+                            {lessThanMd ? <DeleteIcon /> : "Delete"}
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip title={lessThanMd ? "More Details" : null}>
+                          <Button
+                            variant="outlined"
+                            style={{ color: "#00245A" }}
+                            sx={{
+                              borderColor: "rgba(0, 36, 90, 0.4)",
+                              "&:hover": {
+                                borderColor: "#00245A", // Change to the desired hover color
+                              },
+                            }}
+                            onClick={() => handleClickOpen(data)}
+                          >
+                            {lessThanMd ? null : (
+                              <MoreVertIcon sx={{ ml: -1, mr: 1 }} />
+                            )}
+                            {lessThanMd ? <MoreVertIcon /> : "More"}
+                          </Button>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>
                 ))}
-                {emData.length == 0 && (
+                {emDataInTable?.length == 0 && (
                   <TableRow style={{ height: 53 }}>
                     <TableCell colSpan={6} align="center">
-                      <Typography variant="h4" sx={{color:"#00245A"}}>
+                      <Typography variant="h4" sx={{ color: "#00245A" }}>
                         No files found
                       </Typography>
                       <Box
@@ -442,8 +516,8 @@ function EmFileListPage() {
                         sx={{
                           height: 200,
                           width: 200,
-                          mt:2,
-                          ml:2
+                          mt: 2,
+                          ml: 2,
                         }}
                         src={noFiles}
                       />
