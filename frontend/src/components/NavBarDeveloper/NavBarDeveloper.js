@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
-import logo from "../../resources/logo.png";
+import logo from "../../resources/logo-blue-plain.png";
 
 const pages = [
   "Upload Plugin",
@@ -60,7 +60,7 @@ function NavBarDeveloper({ pageName }) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "50px", height: "30px" }}
+            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
           />
           <Typography
             variant="h6"
@@ -72,8 +72,8 @@ function NavBarDeveloper({ pageName }) {
               display: { xs: "none", md: "flex" },
               fontFamily: "roboto",
               fontWeight: 700,
-              letterSpacing: ".1rem",
-              color: "#000000",
+              letterSpacing: ".2rem",
+              color: "#00245A",
               textDecoration: "none",
             }}
           >
@@ -125,14 +125,14 @@ function NavBarDeveloper({ pageName }) {
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
+              fontFamily: "roboto",
               fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "#000000",
+              letterSpacing: ".2rem",
+              color: "#00245A",
               textDecoration: "none",
             }}
           >
-            Emvidence
+            EMvidence
           </Typography>
           <Box
             sx={{

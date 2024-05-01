@@ -18,17 +18,18 @@ export const getReportDetails = async (userData) => {
 
     const resultData = data["reports"];
 
+    let i = 0;
     try {
       for (const report of resultData) {
         // Fetch report file
-        const reportResponse = await fetch(API_URL + "/plugin/report", {
+        const reportResponse = await fetch(API_URL + "/plugin/report?id=" + i, {
           method: "GET",
           headers: {
             Authorization: token,
             report_filename: report["report_file_name"],
           },
         });
-
+        i = i + 1;
         // Check if fetch request was successful
         if (!reportResponse.ok) {
           throw new Error(
@@ -70,9 +71,11 @@ export const getCompatiblePluginDetails = async (userData) => {
 
     const resultData = data["compatiblePlugins"];
 
+    let i = 0;
     for (const plugin of resultData) {
       // Fetch plugin icon
-      const pluginIconResponse = await fetch(API_URL + "/plugin/icon", {
+      i = i + 1;
+      const pluginIconResponse = await fetch(API_URL + "/plugin/icon?id=" + i, {
         method: "GET",
         headers: {
           Authorization: token,
@@ -225,15 +228,18 @@ export const getFilteredPluginDetails = async (
     const data = await response.json();
     const resultData = data["filteredPluginData"];
 
+    let i = 0;
     for (const plugin of resultData) {
       // Fetch plugin icon
-      const pluginIconResponse = await fetch(API_URL + "/plugin/icon", {
+      const pluginIconResponse = await fetch(API_URL + "/plugin/icon?id=" + i, {
         method: "GET",
         headers: {
           Authorization: token,
           icon_filename: plugin["icon_filename"],
         },
       });
+
+      i = i + 1;
 
       // Get plugin icon as blob
       const pluginIcon = await pluginIconResponse.blob();
