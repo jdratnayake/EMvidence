@@ -921,26 +921,24 @@ const PluginVerifyPage = () => {
               flexDirection: "row",
             }}
           >
-            {userObject?.user_type === "admin" && (
-              <LoadingButton
-                sx={{
-                  mt: 3,
-                  mb: 3,
-                  backgroundColor: "#00245A",
-                  color: "#ffffff",
-                  width: "200px",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
-                  },
-                }}
-                variant="contained"
-                disabled={isDependencyInstallationFetching}
-                onClick={executeDependencyInstallation}
-                loading={loadingDependencyInstallation}
-              >
-                Install Dependencies
-              </LoadingButton>
-            )}
+            <LoadingButton
+              sx={{
+                mt: 3,
+                mb: 3,
+                backgroundColor: "#00245A",
+                color: "#ffffff",
+                width: "200px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                },
+              }}
+              variant="contained"
+              disabled={isDependencyInstallationFetching}
+              onClick={executeDependencyInstallation}
+              loading={loadingDependencyInstallation}
+            >
+              Install Dependencies
+            </LoadingButton>
 
             <LoadingButton
               sx={{
