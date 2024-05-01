@@ -1,50 +1,66 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Grid } from "@mui/material";
-import img from "../../resources/error.svg";
-import logo from "../../resources/logo8.png";
+import { Box, Grid, Typography } from "@mui/material";
+import img from "../../resources/error.jpg";
+import logo from "../../resources/logo-blue.png";
 import "./ErrorPage.css";
 
 function ErrorPage() {
   return (
     <div className="errorPage">
-      <div>
-        <img src={img} className="errorImg" alt="not found" />
-        <h3 className="errorTopic">Oh! Page not found</h3>
-        <p className="errorDescription">
-          {" "}
-          We can't seem to find page you're looking for
-        </p>
-
+      <div style={{ marginTop: "60px" }}>
+        <Typography
+          variant="h2"
+          fontFamily="roboto"
+          fontWeight="bold"
+          sx={{ color: '#00245A' }}>
+          Oops! Page not found
+          </Typography>
+        <Box
+          component="img"
+          sx={{
+            height: 300,
+            width: 800,
+            mb: 1,
+            mt: 2
+          }}
+          src={img}
+        />
+        {/* <img src={img} className="errorImg" alt="not found" /> */}
+        <Typography
+          variant="h6"
+          fontFamily="roboto"
+          sx={{ color: '#00245A' }}>
+           We can't seem to find page you're looking for
+          </Typography>
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             marginLeft: 0,
+            mt:2
+
           }}
         >
           <Box
             component="img"
             sx={{
-              height: 75,
-              width: 75,
-              marginBottom: 2,
-              backgroundColor: "#00245A",
-              mt: 2,
-              p: 2
+              height: 100,
+              width: 100,
+              mb: 1
             }}
             src={logo}
           />
-    
-          <Link to="/" className="errorTag" style={{color:'#00245A', marginLeft: '25px', fontSize: '20px'}} 
-          onMouseEnter={(e) => e.target.style.color = 'rgba(0, 36, 90, 0.8)'}
-          onMouseLeave={(e) => e.target.style.color = '#00245A'}>
+
+          <Link to="/" className="errorTag" style={{ color: '#00245A', fontSize: '15px' }}
+            onMouseEnter={(e) => e.target.style.color = 'rgba(0, 36, 90, 0.5)'}
+            onMouseLeave={(e) => e.target.style.color = '#00245A'}>
             Back to Home
           </Link>
-         
-          
+
+
         </Box>
 
       </div>
