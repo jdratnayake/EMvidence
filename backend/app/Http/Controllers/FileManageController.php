@@ -63,15 +63,9 @@ class FileManageController extends Controller
 
             $emdata = EmDataFile::find($request->file_id);
             info($emdata->em_raw_file_name);
-            info($emdata->em_preprocess_file_name);
-
+            unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata->em_raw_file_name);
             if ($emdata->delete()) {
-                if ($emdata->em_raw_upload_status == "processed") {
-                    unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata->em_preprocess_file_name);
-                } else {
-                    unlink(env("EM_RAW_DIRECTORY_PATH") . "/" . $emdata->em_raw_file_name);
-                }
-
+               
                 return response()->json([
                     'status' => 200
                 ]);
@@ -443,13 +437,14 @@ class FileManageController extends Controller
                     // Update the relevent records.
                     EmDataFile::where('em_raw_file_id', $item['em_raw_file_id'])->update([
                         'em_raw_upload_status' => 'processed',
-                        'em_raw_file_name' => $h5FileName,
-                        'em_preprocess_file_name' => $h5FileName . ".enc",
+                        'em_raw_file_name' => $h5FileName .".enc",
                         'em_raw_h5_file_size' => $output->file_size,
                         'em_raw_h5_hash' => $output->file_hash,
                         'preprocessing_file_creation_timestamp' => $formattedDateTime
                     ]);
+
                 } else {
+                    // ********   need to add what happens to the file  status ************
                     continue;
                 }
             }
