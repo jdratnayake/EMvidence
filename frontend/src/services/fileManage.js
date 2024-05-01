@@ -16,7 +16,7 @@ export const getEmRawDetails = async (userData) => {
 
     const data = await response.json();
 
-    return data["em_raw_file"];
+    return data["em_raw_files"];
   } catch (error) {
     throw error;
   }

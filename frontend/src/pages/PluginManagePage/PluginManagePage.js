@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "react-query";
+import axios from "axios";
 import { Box, styled } from "@mui/system";
 import {
   Button,
@@ -21,6 +23,13 @@ import UnpublishedIcon from "@mui/icons-material/Unpublished";
 import Tooltip from "@mui/material/Tooltip";
 import Grid from "@mui/material/Grid";
 import SearchIcon from "@mui/icons-material/Search";
+import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
+import { API_URL, queryKeys } from "../../constants";
+import { getVerifiedPluginDetails } from "../../services/pluginService";
+import { useUser } from "../../contexts/UserContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ContainerBox = styled(Box)(() => ({
   display: "flex",
@@ -100,44 +109,34 @@ const TableCellBlue = styled(TableCell)(() => ({
 
 function PluginManagePage() {
   const [searchText, setSearchText] = useState("");
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+  const [selectedPluginId, setSelectedPluginId] = useState(0);
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [deactivateModalStatus, setDeactivateModalStatus] = useState(false);
 
   const theme = useTheme();
   const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
   const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleSearch = (event) => {
+    const searchTerm = event.target.value;
     setSearchText(event.target.value);
-  };
 
-  const rows = [
-    {
-      id: 1,
-      plugin: "Firmware Version Detection",
-      status: "Inactive",
-      actions: "1",
-    },
-    {
-      id: 2,
-      plugin: "Firmware Version Detection",
-      status: "Active",
-      actions: "2",
-    },
-    {
-      id: 3,
-      plugin: "Firmware Version Detection",
-      status: "Active",
-      actions: "3",
-    },
-  ];
+    if (!searchTerm) {
+      queryClient.prefetchQuery([queryKeys["getVerifiedPluginDetails"]], () =>
+        getVerifiedPluginDetails(user)
+      );
+    } else {
+      const searchTermLower = searchTerm.toLowerCase();
 
-  function getStatusByActions(actionsValue) {
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].actions === actionsValue) {
-        return rows[i].status;
-      }
+      const newData = data.filter((plugin) => {
+        return plugin.plugin_name.toLowerCase().includes(searchTermLower);
+      });
+
+      queryClient.setQueryData(queryKeys["getVerifiedPluginDetails"], newData);
     }
-    return null;
-  }
+  };
 
   const sxStyle = {
     "&:hover": {
@@ -170,8 +169,100 @@ function PluginManagePage() {
     },
   };
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getVerifiedPluginDetails"]],
+    queryFn: () => getVerifiedPluginDetails(user),
+    enabled: false,
+  });
+
+  const handleBanStatusChange = async (status) => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: selectedPluginId,
+      compatibility_status: status,
+    };
+
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        console.log(response);
+
+        setActivateModalStatus(false);
+        setDeactivateModalStatus(false);
+
+        const newData = data.map((plugin) => {
+          if (plugin.plugin_id === selectedPluginId) {
+            return { ...plugin, compatibility_status: status };
+          } else {
+            return plugin;
+          }
+        });
+
+        queryClient.setQueryData(
+          queryKeys["getVerifiedPluginDetails"],
+          newData
+        );
+
+        const message =
+          status === "compatible"
+            ? "Plugin Activated Successfully"
+            : "Plugin Deactivated Successfully";
+
+        toast.success(message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getVerifiedPluginDetails"]], () =>
+        getVerifiedPluginDetails(user)
+      );
+    }
+  }, [user]);
+
   return (
     <>
+      <DeactivateModal
+        open={deactivateModalStatus}
+        name="Do you want to deactivate the plugin?"
+        onClose={() => setDeactivateModalStatus(false)}
+        handleBanStatusChange={() => {
+          handleBanStatusChange("incompatible");
+        }}
+        deactivateButtonName="Deactivate"
+      />
+      <ActivateModal
+        open={activateModalStatus}
+        name="Do you want to activate the plugin?"
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={() => {
+          handleBanStatusChange("compatible");
+        }}
+        activateButtonName="Activate"
+      />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <ContainerBox>
         <Typography variant="h4" gutterBottom sx={{ mb: -1 }}>
           Plugins
@@ -228,141 +319,124 @@ function PluginManagePage() {
                     </TableCell>
                   </TableHead>
                   <TableBody>
-                    <TableRow hover>
-                      <TableCell scope="row">
-                        <Typography variant="h7" color="textPrimary">
-                          plugin 1
-                        </Typography>
-                      </TableCell>
+                    {data?.map((plugin) => (
+                      <TableRow hover>
+                        <TableCell scope="row">
+                          <Typography variant="h7" color="textPrimary">
+                            {plugin.plugin_name}
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell scope="row" align="center">
-                        <Chip
-                          sx={{
-                            background: "#FFF2F2",
-                            color: "red",
-                            mt: "10px",
-                          }}
-                          label={"Inactive"}
-                        />
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            "& > Button": {
-                              marginRight: 2, // Adjust the value as needed
-                            },
-                          }}
-                        >
-                          <Tooltip title={lessThanMd ? "Test" : null}>
-                            <Button
-                              variant="outlined"
-                              style={{ color: "#00245A" }}
+                        <TableCell scope="row" align="center">
+                          {plugin.compatibility_status === "compatible" && (
+                            <Chip
                               sx={{
-                                borderColor: "rgba(0, 36, 90, 0.4)",
-                                "&:hover": {
-                                  borderColor: "#00245A", // Change to the desired hover color
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              {lessThanMd ? null : (
-                                <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
-                              )}
-                              {lessThanMd ? <DeveloperModeIcon /> : "Test"}
-                            </Button>
-                          </Tooltip>
+                                background: "#ECFDF3",
 
-                          <Tooltip title={lessThanMd ? "Activate" : null}>
-                            <Button
-                              variant="outlined"
-                              style={{ color: "#00245A" }}
+                                color: "#037847",
+
+                                mt: "10px",
+
+                                ml: "4px",
+                              }}
+                              label={"Active"}
+                            />
+                          )}
+
+                          {plugin.compatibility_status === "incompatible" && (
+                            <Chip
                               sx={{
-                                borderColor: "rgba(0, 36, 90, 0.4)",
-                                "&:hover": {
-                                  borderColor: "#00245A", // Change to the desired hover color
-                                },
-                                pl: lessThanMd ? 0 : 3,
-                                pr: lessThanMd ? 0 : 3,
+                                background: "#FFF2F2",
+                                color: "red",
+                                mt: "10px",
                               }}
-                              onClick={() => {}}
-                            >
-                              {lessThanMd ? null : (
-                                <OfflinePinIcon sx={{ ml: -1, mr: 1 }} />
-                              )}
-                              {lessThanMd ? <OfflinePinIcon /> : "Activate"}
-                            </Button>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow hover>
-                      <TableCell scope="row">
-                        <Typography variant="h7" color="textPrimary">
-                          plugin 2
-                        </Typography>
-                      </TableCell>
+                              label={"Inactive"}
+                            />
+                          )}
+                        </TableCell>
 
-                      <TableCell scope="row" align="center">
-                        <Chip
-                          sx={{
-                            background: "#ECFDF3",
-                            color: "#037847",
-                            mt: "10px",
-                            ml: "4px",
-                          }}
-                          label={"Active"}
-                        />
-                      </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              "& > Button": {
+                                marginRight: 2, // Adjust the value as needed
+                              },
+                            }}
+                          >
+                            {/* <Tooltip title={lessThanMd ? "Test" : null}>
+                              <Button
+                                variant="outlined"
+                                style={{ color: "#00245A" }}
+                                sx={{
+                                  borderColor: "rgba(0, 36, 90, 0.4)",
+                                  "&:hover": {
+                                    borderColor: "#00245A", // Change to the desired hover color
+                                  },
+                                }}
+                                onClick={() => {}}
+                              >
+                                {lessThanMd ? null : (
+                                  <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
+                                )}
+                                {lessThanMd ? <DeveloperModeIcon /> : "Test"}
+                              </Button>
+                            </Tooltip> */}
 
-                      <TableCell align="center">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            "& > Button": {
-                              marginRight: 2, // Adjust the value as needed
-                            },
-                          }}
-                        >
-                          <Tooltip title={lessThanMd ? "Test" : null}>
-                            <Button
-                              variant="outlined"
-                              style={{ color: "#00245A" }}
-                              sx={{
-                                borderColor: "rgba(0, 36, 90, 0.4)",
-                                "&:hover": {
-                                  borderColor: "#00245A", // Change to the desired hover color
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              {lessThanMd ? null : (
-                                <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
-                              )}
-                              {lessThanMd ? <DeveloperModeIcon /> : "Test"}
-                            </Button>
-                          </Tooltip>
+                            {plugin.compatibility_status === "incompatible" && (
+                              <Tooltip title={lessThanMd ? "Activate" : null}>
+                                <Button
+                                  variant="outlined"
+                                  style={{ color: "#00245A" }}
+                                  sx={{
+                                    borderColor: "rgba(0, 36, 90, 0.4)",
+                                    "&:hover": {
+                                      borderColor: "#00245A", // Change to the desired hover color
+                                    },
+                                    pl: lessThanMd ? 0 : 3,
+                                    pr: lessThanMd ? 0 : 3,
+                                  }}
+                                  onClick={() => {
+                                    setSelectedPluginId(plugin.plugin_id);
+                                    setActivateModalStatus(true);
+                                  }}
+                                >
+                                  {lessThanMd ? null : (
+                                    <OfflinePinIcon sx={{ ml: -1, mr: 1 }} />
+                                  )}
+                                  {lessThanMd ? <OfflinePinIcon /> : "Activate"}
+                                </Button>
+                              </Tooltip>
+                            )}
 
-                          <Tooltip title={lessThanMd ? "Deactivate" : null}>
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              onClick={() => {}}
-                            >
-                              {lessThanMd ? null : (
-                                <UnpublishedIcon sx={{ ml: -1, mr: 1 }} />
-                              )}
-                              {lessThanMd ? <UnpublishedIcon /> : "Deactivate"}
-                            </Button>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
+                            {plugin.compatibility_status === "compatible" && (
+                              <Tooltip title={lessThanMd ? "Deactivate" : null}>
+                                <Button
+                                  variant="outlined"
+                                  color="error"
+                                  onClick={() => {
+                                    setSelectedPluginId(plugin.plugin_id);
+                                    setDeactivateModalStatus(true);
+                                  }}
+                                >
+                                  {lessThanMd ? null : (
+                                    <UnpublishedIcon sx={{ ml: -1, mr: 1 }} />
+                                  )}
+
+                                  {lessThanMd ? (
+                                    <UnpublishedIcon />
+                                  ) : (
+                                    "Deactivate"
+                                  )}
+                                </Button>
+                              </Tooltip>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>

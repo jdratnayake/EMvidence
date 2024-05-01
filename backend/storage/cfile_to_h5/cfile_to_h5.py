@@ -75,12 +75,20 @@ def calculate_sha256(file_path):
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
+def calculate_md5(file_path):
+    md5_hash = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            md5_hash.update(byte_block)
+    return md5_hash.hexdigest()
+
 try:
     data = np.fromfile(cfile_file_path, dtype=np.float32)
     with h5py.File(h5_file_path, 'w') as hf:
         # Create a dataset and store the data
         dset = hf.create_dataset('data', data=data, compression="gzip", compression_opts=6)
-    sha256_hash = calculate_sha256(h5_file_path)
+    # sha256_hash = calculate_sha256(h5_file_path)
+    md5_hash = calculate_md5(h5_file_path)
     file_size = os.stat(h5_file_path)
     encrypt_file(h5_file_path, key, h5_encrypt_file_path)
     calculate_sha256(h5_encrypt_file_path)
@@ -88,7 +96,7 @@ try:
 
     results = { 
                 "status"    : 200,
-                "file_hash" : sha256_hash,
+                "file_hash" : md5_hash,
                 "file_size" : file_size.st_size
               }
 except:
