@@ -50,10 +50,6 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-      <Route
-        path="plugin"
-        element={<InvestigatorTemplate children={<PluginPage />} />}
-      />
 
       {/* Admin */}
       <Route
@@ -144,6 +140,12 @@ const router = createBrowserRouter(
       <Route
         path="edit-profile"
         element={<InvestigatorTemplate children={<EditProfilePage />} />}
+      />
+      <Route
+        path="plugin"
+        element={
+          <InvestigatorTemplate pageName="Plugin" children={<PluginPage />} />
+        }
       />
 
       {/* Developer */}
