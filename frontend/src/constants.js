@@ -10,4 +10,5 @@ export const queryKeys = {
   getFilteredPluginDetails: "filteredPluginDetails",
   getDeveloperPluginDetails: "developerPluginDetails",
   getVerifiedPluginDetails: "verifiedPluginDetails",
+  getSingleUser: "singleUser",
 };
