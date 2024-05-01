@@ -32,3 +32,10 @@ php artisan migrate
 php artisan db:seed
 
 # Database - END
+
+# backend - START
+
+// Start the schdule task
+php artisan schedule:work
+
+# backend - END 
