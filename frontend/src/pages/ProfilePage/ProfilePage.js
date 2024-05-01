@@ -110,7 +110,7 @@ const ImageBox = styled(Box)(() => ({
 
 
 function ProfilePage() {
-  const { user } = useUser();
+  const { user, addUser } = useUser();
   const queryClient = useQueryClient();
 
   const theme = useTheme();
@@ -293,20 +293,25 @@ function ProfilePage() {
         draggable: true,
         progress: undefined,
       });
-
+      console.log("this is user data in the user state");
+      user["userData"].first_name = firstName;
+      user["userData"].last_name = lastName;
+      user["userData"].email = email;
+      addUser({ user });
+    
     }
     ).catch((error) => {
 
-        toast.error("Faild to Update Details", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+      toast.error("Faild to Update Details", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
+    });
 
 
   };
@@ -368,9 +373,9 @@ function ProfilePage() {
         },
       }
       ).then((res) => {
-         console.log(res.data);
-         console.log(res.status);
-         if (res.data.status == 'match'){
+        console.log(res.data);
+        console.log(res.status);
+        if (res.data.status == 'match') {
           toast.success("Password Updated Successfully", {
             position: "top-right",
             autoClose: 5000,
@@ -380,7 +385,7 @@ function ProfilePage() {
             draggable: true,
             progress: undefined,
           });
-         } else if(res.data.status == 'not_match'){
+        } else if (res.data.status == 'not_match') {
           toast.error("Password doesn't Match", {
             position: "top-right",
             autoClose: 5000,
@@ -390,9 +395,9 @@ function ProfilePage() {
             draggable: true,
             progress: undefined,
           });
-       
-         } else{
-         
+
+        } else {
+
           toast.error("Faild to Update Password", {
             position: "top-right",
             autoClose: 5000,
@@ -402,11 +407,11 @@ function ProfilePage() {
             draggable: true,
             progress: undefined,
           });
-         }
+        }
       }
       ).catch((error) => {
-        
-         toast.error("Faild to Update Password", {
+
+        toast.error("Faild to Update Password", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -706,7 +711,7 @@ function ProfilePage() {
                         }
                         label="Current Password"
                         onBlur={(event) => setPassword(event.target.value)}
-                      error={passwordError !== ""}
+                        error={passwordError !== ""}
                       />
                       {passwordError !== "" && (
                         <FormHelperText error>{passwordError}</FormHelperText>
@@ -792,7 +797,7 @@ function ProfilePage() {
                         onBlur={(event) => setConfirmPassword(event.target.value)}
                         error={confirmPasswordError !== ""}
                       />
-                       {confirmPasswordError !== "" && (
+                      {confirmPasswordError !== "" && (
                         <FormHelperText error>
                           {confirmPasswordError}
                         </FormHelperText>
@@ -802,7 +807,7 @@ function ProfilePage() {
                 </Grid>
                 <span style={{ marginTop: "10px" }}>{"\u00A0"}</span>
                 <Button
-                 
+
                   variant="contained"
                   onClick={handlePassWordSubmit}
                   sx={{
