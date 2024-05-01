@@ -293,7 +293,7 @@ function ProfilePage() {
         draggable: true,
         progress: undefined,
       });
-      console.log("this is user data in the user state");
+      // console.log("this is user data in the user state");
       user["userData"].first_name = firstName;
       user["userData"].last_name = lastName;
       user["userData"].email = email;
