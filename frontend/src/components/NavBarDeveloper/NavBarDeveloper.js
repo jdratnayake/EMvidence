@@ -17,8 +17,20 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo.png";
 
-const pages = ["Upload Plugin", "Analysis", "Upload File", "Settings"];
-const pageLinks = ["/plugin-upload-list", "/report", "/file-list", "/profile"];
+const pages = [
+  "Upload Plugin",
+  "Plugin",
+  "Analysis",
+  "Upload File",
+  "Settings",
+];
+const pageLinks = [
+  "/plugin-upload-list",
+  "/plugin",
+  "/report",
+  "/file-list",
+  "/profile",
+];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarDeveloper({ pageName }) {

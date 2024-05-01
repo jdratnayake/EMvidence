@@ -15,6 +15,7 @@ backend/storage/plugins/analysis/icon/*.jpeg
 backend/storage/plugins/analysis/icon/*.png
 backend/storage/plugins/analysis/plugin_ml_model/*.h5
 backend/storage/plugins/analysis/plugin_script_file/*.py
+backend/storage/reports/*.pdf
 
 # .env
 .env.backup
