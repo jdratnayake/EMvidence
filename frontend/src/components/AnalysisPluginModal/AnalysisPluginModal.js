@@ -61,11 +61,11 @@ function AnalysisPluginModal({
               <Typography color="text.secondary" marginTop={2} align="center">
                 Maintained by {author}
               </Typography>
-              <Typography color="text.secondary" marginTop={2} align="left">
+              <Typography color="text.secondary" marginTop={2} align="center">
                 {description}
               </Typography>
             </CardContent>
-            <CardActions>
+            {/* <CardActions>
               <Grid container alignItems="center" justifyContent="center">
                 <Button
                   size="medium"
@@ -75,7 +75,7 @@ function AnalysisPluginModal({
                   USE
                 </Button>
               </Grid>
-            </CardActions>
+            </CardActions> */}
           </Card>
         </DialogContent>
       </Dialog>
