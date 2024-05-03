@@ -192,7 +192,7 @@ function PluginUploadListPage() {
           align="center"
           gutterBottom
         >
-          Plugins
+          Your Plugins
         </Typography>
         <Box
           sx={{
@@ -205,7 +205,7 @@ function PluginUploadListPage() {
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
-                label={searchText === "" ? "Search" : ""}
+                label={searchText === "" ? "Search Plugin" : ""}
                 sx={{ ...sxStyle }}
                 InputLabelProps={{
                   shrink: false,
@@ -214,7 +214,7 @@ function PluginUploadListPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: "80%",
+                  width: lessThanMd ? "80%": "55%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,
@@ -290,7 +290,7 @@ function PluginUploadListPage() {
                       <Chip
                         sx={{
                           background: "#FFFAF2 ",
-                          color: "black",
+                          color: "orange",
                           mt: "10px",
                         }}
                         label={"Initial"}
