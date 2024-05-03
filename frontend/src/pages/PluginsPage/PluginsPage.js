@@ -182,7 +182,7 @@ function PluginsPage() {
         <Grid container alignItems="center" justifyContent="center">
           <TextField
             id="search"
-            label={searchText === "" ? "Search" : ""}
+            label={searchText === "" ? "Search Plugins" : ""}
             InputLabelProps={{
               shrink: false,
             }}
@@ -194,6 +194,7 @@ function PluginsPage() {
               width: "600px",
               marginTop: "40px",
               backgroundColor: "white",
+              borderRadius: "4px"
             }}
             InputProps={{
               endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
@@ -216,6 +217,9 @@ function PluginsPage() {
               md={3}
               marginTop={8}
               m={2}
+              sx ={{ 
+                display:"flex",
+                justifyContent: "center",}}
             >
               <Box
                 sx={{

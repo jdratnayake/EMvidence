@@ -129,7 +129,7 @@ function PluginVerifyPage() {
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
-                label={searchText === "" ? "Search" : ""}
+                label={searchText === "" ? "Search Plugin" : ""}
                 sx={{ ...sxStyle }}
                 InputLabelProps={{
                   shrink: false,
@@ -138,7 +138,7 @@ function PluginVerifyPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: "80%",
+                  width:lessThanMd ? "80%":"55%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,
