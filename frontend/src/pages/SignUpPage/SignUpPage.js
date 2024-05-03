@@ -251,15 +251,16 @@ function SignUpPage() {
       <Grid container spacing={0} style={{ height: "100vh" }}>
         <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
           <Container maxWidth="xs">
-            <Box
-              marginTop={lessThanSm ? 2 : lessThanMd ? 20 : 10}
-              marginBottom={lessThanSm ? 2 : 0}
+          <Box
+              marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
+              marginBottom={lessThanSm ? 1 : 0}
               //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
               sx={{
                 display: "flex",
                 flexDirection: lessThanSm ? "row" : "column",
                 alignItems: "center",
-                marginLeft: lessThanSm ? 14 : 0,
+                justifyContent: "center",
+                marginLeft: 0,
               }}
             >
               <Box
@@ -270,14 +271,6 @@ function SignUpPage() {
                 }}
                 src={lessThanSm ? logo2 : logo}
               />
-              {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
-                  paddingBottom: 4,
-                  marginTop: lessThanSm ? 4 : 2,
-                  marginLeft: lessThanSm ? '20px' : 0,
-                  variant: lessThanSm ? 'h4' : 'h1',
-                  }}>
-                  EMvidence
-                </Typography> */}
             </Box>
           </Container>
         </Grid>
