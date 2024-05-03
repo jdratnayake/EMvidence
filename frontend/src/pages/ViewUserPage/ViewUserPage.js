@@ -257,7 +257,7 @@ function ViewUserPage() {
                             alt="profile pic"
                             width="200px"
                             height="200px"
-                            style={{ borderRadius: "50%" }}
+                            style={{ borderRadius: "50%",  border: "2px solid black" }}
                         />
 
                     </ImageBox>

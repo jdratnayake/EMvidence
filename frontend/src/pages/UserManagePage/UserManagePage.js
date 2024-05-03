@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import { useQuery, useQueryClient } from "react-query";
+import { Container } from "@mui/system";
 import {
   Button,
   Chip,
@@ -159,7 +160,7 @@ function UserManagePage() {
         onClose={() => setActivateModalStatus(false)}
         handleBanStatusChange={handleBanStatusChange}
       />
-      <ContainerBox>
+      <Container>
         <Typography
           variant="h4"
           color="textPrimary"
@@ -177,7 +178,7 @@ function UserManagePage() {
         >
           <TextField
             id="search"
-            label={searchText === "" ? "Search" : ""}
+            label={searchText === "" ? "Search User" : ""}
             sx={{ ...sxStyle }}
             InputLabelProps={{
               shrink: false,
@@ -186,7 +187,7 @@ function UserManagePage() {
             onChange={handleSearch}
             variant="outlined"
             style={{
-              width: "500px",
+              width: "47%",
               marginTop: "40px",
               backgroundColor: "white",
               borderRadius: 4,
@@ -315,7 +316,7 @@ function UserManagePage() {
             </TableBody>
           </Table>
         </TableContainer>
-      </ContainerBox>
+      </Container>
     </>
   );
 }
