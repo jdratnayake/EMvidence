@@ -459,7 +459,7 @@ function EmFileUploadPage() {
       setTimeout(() => {
         navigate("/file-list");
         console.log(" --- msg 2 ---");
-      }, 300);
+      }, 3000);
 
       console.log(fileName, fileSize, fileUniqueName);
     }
