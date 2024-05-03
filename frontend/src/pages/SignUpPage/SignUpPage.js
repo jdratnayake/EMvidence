@@ -37,7 +37,8 @@ import {
 } from "./Validation";
 import { registerUser } from "../../services/authService";
 import { useUser } from "../../contexts/UserContext";
-import logo from "../../resources/logo8.png";
+import logo from "../../resources/logo-white.png";
+import logo2 from "../../resources/logo-side-white.png";
 
 function Copyright(props) {
   return (
@@ -264,12 +265,10 @@ function SignUpPage() {
               <Box
                 component="img"
                 sx={{
-                  height: 520,
-                  width: 680,
-                  maxHeight: { xs: 200, sm: 300, md: 500 },
-                  maxWidth: { xs: 200, sm: 300, md: 500 },
+                  maxHeight: { xs: 300, sm: 350, md: 630 },
+                  maxWidth: { xs: 300, sm: 350, md: 500 },
                 }}
-                src={logo}
+                src={lessThanSm ? logo2 : logo}
               />
               {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
                   paddingBottom: 4,
