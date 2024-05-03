@@ -19,6 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ExtensionIcon from '@mui/icons-material/Extension';
 import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -165,7 +166,7 @@ function PluginVerifyPage() {
                   },
                 }}
               >
-                {lessThanMd ? <OpenInNewIcon /> : "All Plugins"}
+                {lessThanMd ? <ExtensionIcon /> : "All Plugins"}
               </Button>
             </Tooltip>
           </Box>
@@ -241,6 +242,7 @@ function PluginVerifyPage() {
                           variant="outlined"
                           style={{ color: "#00245A" }}
                           sx={{
+                            ml:2,
                             borderColor: "rgba(0, 36, 90, 0.4)",
                             "&:hover": {
                               borderColor: "#00245A", // Change to the desired hover color

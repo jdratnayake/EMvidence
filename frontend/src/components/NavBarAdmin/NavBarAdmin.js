@@ -50,23 +50,29 @@ function NavBarAdmin({ pageName }) {
             alt="Logo"
             style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
           />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2, mt:"4px",
-              display: { xs: "none", md: "flex" },
-              fontFamily: "roboto",
-              fontWeight: 700,
-              letterSpacing: ".2rem",
-              color: "#00245A",
+          <Link to="/"
+            style={{
               textDecoration: "none",
-            }}
-          >
-            EMvidence
-          </Typography>
+            }}>
+
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="#app-bar-with-responsive-menu"
+              sx={{
+                mr: 2, mt: "4px",
+                display: { xs: "none", md: "flex" },
+                fontFamily: "roboto",
+                fontWeight: 700,
+                letterSpacing: ".2rem",
+                color: "#00245A",
+                textDecoration: "none",
+              }}
+            >
+              EMvidence
+            </Typography>
+          </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -120,7 +126,13 @@ function NavBarAdmin({ pageName }) {
               textDecoration: "none",
             }}
           >
-            EMvidence
+            <Link to="/"
+              style={{
+                textDecoration: "none",
+                color: "#00245A",
+              }}>
+              EMvidence
+            </Link>
           </Typography>
           <Box
             sx={{

@@ -115,9 +115,9 @@ function EmFileUploadPage() {
   const [showCancelAlert, setShowCancelAlert] = useState(false);
 
   // State to manage the selected value of the dropdown
-  const [deviceId, setDeviceId] = useState(1);
-  const [centerFreq, setCenterFreq] = useState(10);
-  const [samplingRate, setSamplingRate] = useState(8);
+  const [deviceId, setDeviceId] = useState();
+  const [centerFreq, setCenterFreq] = useState();
+  const [samplingRate, setSamplingRate] = useState();
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileUniqueName, setFileUniqueName] = useState("");
@@ -459,7 +459,7 @@ function EmFileUploadPage() {
       setTimeout(() => {
         navigate("/file-list");
         console.log(" --- msg 2 ---");
-      }, 300);
+      }, 3000);
 
       console.log(fileName, fileSize, fileUniqueName);
     }
@@ -644,7 +644,7 @@ function EmFileUploadPage() {
                       type="file"
                       required
                       onChange={handleFileSelect}
-                      accept=".h5, .cfile, .png, .pdf, .jpg"
+                      accept=".cfile"
                       style={{
                         color: selectedFile ? 'black' : 'grey', height: '53px',
                         border: 'none', left: '-20px', width: "100%"
