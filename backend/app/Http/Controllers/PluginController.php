@@ -213,7 +213,6 @@ class PluginController extends Controller
             $overlapPercentageIndex = $request->header("overlap_percentage_index");
             $sampleSelectionIndex = $request->header("sample_selection_index");
             $emRawFileId = $request->header("em_raw_file_id");
-
             // Retrieve EM raw file record
             $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId)->firstOrFail();
             $emRawFileName = $emRawFileRecord->em_raw_file_name;
@@ -222,11 +221,31 @@ class PluginController extends Controller
             $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
             $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
             $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
-
+            $decrytPythonCodeFilePath = env("DECRYPTION_FILE_PATH");
+            info($decrytPythonCodeFilePath);
+            $h5FilePath = str_replace('.enc', '', $emRawFilePath);
+            info($h5FilePath);
+            $getKey = env('APP_KEY');
+            info($getKey);
+            info('in pre processing');
+            $output = execute_python_script(
+                $decrytPythonCodeFilePath,
+                $emRawFilePath,
+                $getKey,
+                $h5FilePath
+            );
+          
+            if ($output->status == 200) {
+                info("decryption success");
+            }else{
+                info("decryption unsuccess");
+                return response()->json(["error" => "decryption unsuccess"], 500);
+            }
+            info('in pre processing 4');
             // Execute Python script
             $output = execute_python_script(
                 $preprocessingPluginPath,
-                $emRawFilePath,
+                $h5FilePath,
                 $emPreprocessedDirectoryPath,
                 $downSamplingIndex,
                 $fftSizeIndex,

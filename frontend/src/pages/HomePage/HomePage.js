@@ -17,7 +17,7 @@ function HomePage() {
 
   return (
     <>
-      <Box sx={{ backgroundColor: "#E8E8E8", minHeight: "602px", paddingBottom: "0.5%", }}>
+      <Box sx={{ backgroundColor: "#E8E8E8", minHeight: "610px", paddingBottom: "0.5%", }}>
         <NavBar />
         <Container maxWidth="lg" sx={{ marginTop: "30px", maxWidth: "100vh" }}>
           <Box sx={{ display: "flex", maxHeight: "50vh" }}>
