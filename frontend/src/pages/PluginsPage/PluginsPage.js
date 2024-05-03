@@ -138,12 +138,13 @@ function PluginsPage() {
                         height: "70px",
                         alignContent: "center",
                         borderRadius: "50%",
+                        border: "2px solid grey"
                       }}
                     />
                   </Grid>
 
                   <Typography
-                    sx={{ fontSize: 16 }}
+                    sx={{ fontSize: 16 , fontWeight: "bold"}}
                     color="text.primary"
                     gutterBottom
                     align="center"
@@ -158,7 +159,7 @@ function PluginsPage() {
                   >
                     Maintained by {author}
                   </Typography>
-                  <Typography color="text.secondary" marginTop={2} align="left">
+                  <Typography color="text.secondary" marginTop={2} align="center">
                     {description}
                   </Typography>
                 </CardContent>
@@ -248,12 +249,13 @@ function PluginsPage() {
                             height: "70px",
                             alignContent: "center",
                             borderRadius: "50%",
+                            border: "2px solid grey",
                           }}
                         />
                       </Grid>
 
                       <Typography
-                        sx={{ fontSize: 16 }}
+                        sx={{ fontSize: 16 , fontWeight: "bold"}}
                         color="text.primary"
                         gutterBottom
                         align="center"
