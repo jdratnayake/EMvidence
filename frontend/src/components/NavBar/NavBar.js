@@ -21,7 +21,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import RuleIcon from '@mui/icons-material/Rule';
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import logo from "../../resources/logo.png";
+import logo from "../../resources/logo-blue-plain.png";
 import { Link } from "react-router-dom";
 import {
   FormControl,
@@ -73,20 +73,19 @@ function NavBar(pageName) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "50px", height: "30px" }}
+            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
           />
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
-              mr: 2,
+              mr: 2, mt:"4px",
               display: { xs: "none", md: "flex" },
               fontFamily: "roboto",
               fontWeight: 700,
-              letterSpacing: ".1rem",
-              color: "#000000",
+              letterSpacing: ".2rem",
+              color: "#00245A",
               textDecoration: "none",
             }}
           >
@@ -133,19 +132,18 @@ function NavBar(pageName) {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
               fontFamily: "roboto",
               fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "#000000",
+              letterSpacing: ".2rem",
+              color: "#00245A",
               textDecoration: "none",
             }}
           >
-            Emvidence
+            EMvidence
           </Typography>
           <Box
             sx={{

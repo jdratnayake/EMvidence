@@ -378,6 +378,7 @@ function PluginUploadListPage() {
                       <Tooltip title={lessThanMd ? "Delete" : null}>
                         <Button
                           variant="outlined"
+                          sx={{ml:2}}
                           color="error"
                           onClick={() => {
                             setSelectedPluginId(plugin.plugin_id);

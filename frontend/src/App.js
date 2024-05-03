@@ -24,6 +24,7 @@ import ReportPage from "./pages/ReportPage/ReportPage";
 import PluginPage from "./pages/PluginsPage/PluginsPage";
 import PluginVerifyPage from "./pages/PluginVerifyPage/PluginVerifyPage";
 import PluginVerifyListPage from "./pages/PluginVerifyListPage/PluginVerifyListPage";
+import ViewUserPage from "./pages/ViewUserPage/ViewUserPage";
 
 import AnalysisPage1 from "./pages/AnalysisPageModified/AnalysisPage1";
 import PluginManagePage from "./pages/PluginManagePage/PluginManagePage";
@@ -49,10 +50,6 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="login" element={<SignInPage />} />
       <Route path="register" element={<SignUpPage />} />
-      <Route
-        path="plugin"
-        element={<InvestigatorTemplate children={<PluginPage />} />}
-      />
 
       {/* Admin */}
       <Route
@@ -65,6 +62,12 @@ const router = createBrowserRouter(
         path="user-list"
         element={
           <AdminTemplate pageName="Users" children={<UserManagePage />} />
+        }
+      />
+      <Route
+        path="user/:selectedUserId"
+        element={
+          <AdminTemplate pageName="user" children={<ViewUserPage />} />
         }
       />
       {/* Contains all plugins */}
@@ -137,6 +140,12 @@ const router = createBrowserRouter(
       <Route
         path="edit-profile"
         element={<InvestigatorTemplate children={<EditProfilePage />} />}
+      />
+      <Route
+        path="plugin"
+        element={
+          <InvestigatorTemplate pageName="Plugin" children={<PluginPage />} />
+        }
       />
 
       {/* Developer */}

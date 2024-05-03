@@ -274,6 +274,7 @@ const AnalysisPage = () => {
   const [emDataFile, setEmDataFile] = useState();
   const [openPopup, setOpenPopup] = useState(false);
   const [reportName, setReportName] = useState("");
+  const [reportNameError, setReportNameError] = useState("");
 
   const handleOpenPopup = () => {
     setOpenPopup(true);
@@ -283,8 +284,68 @@ const AnalysisPage = () => {
     setOpenPopup(false);
   };
 
-  const handleSave = () => {
-    console.log(reportName);
+  const validateReportName = (reportName) => {
+    if (!reportName) {
+      return "Report name is required";
+    }
+
+    return true;
+  };
+
+  const handleSave = async () => {
+    const reportNameValidationResult = validateReportName(reportName);
+    if (reportNameValidationResult !== true) {
+      setReportNameError(reportNameValidationResult);
+
+      return 0;
+    }
+
+    const pluginResponseData = analysisResults
+      .map(
+        (result) =>
+          `<tr>
+        <th>${result.action}:</th>
+        <td>${result.probability}%</td>
+      </tr>`
+      )
+      .join("")
+      .replace(/\n/g, "");
+
+    // console.log(pluginResponseData);
+    // return 1;
+
+    const userData = {
+      report_visible_name: reportName,
+      em_file_id: emRawFileRecord.em_raw_file_id,
+      plugin_id: checkedPlugin,
+      down_sampling_index: downSamplingIndex,
+      fft_size_index: fftSizeIndex,
+      overlap_size_index: overLapPercentageIndex,
+      sample_selection_index: sampleSelectionIndex,
+      plugin_response: pluginResponseData,
+    };
+
+    const response = await fetch(API_URL + "/plugin/analysis-report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user["userData"]["token"],
+        user_id: user["userData"]["user_id"],
+      },
+      body: JSON.stringify(userData),
+    });
+
+    setReportName("");
+
+    toast.success("Report Created Successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
     setOpenPopup(false);
   };
 
@@ -951,7 +1012,7 @@ const AnalysisPage = () => {
 
           <Dialog open={openPopup} onClose={handleClosePopup}>
             <Typography variant="h5" sx={{ ml: 3, mt: 1, fontWeight: "bold" }}>
-              Add Title
+              Add Report Name
             </Typography>
             <DialogContent sx={{ width: "500px", height: "120px" }}>
               <TextField
@@ -964,6 +1025,8 @@ const AnalysisPage = () => {
                 }}
                 value={reportName}
                 onChange={(e) => setReportName(e.target.value)}
+                error={reportNameError !== ""}
+                helperText={reportNameError}
               />
             </DialogContent>
             <DialogActions>

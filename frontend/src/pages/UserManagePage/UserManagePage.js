@@ -31,6 +31,7 @@ import { API_URL, queryKeys } from "../../constants";
 import { getInvestigatorDeveloperDetails } from "../../services/userService";
 import { useUser } from "../../contexts/UserContext";
 import { getFullName, capitalizeWords } from "../../helper";
+import { useNavigate } from "react-router-dom";
 
 function UserManagePage() {
   const [selectedUserId, setSelectedUserId] = useState(0);
@@ -42,6 +43,7 @@ function UserManagePage() {
   const [searchText, setSearchText] = useState("");
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const handleSearch = (event) => {
     const searchTerm = event.target.value;
@@ -158,15 +160,19 @@ function UserManagePage() {
         handleBanStatusChange={handleBanStatusChange}
       />
       <ContainerBox>
-        <HeadingBox>
-          <Typography variant="h4" gutterBottom>
-            Users
-          </Typography>
-        </HeadingBox>
+        <Typography
+          variant="h4"
+          color="textPrimary"
+          align="center"
+          gutterBottom
+        >
+          Users
+        </Typography>
+
         <Grid
           container
           alignItems="center"
-          justifyContent="center"
+          justifyContent="left"
           sx={{ mb: 4 }}
         >
           <TextField
@@ -190,129 +196,125 @@ function UserManagePage() {
             }}
           />
         </Grid>
-        <ContentBox>
-          <TableBox>
-            <Paper sx={{ width: "100%", overflow: "hidden" }}>
-              <TableContainer sx={{ maxHeight: "440" }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>
-                        <Typography variant="h6" color="textPrimary">
-                          Name
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="h6" color="textPrimary">
-                          Type
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="h6" color="textPrimary">
-                          Status
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="h6" color="textPrimary">
-                          Action
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data?.map((user) => (
-                      <TableRow hover={true} key={user.user_id}>
-                        <TableCell>
-                          {getFullName(user.first_name, user.last_name)}
-                        </TableCell>
-                        <TableCell>{capitalizeWords(user.user_type)}</TableCell>
-                        <TableCell align="center">
-                          <Chip
-                            sx={settingsArray[user.ban_status]["style"]}
-                            label={settingsArray[user.ban_status]["labelName"]}
-                          />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <span style={{ marginLeft: "10px" }}>
-                              {"\u00A0"}
-                            </span>
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: "#00245A",
-                                cursor: "pointer",
-                                borderColor: "rgba(0, 36, 90, 0.4)",
-                                "&:hover": {
-                                  borderColor: "#00245A", // Change to the desired hover color
-                                },
-                              }}
-                              onClick={() => {}}
-                            >
-                              <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
-                              View
-                            </Button>
-                            <span style={{ marginLeft: "10px" }}>
-                              {"\u00A0"}
-                            </span>
+        <TableContainer sx={{ maxHeight: "440" }} component={Paper}>
+          <Table stickyHeader aria-label="custom pagination table" sx={{ minWidth: 500 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="h6" color="textPrimary">
+                    Name
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="h6" color="textPrimary">
+                    Type
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography variant="h6" color="textPrimary">
+                    Status
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Typography variant="h6" color="textPrimary">
+                    Action
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data?.map((user) => (
+                <TableRow hover={true} key={user.user_id}>
+                  <TableCell>
+                    {getFullName(user.first_name, user.last_name)}
+                  </TableCell>
+                  <TableCell>{capitalizeWords(user.user_type)}</TableCell>
+                  <TableCell align="center">
+                    <Chip
+                      sx={settingsArray[user.ban_status]["style"]}
+                      label={settingsArray[user.ban_status]["labelName"]}
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ marginLeft: "10px" }}>
+                        {"\u00A0"}
+                      </span>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "#00245A",
+                          cursor: "pointer",
+                          borderColor: "rgba(0, 36, 90, 0.4)",
+                          "&:hover": {
+                            borderColor: "#00245A", // Change to the desired hover color
+                          },
+                        }}
+                        onClick={() => {
+                          navigate(`/user/${user.user_id}`)
+                        }}
+                      >
+                        <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                        View
+                      </Button>
+                      <span style={{ marginLeft: "10px" }}>
+                        {"\u00A0"}
+                      </span>
 
-                            {user.ban_status === "false" ? (
-                              <Button
-                                variant="outlined"
-                                color="error"
-                                onClick={() => {
-                                  setSelectedUserId(user.user_id);
-                                  setDeactivateModalStatus(true);
-                                  setBanStatus("true");
-                                }}
-                              >
-                                Deactivate
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outlined"
-                                sx={{
-                                  color: "green",
+                      {user.ban_status === "false" ? (
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => {
+                            setSelectedUserId(user.user_id);
+                            setDeactivateModalStatus(true);
+                            setBanStatus("true");
+                          }}
+                        >
+                          Deactivate
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "green",
 
-                                  cursor: "pointer",
+                            cursor: "pointer",
 
-                                  borderColor: "rgba(0, 128, 0, 0.4)",
+                            borderColor: "rgba(0, 128, 0, 0.4)",
 
-                                  pl: 3,
+                            pl: 3,
 
-                                  pr: 3,
+                            pr: 3,
 
-                                  "&:hover": {
-                                    borderColor: "green",
-                                  },
-                                }}
-                                onClick={() => {
-                                  setSelectedUserId(user.user_id);
-                                  setActivateModalStatus(true);
-                                  setBanStatus("false");
-                                }}
-                              >
-                                {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
-                                Activate
-                              </Button>
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </TableBox>
-        </ContentBox>
+                            "&:hover": {
+                              borderColor: "green",
+                            },
+                          }}
+                          onClick={() => {
+                            setSelectedUserId(user.user_id);
+                            setActivateModalStatus(true);
+                            setBanStatus("false");
+                          }}
+                        >
+                          {/* <DeleteIcon sx={{ ml: -1, mr: 1 }} /> */}
+                          Activate
+                        </Button>
+                      )}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </ContainerBox>
     </>
   );

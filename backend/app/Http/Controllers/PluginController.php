@@ -8,9 +8,12 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use App\Models\AnalysisPlugin;
 use App\Models\EmDataFile;
+use App\Models\Report;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 function execute_python_script($path, ...$variables)
 {
@@ -48,6 +51,25 @@ class PluginController extends Controller
         ];
 
         return response()->json($responseData);
+    }
+
+    public function deleteReport(Request $request)
+    {
+        $reportId = $request->header("report_id");
+
+        $reportRecord = Report::where('report_id', $reportId)->firstOrFail();
+        $filePath = env("REPORTS_DIRECTORY_PATH") . $reportRecord->report_file_name;
+
+        if (File::exists($filePath)) {
+            File::delete($filePath);
+            $report = Report::where('report_id', $reportId)->delete();
+            $responseData = [
+                'success' => "Report deleted successfully",
+            ];
+            return response()->json($responseData);
+        } else {
+            return response()->json(['error' => 'Report deletion failed.'], 500);
+        }
     }
 
     public function getDeveloperPlugins(Request $request)
@@ -125,6 +147,21 @@ class PluginController extends Controller
         return response()->json($responseData);
     }
 
+    public function getCompatiblePlugins()
+    {
+        $verifiedPlugins = AnalysisPlugin::orderBy('number_of_usage_times', 'desc')
+            ->where('compatibility_status', 'compatible')
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->get();
+
+        $responseData = [
+            'compatiblePlugins' => $verifiedPlugins,
+        ];
+
+        return response()->json($responseData);
+    }
+
     public function getPluginIcon(Request $request)
     {
         $filename = $request->header("icon_filename");
@@ -139,6 +176,33 @@ class PluginController extends Controller
         }
     }
 
+    public function getAnalysisReport(Request $request)
+    {
+        $filename = $request->header("report_filename");
+
+        $path = env("REPORTS_DIRECTORY_PATH") . $filename;
+
+        if (file_exists($path)) {
+            return response()->file($path);
+        } else {
+            return response()->json(['error' => 'Report do not exist.'], 500);
+        }
+    }
+
+    public function getReportDetails(Request $request)
+    {
+        $userId = $request->header("user_id");
+
+        $reports = Report::orderBy('created_date', 'asc')
+            ->where('user_id', $userId)->get();
+
+        $responseData = [
+            'reports' => $reports,
+        ];
+
+        return response()->json($responseData);
+    }
+
     public function executePreprocessingPlugin(Request $request)
     {
         try {
@@ -149,7 +213,6 @@ class PluginController extends Controller
             $overlapPercentageIndex = $request->header("overlap_percentage_index");
             $sampleSelectionIndex = $request->header("sample_selection_index");
             $emRawFileId = $request->header("em_raw_file_id");
-
             // Retrieve EM raw file record
             $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileId)->firstOrFail();
             $emRawFileName = $emRawFileRecord->em_raw_file_name;
@@ -158,11 +221,31 @@ class PluginController extends Controller
             $emRawFilePath = env("EM_RAW_DIRECTORY_PATH") . "/" . $emRawFileName;
             $preprocessingPluginPath = env("PREPROCESSING_PLUGIN_DIRECTORY_PATH") . "/" . $preprocessingPluginName;
             $emPreprocessedDirectoryPath = env("EM_PREPROCESSED_DIRECTORY_PATH");
-
+            $decrytPythonCodeFilePath = env("DECRYPTION_FILE_PATH");
+            info($decrytPythonCodeFilePath);
+            $h5FilePath = str_replace('.enc', '', $emRawFilePath);
+            info($h5FilePath);
+            $getKey = env('APP_KEY');
+            info($getKey);
+            info('in pre processing');
+            $output = execute_python_script(
+                $decrytPythonCodeFilePath,
+                $emRawFilePath,
+                $getKey,
+                $h5FilePath
+            );
+          
+            if ($output->status == 200) {
+                info("decryption success");
+            }else{
+                info("decryption unsuccess");
+                return response()->json(["error" => "decryption unsuccess"], 500);
+            }
+            info('in pre processing 4');
             // Execute Python script
             $output = execute_python_script(
                 $preprocessingPluginPath,
-                $emRawFilePath,
+                $h5FilePath,
                 $emPreprocessedDirectoryPath,
                 $downSamplingIndex,
                 $fftSizeIndex,
@@ -186,6 +269,8 @@ class PluginController extends Controller
         try {
             $emRawFileID = $request->header("em_raw_file_id");
             $analysisPluginID = $request->header("analysis_plugin_id");
+
+            AnalysisPlugin::where('plugin_id', $analysisPluginID)->increment('number_of_usage_times');
 
             $emRawFileRecord = EmDataFile::where('em_raw_file_id', $emRawFileID)->firstOrFail();
             $analysisPluginRecord = AnalysisPlugin::where('plugin_id', $analysisPluginID)->firstOrFail();
@@ -353,17 +438,160 @@ class PluginController extends Controller
 
     public function generateAnalysisReport(Request $request)
     {
+        $userId = $request->header("user_id");
+        $reportVisibleName = $request->input('report_visible_name');
+        $emFileId = $request->input('em_file_id');
+        $pluginId = $request->input('plugin_id');
+        $downSamplingIndex = $request->input('down_sampling_index');
+        $fftSizeIndex = $request->input('fft_size_index');
+        $overlapSizeIndex = $request->input('overlap_size_index');
+        $sampleSelectionIndex = $request->input('sample_selection_index');
+        $pluginResponse = $request->input('plugin_response');
+
+        $emFileRecord = EmDataFile::where('em_raw_file_id', $emFileId)
+            ->join('devices', 'em_data_files.device_id', '=', 'devices.device_id')
+            ->select('em_data_files.*', 'devices.device_name')
+            ->firstOrFail();
+        $pluginRecord = AnalysisPlugin::where('plugin_id', $pluginId)
+            ->join('users', 'analysis_plugins.user_id', '=', 'users.user_id')
+            ->select('analysis_plugins.*', 'users.first_name', 'users.last_name')
+            ->firstOrFail();
+
+        if ($downSamplingIndex == "0") {
+            $downSamplingText = "Not down-sampled";
+        } elseif ($downSamplingIndex == "1") {
+            $downSamplingText = "To 10MHz";
+        } elseif ($downSamplingIndex == "2") {
+            $downSamplingText = "To 8MHz";
+        } elseif ($downSamplingIndex == "3") {
+            $downSamplingText = "To 4MHz";
+        }
+
+        if ($fftSizeIndex == "2048") {
+            $fftSizeText = "2048";
+        }
+
+        if ($overlapSizeIndex == "0") {
+            $overlapSizeText = "10%";
+        } elseif ($overlapSizeIndex == "1") {
+            $overlapSizeText = "20%";
+        }
+
+        if ($sampleSelectionIndex == "0") {
+            $sampleSelectionText = "All Samples";
+        } elseif ($sampleSelectionIndex == "1") {
+            $sampleSelectionText = "First 20000 Samples";
+        } elseif ($sampleSelectionIndex == "2") {
+            $sampleSelectionText = "Samples selected from 1/4 to 3/4 of the file";
+        }
+
         // Initialize Dompdf
         $dompdf = new Dompdf();
 
         // Generate PDF content
-        $html = '<html><body>';
-        $html .= '<h1>PDF Report</h1>';
-        // Add content based on the provided data
-        $html .= '<p>User: ' . "Janitha" . '</p>';
-        $html .= '<p>Date: ' . "Today" . '</p>';
-        // Add more content as needed
-        $html .= '</body></html>';
+        $html = '<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }
+                h1, h2 {
+                    text-align: center;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+        
+                }
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                    border: 1px solid #dddddd;
+                }
+                th {
+                    background-color: #f2f2f2;
+                    width: 35%;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>' . $reportVisibleName . '</h1>
+            <h2>Date: ' . Carbon::today()->format('Y-m-d') . '</h2>
+        
+            <h2>File Details:</h2>
+            <table>
+                <tr>
+                    <th>File Name:</th>
+                    <td>' . $emFileRecord->em_raw_file_visible_name . '</td>
+                </tr>
+                <tr>
+                    <th>Sampling Rate:</th>
+                    <td>' . $emFileRecord->sampling_rate . ' Hz</td>
+                </tr>
+                <tr>
+                    <th>Center Frequency:</th>
+                    <td>' . $emFileRecord->center_frequency . ' Hz</td>
+                </tr>
+                <tr>
+                    <th>Device Name:</th>
+                    <td>' . $emFileRecord->device_name . '</td>
+                </tr>
+                <tr>
+                    <th>File Size:</th>
+                    <td>' . round(($emFileRecord->em_raw_cfile_file_size) / (1024.0 * 1024), 2) . ' MB</td>
+                </tr>
+                <tr>
+                    <th>File Hash:</th>
+                    <td>' . $emFileRecord->em_raw_cfile_hash . '</td> 
+                </tr>
+            </table>
+        
+            <h2>Pre-processing Plugin Details:</h2>
+            <table>
+                <tr>
+                    <th>Down-sampling:</th>
+                    <td>' . $downSamplingText . '</td> 
+                </tr>
+                <tr>
+                    <th>FFT Size:</th>
+                    <td>' . $fftSizeText . '</td>
+                </tr>
+                <tr>
+                    <th>Overlap Size:</th>
+                    <td>' . $overlapSizeText . '</td> 
+                </tr>
+                <tr>
+                    <th>Sample Selection:</th>
+                    <td>' . $sampleSelectionText . '</td> 
+                </tr>
+            </table>
+        
+            <h2>Analysis Plugin Details:</h2>
+            <table>
+                <tr>
+                    <th>Plugin Name:</th>
+                    <td>' . $pluginRecord->plugin_name . '</td> 
+                </tr>
+                <tr>
+                    <th>Plugin Author:</th>
+                    <td>' . $pluginRecord->first_name . ' ' . $pluginRecord->last_name . '</td> 
+                </tr>
+            </table>
+        <br/>
+        <br/>
+            <h2>Results:</h2>
+            <table>
+                ' . $pluginResponse . '
+            </table>
+        </body>
+        </html>
+        ';
 
         // Load HTML content into Dompdf
         $dompdf->loadHtml($html);
@@ -376,9 +604,14 @@ class PluginController extends Controller
 
         // Store PDF in the storage directory
         $pdfContent = $dompdf->output();
-        Storage::put('pdf/' . $pdfFilename, $pdfContent);
+        file_put_contents(env("REPORTS_DIRECTORY_PATH") . $pdfFilename, $pdfContent);
 
-        // Return the filename of the stored PDF
-        return $pdfFilename;
+        $report = new Report();
+        $report->report_visible_name = $reportVisibleName;
+        $report->report_file_name = $pdfFilename;
+        $report->user_id = $userId;
+        $report->save();
+
+        return response()->json(["success" => $pdfFilename]);
     }
 }

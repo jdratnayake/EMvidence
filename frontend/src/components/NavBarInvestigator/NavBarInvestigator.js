@@ -15,10 +15,10 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
-import logo from "../../resources/logo.png";
+import logo from "../../resources/logo-blue-plain.png";
 
-const pages = ["Analysis", "Upload File", "Settings"];
-const pageLinks = ["/report", "/file-list", "/profile"];
+const pages = ["Plugin", "Analysis", "Upload File", "Settings"];
+const pageLinks = ["/plugin", "/report", "/file-list", "/profile"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBarInvestigator({ pageName }) {
@@ -48,25 +48,31 @@ function NavBarInvestigator({ pageName }) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "50px", height: "30px" }}
+            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
           />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "roboto",
-              fontWeight: 700,
-              letterSpacing: ".1rem",
-              color: "#000000",
+          <Link to="/"
+            style={{
               textDecoration: "none",
-            }}
-          >
-            EMvidence
-          </Typography>
+            }}>
+
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="#app-bar-with-responsive-menu"
+              sx={{
+                mr: 2, mt: "4px",
+                display: { xs: "none", md: "flex" },
+                fontFamily: "roboto",
+                fontWeight: 700,
+                letterSpacing: ".2rem",
+                color: "#00245A",
+                textDecoration: "none",
+              }}
+            >
+              EMvidence
+            </Typography>
+          </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -104,6 +110,7 @@ function NavBarInvestigator({ pageName }) {
               ))}
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
@@ -113,15 +120,22 @@ function NavBarInvestigator({ pageName }) {
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
+              fontFamily: "roboto",
               fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "#000000",
+              letterSpacing: ".2rem",
+              color: "#00245A",
               textDecoration: "none",
             }}
           >
-            Emvidence
+            <Link to="/"
+              style={{
+                textDecoration: "none",
+                color: "#00245A",
+              }}>
+              EMvidence
+            </Link>
           </Typography>
+
           <Box
             sx={{
               flexGrow: 1,

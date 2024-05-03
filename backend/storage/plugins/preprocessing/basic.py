@@ -5,10 +5,10 @@ from scipy import signal
 from sklearn.preprocessing import MinMaxScaler
 import json
 
-def getData(cfileName):
-    data = np.fromfile(cfileName, dtype="float32")
+def getData(filename):
+    hf = h5py.File(filename,'r')
+    data = hf.get('data')
     data = data[0::2] + 1j*data[1::2]
-
     return data
 
 def downSampling(data,sampling_rate,down_sampling_rate):
