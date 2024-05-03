@@ -138,12 +138,13 @@ function PluginsPage() {
                         height: "70px",
                         alignContent: "center",
                         borderRadius: "50%",
+                        border: "2px solid grey"
                       }}
                     />
                   </Grid>
 
                   <Typography
-                    sx={{ fontSize: 16 }}
+                    sx={{ fontSize: 16 , fontWeight: "bold"}}
                     color="text.primary"
                     gutterBottom
                     align="center"
@@ -158,7 +159,7 @@ function PluginsPage() {
                   >
                     Maintained by {author}
                   </Typography>
-                  <Typography color="text.secondary" marginTop={2} align="left">
+                  <Typography color="text.secondary" marginTop={2} align="center">
                     {description}
                   </Typography>
                 </CardContent>
@@ -181,7 +182,7 @@ function PluginsPage() {
         <Grid container alignItems="center" justifyContent="center">
           <TextField
             id="search"
-            label={searchText === "" ? "Search" : ""}
+            label={searchText === "" ? "Search Plugins" : ""}
             InputLabelProps={{
               shrink: false,
             }}
@@ -193,6 +194,7 @@ function PluginsPage() {
               width: "600px",
               marginTop: "40px",
               backgroundColor: "white",
+              borderRadius: "4px"
             }}
             InputProps={{
               endAdornment: <SearchIcon sx={{ fontSize: 30 }} />,
@@ -215,6 +217,9 @@ function PluginsPage() {
               md={3}
               marginTop={8}
               m={2}
+              sx ={{ 
+                display:"flex",
+                justifyContent: "center",}}
             >
               <Box
                 sx={{
@@ -248,12 +253,13 @@ function PluginsPage() {
                             height: "70px",
                             alignContent: "center",
                             borderRadius: "50%",
+                            border: "2px solid grey",
                           }}
                         />
                       </Grid>
 
                       <Typography
-                        sx={{ fontSize: 16 }}
+                        sx={{ fontSize: 16 , fontWeight: "bold"}}
                         color="text.primary"
                         gutterBottom
                         align="center"
