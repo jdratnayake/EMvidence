@@ -1057,9 +1057,26 @@ const PluginVerifyPage = () => {
               backgroundColor: "#E8E8E8",
             }}
           >
-            <Typography variant="h5" sx={{ mb: "30px" , justifyContent:"center", display:"flex" }}>
+            <Typography variant="h5" sx={{ mb: "30px" , justifyContent:"center", display:"flex",  fontWeight: "bold", }}>
               Result
             </Typography>
+            <Typography
+                variant="body1"
+                display="block"
+                sx={{
+                  display:"flex", justifyContent:"center",
+                  fontSize: "25px",
+                  fontStyle: "normal",
+                  lineHeight: "normal",
+                  fontWeight: "bold",
+                  color: "grey",
+                  mb: 3,
+                  mt: 3,
+                }}
+                gutterBottom
+              >
+                Not Available !
+              </Typography>
 
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
