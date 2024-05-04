@@ -113,17 +113,17 @@ class UserController extends Controller
         info($userId);
         $user = User::find($userId);
         $imagePath = env("PROFILE_IMAGE_PATH") . $user->profile_picture;
-        return response()->file($imagePath);
-        // info('this is image path: '.$imagePath);
-        // if (file_exists($imagePath)) {
-        //     info('image exists');
-        //     info($imagePath);
-        //     return response()->file($imagePath);
-        // } else {
-        //     $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default_image.jpg";
-        //     info($defaultImagePath);
-        //     return response()->file($defaultImagePath);
-        // }
+        //return response()->file($imagePath);
+        info('this is image path: '.$imagePath);
+        if (file_exists($imagePath)) {
+            info('image exists');
+            info($imagePath);
+            return response()->file($imagePath);
+        } else {
+            $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default_image.jpg";
+            info($defaultImagePath);
+            return response()->file($defaultImagePath);
+        }
     }
 
 
