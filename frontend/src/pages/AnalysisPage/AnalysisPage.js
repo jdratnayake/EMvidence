@@ -562,7 +562,7 @@ const AnalysisPage = () => {
             }}
             gutterBottom
           >
-            Pre-processing Plugins
+            Pre-processing 
           </Typography>
         </Box>
         <Box
@@ -827,6 +827,7 @@ const AnalysisPage = () => {
             borderEndEndRadius: "5px",
           }}
         >
+
           <Box
             sx={{
               display: "flex",
@@ -835,6 +836,25 @@ const AnalysisPage = () => {
               mb: "5px",
             }}
           >
+            <Typography
+                variant="body1"
+                display="block"
+                sx={{
+                  fontSize: "25px",
+                  fontStyle: "normal",
+                  lineHeight: "normal",
+                  fontWeight: "bold",
+                  color: "grey",
+                  mb: 3,
+                  mt: 3,
+                }}
+                gutterBottom
+              >
+                Not Available !
+              </Typography>
+
+
+
             {pluginData && pluginData?.length !== 0 && (
               <Typography
                 variant="body1"
@@ -973,10 +993,26 @@ const AnalysisPage = () => {
               backgroundColor: "#E8E8E8",
             }}
           >
-            <Typography variant="h5" sx={{ mb: "30px" }}>
+            <Typography variant="h5" sx={{ mb: "30px", display:"flex", justifyContent:"center", fontWeight:"bold" }}>
               Result
             </Typography>
-
+            <Typography
+              variant="body1"
+              display="block"
+              sx={{
+                display: "flex", justifyContent: "center",
+                fontSize: "25px",
+                fontStyle: "normal",
+                lineHeight: "normal",
+                fontWeight: "bold",
+                color: "grey",
+                mb: 3,
+                mt: 3,
+              }}
+              gutterBottom
+            >
+              Not Available !
+            </Typography>
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
                 <strong style={{ display: "inline-block", width: "200px" }}>
