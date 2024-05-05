@@ -19,7 +19,7 @@ import logo from "../../resources/logo-blue-plain.png";
 
 const pages = ["Dashboard", "Users", "Plugins"];
 const pageLinks = ["/admin", "/user-list", "/plugin-verify-list"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Dashboard", "Logout"];
 
 function NavBarAdmin({ pageName }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -48,20 +48,27 @@ function NavBarAdmin({ pageName }) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
+            style={{
+              width: "30px",
+              height: "20px",
+              marginRight: 10,
+              marginTop: "0px",
+            }}
           />
-          <Link to="/"
+          <Link
+            to="/"
             style={{
               textDecoration: "none",
-            }}>
-
+            }}
+          >
             <Typography
               variant="h6"
               noWrap
               component="a"
               href="#app-bar-with-responsive-menu"
               sx={{
-                mr: 2, mt: "4px",
+                mr: 2,
+                mt: "4px",
                 display: { xs: "none", md: "flex" },
                 fontFamily: "roboto",
                 fontWeight: 700,
@@ -126,11 +133,13 @@ function NavBarAdmin({ pageName }) {
               textDecoration: "none",
             }}
           >
-            <Link to="/"
+            <Link
+              to="/"
               style={{
                 textDecoration: "none",
                 color: "#00245A",
-              }}>
+              }}
+            >
               EMvidence
             </Link>
           </Typography>

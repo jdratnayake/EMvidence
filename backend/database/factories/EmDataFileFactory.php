@@ -43,7 +43,7 @@ class EmDataFileFactory extends Factory
         } while (EmDataFile::where('em_preprocess_file_name', $em_preprocess_file_name)->exists());
 
         return [
-            'em_raw_upload_status' => $this->faker->randomElement(['processed', 'invalid']),
+            'em_raw_upload_status' => $this->faker->randomElement(['processed', 'faild']),
             'em_raw_file_name' => $em_raw_file_name,
             'em_raw_file_visible_name' => $this->faker->sentence(3),
             'em_raw_cfile_hash' => $this->faker->sha256,

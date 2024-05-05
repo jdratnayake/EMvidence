@@ -49,9 +49,9 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="">
+      <RouterLink color="inherit" to="/" style={{ color: "grey" }}>
         EMvidence
-      </Link>{" "}
+      </RouterLink>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -251,7 +251,7 @@ function SignUpPage() {
       <Grid container spacing={0} style={{ height: "100vh" }}>
         <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
           <Container maxWidth="xs">
-          <Box
+            <Box
               marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
               marginBottom={lessThanSm ? 1 : 0}
               //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}

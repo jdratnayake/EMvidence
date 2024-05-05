@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('em_raw_file_id');
             // processing
             // processed
-            // invalid
+            // faild
             $table->string('em_raw_upload_status', 16)->nullable(false)->default('processing');
             $table->string('em_raw_file_name', 128)->unique()->nullable(false);
             $table->string('em_raw_file_visible_name', 128)->nullable(false);
