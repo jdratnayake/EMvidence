@@ -519,11 +519,11 @@ const AnalysisPage = () => {
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Sampling Rate:</strong> {emRawFileRecord?.sampling_rate}{" "}
-                Hz
+                MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong>{" "}
-                {emRawFileRecord?.center_frequency} Hz
+                {emRawFileRecord?.center_frequency} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Device Name:</strong> {emRawFileRecord?.device_name}

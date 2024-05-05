@@ -331,7 +331,7 @@ function PluginUploadPage() {
               fontWeight: 1,
             }}
           >
-            Guidlines
+            Guidelines
           </Link>
         </Grid>
       </Grid>

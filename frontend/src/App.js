@@ -66,9 +66,7 @@ const router = createBrowserRouter(
       />
       <Route
         path="user/:selectedUserId"
-        element={
-          <AdminTemplate pageName="user" children={<ViewUserPage />} />
-        }
+        element={<AdminTemplate pageName="user" children={<ViewUserPage />} />}
       />
       {/* Contains all plugins */}
       <Route
@@ -131,10 +129,7 @@ const router = createBrowserRouter(
       <Route
         path="profile"
         element={
-          <InvestigatorTemplate
-            pageName="Settings"
-            children={<ProfilePage />}
-          />
+          <InvestigatorTemplate pageName="Profile" children={<ProfilePage />} />
         }
       />
       <Route

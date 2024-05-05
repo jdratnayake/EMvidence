@@ -549,11 +549,11 @@ const PluginVerifyPage = () => {
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} Hz
+                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong>{" "}
-                {data?.emFile.center_frequency} Hz
+                {data?.emFile.center_frequency} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Device Name:</strong> {data?.emFile.device_name}

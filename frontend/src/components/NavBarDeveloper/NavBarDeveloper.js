@@ -17,13 +17,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useUser } from "../../contexts/UserContext";
 import logo from "../../resources/logo-blue-plain.png";
 
-const pages = [
-  "Upload Plugin",
-  "Plugin",
-  "Analysis",
-  "Upload File",
-  "Settings",
-];
+const pages = ["Upload Plugin", "Plugin", "Analysis", "Upload File", "Profile"];
 const pageLinks = [
   "/plugin-upload-list",
   "/plugin",
@@ -31,7 +25,8 @@ const pageLinks = [
   "/file-list",
   "/profile",
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Dashboard", "Profile", "Logout"];
+const settingsLinks = ["/plugin-upload-list", "/profile", "/login"];
 
 function NavBarDeveloper({ pageName }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -60,20 +55,27 @@ function NavBarDeveloper({ pageName }) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
+            style={{
+              width: "30px",
+              height: "20px",
+              marginRight: 10,
+              marginTop: "0px",
+            }}
           />
-         <Link to="/"
+          <Link
+            to="/"
             style={{
               textDecoration: "none",
-            }}>
-
+            }}
+          >
             <Typography
               variant="h6"
               noWrap
               component="a"
               href="#app-bar-with-responsive-menu"
               sx={{
-                mr: 2, mt: "4px",
+                mr: 2,
+                mt: "4px",
                 display: { xs: "none", md: "flex" },
                 fontFamily: "roboto",
                 fontWeight: 700,
@@ -138,11 +140,13 @@ function NavBarDeveloper({ pageName }) {
               textDecoration: "none",
             }}
           >
-            <Link to="/"
+            <Link
+              to="/"
               style={{
                 textDecoration: "none",
                 color: "#00245A",
-              }}>
+              }}
+            >
               EMvidence
             </Link>
           </Typography>
@@ -197,13 +201,19 @@ function NavBarDeveloper({ pageName }) {
               open={Boolean(anchorElUser)}
               onClose={() => setAnchorElUser(null)}
             >
-              {settings.map((setting) =>
+              {settings.map((setting, i) =>
                 setting === "Logout" ? (
                   <MenuItem key={setting} onClick={handleLogout}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ) : (
-                  <MenuItem key={setting} onClick={() => setAnchorElUser(null)}>
+                  <MenuItem
+                    key={setting}
+                    onClick={() => {
+                      setAnchorElUser(null);
+                      navigate(settingsLinks[i]);
+                    }}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 )
