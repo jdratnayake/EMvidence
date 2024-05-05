@@ -23,7 +23,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import RuleIcon from "@mui/icons-material/Rule";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 import ActivateModal from "../../components/ActivateModal/ActivateModal";
@@ -214,7 +214,7 @@ function PluginUploadListPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: lessThanMd ? "80%": "55%",
+                  width: lessThanMd ? "80%" : "55%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,
@@ -350,9 +350,9 @@ function PluginUploadListPage() {
                           }}
                         >
                           {lessThanMd ? null : (
-                            <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                            <RuleIcon sx={{ ml: -1, mr: 1 }} />
                           )}
-                          {lessThanMd ? <VisibilityIcon /> : " Verify"}
+                          {lessThanMd ? <RuleIcon /> : " Verify"}
                         </Button>
                       </Tooltip>
                       <Tooltip title={lessThanMd ? "Test" : null}>
@@ -378,7 +378,7 @@ function PluginUploadListPage() {
                       <Tooltip title={lessThanMd ? "Delete" : null}>
                         <Button
                           variant="outlined"
-                          sx={{ml:2}}
+                          sx={{ ml: 2 }}
                           color="error"
                           onClick={() => {
                             setSelectedPluginId(plugin.plugin_id);
