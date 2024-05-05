@@ -482,7 +482,7 @@ function PluginUploadPage() {
               onChange={(event) => setCenterFrequency(event.target.value)}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">Hz</InputAdornment>
+                  <InputAdornment position="end">MHz</InputAdornment>
                 ),
                 inputMode: "numeric",
                 pattern: "/^-?d+(?:.d+)?$/g",

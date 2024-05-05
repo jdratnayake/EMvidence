@@ -562,7 +562,7 @@ const AnalysisPage = () => {
             }}
             gutterBottom
           >
-            Pre-processing 
+            Pre-processing
           </Typography>
         </Box>
         <Box
@@ -681,6 +681,7 @@ const AnalysisPage = () => {
                     label="FFT Size"
                     style={{ borderColor: "#525252" }}
                   >
+                    <MenuItem value={1024}>1024</MenuItem>
                     <MenuItem value={2048}>2048</MenuItem>
                     <MenuItem value={1} disabled></MenuItem>
                   </Select>
@@ -827,7 +828,6 @@ const AnalysisPage = () => {
             borderEndEndRadius: "5px",
           }}
         >
-
           <Box
             sx={{
               display: "flex",
@@ -836,7 +836,8 @@ const AnalysisPage = () => {
               mb: "5px",
             }}
           >
-            <Typography
+            {!(pluginData && pluginData?.length !== 0) && (
+              <Typography
                 variant="body1"
                 display="block"
                 sx={{
@@ -852,8 +853,7 @@ const AnalysisPage = () => {
               >
                 Not Available !
               </Typography>
-
-
+            )}
 
             {pluginData && pluginData?.length !== 0 && (
               <Typography
@@ -993,26 +993,38 @@ const AnalysisPage = () => {
               backgroundColor: "#E8E8E8",
             }}
           >
-            <Typography variant="h5" sx={{ mb: "30px", display:"flex", justifyContent:"center", fontWeight:"bold" }}>
+            <Typography
+              variant="h5"
+              sx={{
+                mb: "30px",
+                display: "flex",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}
+            >
               Result
             </Typography>
-            <Typography
-              variant="body1"
-              display="block"
-              sx={{
-                display: "flex", justifyContent: "center",
-                fontSize: "25px",
-                fontStyle: "normal",
-                lineHeight: "normal",
-                fontWeight: "bold",
-                color: "grey",
-                mb: 3,
-                mt: 3,
-              }}
-              gutterBottom
-            >
-              Not Available !
-            </Typography>
+            {!(analysisResults && analysisResults?.length !== 0) && (
+              <Typography
+                variant="body1"
+                display="block"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  fontSize: "25px",
+                  fontStyle: "normal",
+                  lineHeight: "normal",
+                  fontWeight: "bold",
+                  color: "grey",
+                  mb: 3,
+                  mt: 3,
+                }}
+                gutterBottom
+              >
+                Not Available !
+              </Typography>
+            )}
+
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
                 <strong style={{ display: "inline-block", width: "200px" }}>
