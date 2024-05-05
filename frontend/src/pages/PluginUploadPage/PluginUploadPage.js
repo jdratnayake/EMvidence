@@ -320,7 +320,9 @@ function PluginUploadPage() {
       <Grid container justifyContent="flex-end">
         <Grid item sx={{ marginBottom: 3 }}>
           <Link
-            href="#"
+            href="/guidlines.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             variant="body2"
             color={"rgba(0, 36, 90, 0.8)"}
             sx={{

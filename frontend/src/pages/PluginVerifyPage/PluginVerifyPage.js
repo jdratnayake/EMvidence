@@ -1189,13 +1189,13 @@ const PluginVerifyPage = () => {
               variant="contained"
               onClick={() => {
                 setActivateModalMessage(
-                  "Are you sure you want to verify the plugin?"
+                  "Are you sure you want to confirm the plugin?"
                 );
-                setActivateModalButtonMessage("Verify");
+                setActivateModalButtonMessage("Confirm");
                 setActivateModalStatus(true);
               }}
             >
-              Verify
+              Confirm
             </Button>
           )}
         </Box>

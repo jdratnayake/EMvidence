@@ -272,7 +272,7 @@ function PluginVerifyPage() {
                         },
                       }}
                     >
-                      <Tooltip title={lessThanMd ? "Test" : null}>
+                      <Tooltip title={lessThanMd ? "Test & Verify" : null}>
                         <Button
                           variant="outlined"
                           style={{ color: "#00245A" }}
@@ -288,30 +288,7 @@ function PluginVerifyPage() {
                           {lessThanMd ? null : (
                             <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
                           )}
-                          {lessThanMd ? <DeveloperModeIcon /> : " Test"}
-                        </Button>
-                      </Tooltip>
-
-                      <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A" }}
-                          sx={{
-                            ml: 2,
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            "&:hover": {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => {
-                            setActivateModalStatus(true);
-                            setSelectedPluginId(plugin.plugin_id);
-                          }}
-                        >
-                          {lessThanMd ? null : (
-                            <RuleIcon sx={{ ml: -1, mr: 1 }} />
-                          )}
-                          {lessThanMd ? <RuleIcon /> : "Verify"}
+                          {lessThanMd ? <DeveloperModeIcon /> : "Test & Verify"}
                         </Button>
                       </Tooltip>
                     </Box>

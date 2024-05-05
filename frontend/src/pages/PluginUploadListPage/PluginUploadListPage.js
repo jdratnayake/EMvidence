@@ -334,28 +334,7 @@ function PluginUploadListPage() {
                         },
                       }}
                     >
-                      <Tooltip title={lessThanMd ? "Verify" : null}>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A" }}
-                          sx={{
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            "&:hover": {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => {
-                            setSelectedPluginId(plugin.plugin_id);
-                            setActivateModalStatus(true);
-                          }}
-                        >
-                          {lessThanMd ? null : (
-                            <RuleIcon sx={{ ml: -1, mr: 1 }} />
-                          )}
-                          {lessThanMd ? <RuleIcon /> : " Verify"}
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title={lessThanMd ? "Test" : null}>
+                      <Tooltip title={lessThanMd ? "Test & Confirm" : null}>
                         <Button
                           variant="outlined"
                           style={{ color: "#00245A" }}
@@ -371,7 +350,11 @@ function PluginUploadListPage() {
                           {lessThanMd ? null : (
                             <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
                           )}
-                          {lessThanMd ? <DeveloperModeIcon /> : "Test"}
+                          {lessThanMd ? (
+                            <DeveloperModeIcon />
+                          ) : (
+                            "Test & Confirm"
+                          )}
                         </Button>
                       </Tooltip>
 
