@@ -154,7 +154,8 @@ function ProfilePage() {
       setLastname(data?.last_name);
       setEmail(data?.email);
       setPhoneNumber(data?.phone_number);
-      setImage(data?.profile_image)
+      setImage(data?.profile_image);
+      setImageName(data?.profile_picture)
       setFirstnameBackup(data?.first_name);
       setLastnameBackup(data?.last_name);
       setEmailBackup(data?.email);
