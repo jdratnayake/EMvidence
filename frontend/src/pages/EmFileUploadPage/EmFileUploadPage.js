@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { CssBaseline, Typography } from "@mui/material";
 import { borderColor, Container, height } from "@mui/system";
-import React, { useState, useEffect } from "react";
 import "./EmFileUploadPage.css";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -9,11 +10,11 @@ import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Resumable from "resumablejs";
 import { useNavigate } from "react-router-dom";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
 import NavBar from "../../components/NavBar/NavBar";
 import Alert from "@mui/material/Alert";
@@ -26,9 +27,9 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
-import CloseIcon from '@mui/icons-material/Close';
-import Tooltip from '@mui/material/Tooltip';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CloseIcon from "@mui/icons-material/Close";
+import Tooltip from "@mui/material/Tooltip";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   FormControl,
   InputLabel,
@@ -40,10 +41,9 @@ import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
 import { notifyManager } from "react-query";
-import { API_URL } from "../../constants";
+import { API_URL, queryKeys } from "../../constants";
 import { useUser } from "../../contexts/UserContext";
-
-
+import { getDeviceDetails } from "../../services/deviceService";
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 14,
@@ -59,10 +59,9 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
   },
 });
-
 
 function ConfirmCancelDialog({ open, onClose }) {
   const handleClose = () => {
@@ -113,6 +112,7 @@ function EmFileUploadPage() {
   const [resumable, setResumable] = useState(null);
   const [isSendToDatabase, setIsSendToDatabase] = useState(false);
   const [showCancelAlert, setShowCancelAlert] = useState(false);
+  const queryClient = useQueryClient();
 
   // State to manage the selected value of the dropdown
   const [deviceId, setDeviceId] = useState();
@@ -140,11 +140,16 @@ function EmFileUploadPage() {
     }
   };
 
-
   function LinearProgressWithLabel(props) {
     return (
-      <Box sx={{ display: "flex", alignItems: "center", mt: compressedFile ? 4 : 0 }}>
-        <Box sx={{ width: "100%", mr: 1, }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mt: compressedFile ? 4 : 0,
+        }}
+      >
+        <Box sx={{ width: "100%", mr: 1 }}>
           <BorderLinearProgress variant="determinate" {...props} />
         </Box>
         <Box sx={{ minWidth: 35, ml: 1 }}>
@@ -308,8 +313,11 @@ function EmFileUploadPage() {
 
           setCompressedFile(compressedBlob);
           let time2 = performance.now();
-          console.log("Time for Compression : ", (time2 - time1) / 1000, " sec");
-
+          console.log(
+            "Time for Compression : ",
+            (time2 - time1) / 1000,
+            " sec"
+          );
         }
       };
 
@@ -319,7 +327,6 @@ function EmFileUploadPage() {
 
     readNextChunk();
   };
-
 
   const concatenateUint8Arrays = (arrays) => {
     const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
@@ -333,7 +340,6 @@ function EmFileUploadPage() {
 
     return result;
   };
-
 
   const uploader = new Resumable({
     target: baseURL1,
@@ -412,11 +418,9 @@ function EmFileUploadPage() {
       setFileName(file.name);
       setFileSize(file.size);
     }
-
   };
 
   useEffect(() => {
-
     if (isSuccess === 1 && percentage == 100) {
       let nowtime = performance.now();
       console.log("end time : ", nowtime);
@@ -424,7 +428,8 @@ function EmFileUploadPage() {
       console.log("time to take for upload : ", dif, " sec");
       setUploadTime(dif);
       const userId = user["userData"].user_id;
-      axios.post(baseURL2, {
+      axios
+        .post(baseURL2, {
           user_id: userId,
           name: fileName,
           size: fileSize,
@@ -438,7 +443,6 @@ function EmFileUploadPage() {
           console.log(response);
           if (response.data.status == 200) {
             setIsSendToDatabase(true);
-
           } else {
             alert("Error", response);
             navigate("/file-list");
@@ -449,13 +453,13 @@ function EmFileUploadPage() {
       //   .then(() => {
       //     console.log(" --- msg 1 ---");
       //     navigate("/file-list");
-         
+
       //   })
       //   .catch(error => {
       //     console.error("Error processing file:", error);
       //     // Handle error, e.g., show a message to the user
       //   });
-        
+
       setTimeout(() => {
         navigate("/file-list");
         console.log(" --- msg 2 ---");
@@ -464,6 +468,20 @@ function EmFileUploadPage() {
       console.log(fileName, fileSize, fileUniqueName);
     }
   }, [isSuccess, percentage, fileName, fileSize, fileUniqueName]);
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: [queryKeys["getDeviceDetails"]],
+    queryFn: () => getDeviceDetails(user),
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      queryClient.prefetchQuery([queryKeys["getDeviceDetails"]], () =>
+        getDeviceDetails(user)
+      );
+    }
+  }, [user]);
 
   const sxStyle = {
     "&:hover": {
@@ -480,7 +498,6 @@ function EmFileUploadPage() {
       },
     },
     "& .MuiOutlinedInput-root": {
-
       "&.Mui-focused": {
         "& .MuiOutlinedInput-notchedOutline": {
           borderColor: "#00245A",
@@ -496,7 +513,7 @@ function EmFileUploadPage() {
         },
       },
     },
-  }
+  };
 
   const containerStyle = {
     backgroundColor: "white",
@@ -507,9 +524,7 @@ function EmFileUploadPage() {
   };
 
   return (
-
-    <div className="maindiv" >
-
+    <div className="maindiv">
       {!isSubmitted && (
         <Container maxWidth="sm" id="form" style={containerStyle}>
           <Typography
@@ -536,7 +551,6 @@ function EmFileUploadPage() {
                 required
                 sx={{
                   ...sxStyle,
-
                 }}
               >
                 <InputLabel id="dropdown-label-1">Device Name</InputLabel>
@@ -547,18 +561,16 @@ function EmFileUploadPage() {
                   onChange={handleDropdownChange1}
                   label="Device Name"
                   style={{ borderColor: "#525252" }}
-
                 >
-                  <MenuItem value={1}>Arduino</MenuItem>
-                  <MenuItem value={2}>Raspberry Pi</MenuItem>
+                  {data?.map((device) => (
+                    <MenuItem value={device.device_id}>
+                      {device.device_name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
-              <FormControl
-                fullWidth
-                style={{ marginBottom: "20px" }}
-                required
-              >
+              <FormControl fullWidth style={{ marginBottom: "20px" }} required>
                 <TextField
                   id="text-1"
                   type="number"
@@ -566,20 +578,18 @@ function EmFileUploadPage() {
                   variant="outlined"
                   value={centerFreq}
                   onChange={handleDropdownChange2}
-
                   sx={{
                     ...sxStyle,
                   }}
                   InputProps={{
                     endAdornment: (
-                      <InputAdornment position="end">Hz</InputAdornment>
+                      <InputAdornment position="end">MHz</InputAdornment>
                     ),
                     inputMode: "numeric",
                     pattern: "/^-?d+(?:.d+)?$/g",
                     inputProps: {
                       min: 0,
                       step: 0.01,
-
                     },
                   }}
                   required
@@ -589,7 +599,6 @@ function EmFileUploadPage() {
               <FormControl
                 fullWidth
                 style={{ marginBottom: "20px", textAlign: "left" }}
-
                 sx={{
                   ...sxStyle,
                 }}
@@ -614,11 +623,10 @@ function EmFileUploadPage() {
               <FormControl
                 required
                 sx={{
-                  width: '100%',
-                  marginLeft: '0px',
-                  borderColor: 'red'
+                  width: "100%",
+                  marginLeft: "0px",
+                  borderColor: "red",
                 }}
-
               >
                 <Box
                   sx={{
@@ -628,17 +636,25 @@ function EmFileUploadPage() {
                     alignItems: "left",
                     justifyContent: "left",
                     marginLeft: 0,
-                    border: '1px solid #bbbbbb',
-                    borderRadius: '4px',
-                    '&:hover': {
-                      border: '2px solid #00245A', // Border color on hover
+                    border: "1px solid #bbbbbb",
+                    borderRadius: "4px",
+                    "&:hover": {
+                      border: "2px solid #00245A", // Border color on hover
                     },
                   }}
-
                 >
-                  <div className="fileUploadInput" style={{ display: 'flex', flexDirection: 'row', width: "100%" }} >
-
-                    <AttachFileIcon fontSize="7px" sx={{ color: '#00245A', mt: '10px', ml: '4px' }} />
+                  <div
+                    className="fileUploadInput"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      width: "100%",
+                    }}
+                  >
+                    <AttachFileIcon
+                      fontSize="7px"
+                      sx={{ color: "#00245A", mt: "10px", ml: "4px" }}
+                    />
 
                     <input
                       type="file"
@@ -646,16 +662,15 @@ function EmFileUploadPage() {
                       onChange={handleFileSelect}
                       accept=".cfile"
                       style={{
-                        color: selectedFile ? 'black' : 'grey', height: '53px',
-                        border: 'none', left: '-20px', width: "100%"
+                        color: selectedFile ? "black" : "grey",
+                        height: "53px",
+                        border: "none",
+                        left: "-20px",
+                        width: "100%",
                       }}
-
                     />
                   </div>
-
-
                 </Box>
-
               </FormControl>
 
               {/* Submit button */}
@@ -663,9 +678,15 @@ function EmFileUploadPage() {
                 type="submit"
                 variant="contained"
                 sx={{
-                  mt: 3, mb: 2, bgcolor: '#00245A', color: 'white', pt: 1, pb: 1, width: "150px",
-                  '&:hover': {
-                    bgcolor: 'rgba(0, 36, 90, 0.8)',
+                  mt: 3,
+                  mb: 2,
+                  bgcolor: "#00245A",
+                  color: "white",
+                  pt: 1,
+                  pb: 1,
+                  width: "150px",
+                  "&:hover": {
+                    bgcolor: "rgba(0, 36, 90, 0.8)",
                   },
                 }}
               >
@@ -676,7 +697,7 @@ function EmFileUploadPage() {
         </Container>
       )}
       {isSubmitted && !isSendToDatabase && (
-        <Container maxWidth="sm" id="showProgress" >
+        <Container maxWidth="sm" id="showProgress">
           <Stack
             spacing={2}
             direction="row"
@@ -709,21 +730,20 @@ function EmFileUploadPage() {
             </Typography>
           </div>
 
-          <Box sx={{
-            width: "100%",
-            marginTop: 10,
-            mb: hash && compressedFile ? 40 : 36,
-            display: "flex",
-            flexDirection: "row",
-          }}>
-
-
-            {compressedFile &&
+          <Box
+            sx={{
+              width: "100%",
+              marginTop: 10,
+              mb: hash && compressedFile ? 40 : 36,
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            {compressedFile && (
               <div style={{ width: "100%", mt: 10 }}>
                 <LinearProgressWithLabel value={progress} />
               </div>
-
-            }
+            )}
 
             {!hash && !compressedFile && (
               <div style={{ width: "100%" }}>
@@ -741,10 +761,8 @@ function EmFileUploadPage() {
                   </Box> */}
                 </Stack>
                 <LinearProgressWithLabel value={hasingProgress} />
-
               </div>
             )}
-
 
             {hash && !compressedFile && (
               <div style={{ width: "100%" }}>
@@ -765,8 +783,7 @@ function EmFileUploadPage() {
               </div>
             )}
             <Tooltip title="Cancel">
-              <IconButton sx={{ mt: "28px", ml: 1 }}
-                onClick={confirmCancel}>
+              <IconButton sx={{ mt: "28px", ml: 1 }} onClick={confirmCancel}>
                 <CloseIcon sx={{ color: "red" }} />
               </IconButton>
             </Tooltip>
@@ -774,7 +791,6 @@ function EmFileUploadPage() {
               open={showCancelDialog}
               onClose={handleCloseCancelDialog}
             />
-
           </Box>
         </Container>
       )}
@@ -786,7 +802,6 @@ function EmFileUploadPage() {
         </Container>
       )}
     </div>
-
   );
 }
 
