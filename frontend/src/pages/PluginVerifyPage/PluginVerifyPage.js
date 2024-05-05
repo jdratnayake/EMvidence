@@ -549,11 +549,11 @@ const PluginVerifyPage = () => {
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} Hz
+                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong>{" "}
-                {data?.emFile.center_frequency} Hz
+                {data?.emFile.center_frequency} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Device Name:</strong> {data?.emFile.device_name}
@@ -837,7 +837,7 @@ const PluginVerifyPage = () => {
             }}
             gutterBottom
           >
-            Analysis Plugins
+            Analysis Plugin
           </Typography>
         </Box>
         <Box
@@ -851,15 +851,15 @@ const PluginVerifyPage = () => {
             borderEndEndRadius: "5px",
           }}
         >
-          <Box sx={{ display: "flex", width: "100%" , flexDirection:"column"}}>
+          <Box sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "end",
                 flexDirection: "row",
-                pr:2,
-                height: "4"
+                pr: 2,
+                height: "4",
               }}
             >
               <LoadingButton
@@ -880,7 +880,6 @@ const PluginVerifyPage = () => {
               >
                 Install Dependencies
               </LoadingButton>
-
             </Box>
             <Grid
               container
@@ -1057,14 +1056,24 @@ const PluginVerifyPage = () => {
               backgroundColor: "#E8E8E8",
             }}
           >
-            <Typography variant="h5" sx={{ mb: "30px" , justifyContent:"center", display:"flex",  fontWeight: "bold", }}>
+            <Typography
+              variant="h5"
+              sx={{
+                mb: "30px",
+                justifyContent: "center",
+                display: "flex",
+                fontWeight: "bold",
+              }}
+            >
               Result
             </Typography>
-            <Typography
+            {!(analysisResults && analysisResults?.length !== 0) && (
+              <Typography
                 variant="body1"
                 display="block"
                 sx={{
-                  display:"flex", justifyContent:"center",
+                  display: "flex",
+                  justifyContent: "center",
                   fontSize: "25px",
                   fontStyle: "normal",
                   lineHeight: "normal",
@@ -1077,6 +1086,7 @@ const PluginVerifyPage = () => {
               >
                 Not Available !
               </Typography>
+            )}
 
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
@@ -1119,7 +1129,6 @@ const PluginVerifyPage = () => {
             </Button>
           )}
 
-
           {userObject?.user_type === "admin" && (
             <Button
               sx={{
@@ -1140,8 +1149,6 @@ const PluginVerifyPage = () => {
               Accept
             </Button>
           )}
-
-
 
           {userObject?.user_type === "developer" && (
             <Button
@@ -1177,18 +1184,18 @@ const PluginVerifyPage = () => {
                 "&:hover": {
                   backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
                 },
-                p: 1
+                p: 1,
               }}
               variant="contained"
               onClick={() => {
                 setActivateModalMessage(
-                  "Are you sure you want to verify the plugin?"
+                  "Are you sure you want to confirm the plugin?"
                 );
-                setActivateModalButtonMessage("Verify");
+                setActivateModalButtonMessage("Confirm");
                 setActivateModalStatus(true);
               }}
             >
-              Verify
+              Confirm
             </Button>
           )}
         </Box>
