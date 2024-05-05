@@ -5,6 +5,8 @@ import { Container } from "@mui/system";
 import {
   Button,
   Chip,
+  useMediaQuery,
+  useTheme,
   Paper,
   Table,
   TableBody,
@@ -35,6 +37,9 @@ import { getFullName, capitalizeWords } from "../../helper";
 import { useNavigate } from "react-router-dom";
 
 function UserManagePage() {
+  const theme = useTheme();
+  const lessThanSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const lessThanMd = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedUserId, setSelectedUserId] = useState(0);
   // false => activate
   // true => deactivate
@@ -173,7 +178,7 @@ function UserManagePage() {
         <Grid
           container
           alignItems="center"
-          justifyContent="left"
+          justifyContent="center"
           sx={{ mb: 4 }}
         >
           <TextField
@@ -187,7 +192,7 @@ function UserManagePage() {
             onChange={handleSearch}
             variant="outlined"
             style={{
-              width: "47%",
+              width: lessThanMd? "80%" : "50%",
               marginTop: "40px",
               backgroundColor: "white",
               borderRadius: 4,
