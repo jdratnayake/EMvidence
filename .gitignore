@@ -7,6 +7,8 @@ backend/public/storage
 backend/storage/*.key
 backend/vendor
 backend/storage/em_raw/*.cfile
+backend/storage/em_raw/*.enc
+backend/storage/em_raw/*.h5
 backend/storage/em_preprocessed/*.cfile
 backend/storage/em_preprocessed/*.npy
 backend/storage/plugins/analysis/dependency_list/*.txt
@@ -16,6 +18,10 @@ backend/storage/plugins/analysis/icon/*.png
 backend/storage/plugins/analysis/plugin_ml_model/*.h5
 backend/storage/plugins/analysis/plugin_script_file/*.py
 backend/storage/reports/*.pdf
+backend/storage/profile_picture/*.png
+backend/storage/profile_picture/*.svg
+backend/storage/profile_picture/*.jpg
+backend/storage/profile_picture/*.jpeg
 
 # .env
 .env.backup
