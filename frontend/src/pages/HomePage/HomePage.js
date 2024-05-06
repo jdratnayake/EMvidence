@@ -17,22 +17,30 @@ function HomePage() {
 
   return (
     <>
-      <Box sx={{ backgroundColor: "#E8E8E8", minHeight: "602px", paddingBottom: "0.5%", }}>
+      <Box sx={{ backgroundColor: "#E8E8E8", minHeight: "88vh", paddingBottom: "0.5%", }}>
         <NavBar />
         <Container maxWidth="lg" sx={{ marginTop: "30px", maxWidth: "100vh" }}>
           <Box sx={{ display: "flex", maxHeight: "50vh" }}>
             <Grid container alignItems="left" flexDirection="column">
-              <Grid item xs={12} sm={7} md={7} sx={{ maxWidth: "100%" ,backgroundColor:"" }}>
-                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "left", mt: 0 }}>
-                  <Typography variant="h2"
+              <Grid item xs={12} sm={7} md={6} sx={{ maxWidth: "100%" ,backgroundColor:"" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "left", mt: 3 }}>
+                  <Typography variant="h3"
                     sx={{
                       fontWeight: 2,
                       lineHeight: 1.0,
                       letterSpacing: 0.32,
                     }}>
-                    Analyze Your Electromagnetic Data with
+                    Analyze Your Electromagnetic Data 
                   </Typography>
-                  <Typography variant="h1" sx={{ fontWeight: "bold", mt: 0, color: "#00245A", fontSize: "7rem", letterSpacing: ".1rem", }}>
+                  <Typography variant="h3"
+                    sx={{
+                      fontWeight: 2,
+                      lineHeight: 1.0,
+                      letterSpacing: 0.32,
+                    }}>
+                    with
+                  </Typography>
+                  <Typography variant="h2" sx={{ fontWeight: "bold", mt: 0, color: "#00245A", fontSize: "7rem", letterSpacing: ".1rem", }}>
                     EMvidence
                   </Typography>
                   <Typography variant="h6" sx={{ mt: 0, color: "grey", ml: 1, fontSize: "15px" }}>

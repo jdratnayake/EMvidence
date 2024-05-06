@@ -19,7 +19,7 @@ import logo from "../../resources/logo-blue-plain.png";
 
 const pages = ["Dashboard", "Users", "Plugins"];
 const pageLinks = ["/admin", "/user-list", "/plugin-verify-list"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Dashboard", "Logout"];
 
 function NavBarAdmin({ pageName }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -48,25 +48,38 @@ function NavBarAdmin({ pageName }) {
           <img
             src={logo}
             alt="Logo"
-            style={{ width: "30px", height: "20px", marginRight: 10, marginTop: "0px" }}
+            style={{
+              width: "30px",
+              height: "20px",
+              marginRight: 10,
+              marginTop: "0px",
+            }}
           />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2, mt:"4px",
-              display: { xs: "none", md: "flex" },
-              fontFamily: "roboto",
-              fontWeight: 700,
-              letterSpacing: ".2rem",
-              color: "#00245A",
+          <Link
+            to="/"
+            style={{
               textDecoration: "none",
             }}
           >
-            EMvidence
-          </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="#app-bar-with-responsive-menu"
+              sx={{
+                mr: 2,
+                mt: "4px",
+                display: { xs: "none", md: "flex" },
+                fontFamily: "roboto",
+                fontWeight: 700,
+                letterSpacing: ".2rem",
+                color: "#00245A",
+                textDecoration: "none",
+              }}
+            >
+              EMvidence
+            </Typography>
+          </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -120,7 +133,15 @@ function NavBarAdmin({ pageName }) {
               textDecoration: "none",
             }}
           >
-            EMvidence
+            <Link
+              to="/"
+              style={{
+                textDecoration: "none",
+                color: "#00245A",
+              }}
+            >
+              EMvidence
+            </Link>
           </Typography>
           <Box
             sx={{
@@ -154,7 +175,7 @@ function NavBarAdmin({ pageName }) {
                 onClick={(event) => setAnchorElUser(event.currentTarget)}
                 sx={{ p: 0 }}
               >
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Remy Sharp" src="/admin.png" />
               </IconButton>
             </Tooltip>
             <Menu

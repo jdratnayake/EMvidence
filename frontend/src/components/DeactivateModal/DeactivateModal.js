@@ -9,7 +9,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 500,
   backgroundColor: "#FFFFFF",
-  border: "2px solid #000",
+  borderRadious:"10px",
   boxShadow: 24,
   p: 4,
 };
@@ -48,7 +48,7 @@ function DeactivateModal({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={{...style, borderRadius: "4px"}} >
           <Typography id="modal-modal-title" variant="h6" component="h2">
             {name}
           </Typography>

@@ -109,21 +109,22 @@ class UserController extends Controller
     public function getUserProfileImage(Request $request)
     {
         $userId = $request->header('user_id');
-        info("user profile image");
+        info("--- getUserProfileImage ---");
         info($userId);
         $user = User::find($userId);
         $imagePath = env("PROFILE_IMAGE_PATH") . $user->profile_picture;
-        return response()->file($imagePath);
-        // info('this is image path: '.$imagePath);
-        // if (file_exists($imagePath)) {
-        //     info('image exists');
-        //     info($imagePath);
-        //     return response()->file($imagePath);
-        // } else {
-        //     $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default_image.jpg";
-        //     info($defaultImagePath);
-        //     return response()->file($defaultImagePath);
-        // }
+        //return response()->file($imagePath);
+        info('this is image path: '.$imagePath);
+        if (file_exists($imagePath)) {
+            info('image exists');
+            info($imagePath);
+            return response()->file($imagePath);
+        } else {
+            info('image doesnt exists');
+            $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default.svg";
+            info($defaultImagePath);
+            return response()->file($defaultImagePath);
+        }
     }
 
 
@@ -193,24 +194,47 @@ class UserController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'User not found'], 404);
             }
-            if ($imageName != "null") {
+
+            $getImageName =  $user->profile_picture;
+            
+            if ($imageName == "default.svg"){
+                info("user is using default image");
+                // $imageName = 'default.svg';
+            } else if($imageName != $getImageName){
+                info("user changed the image");
                 // delete previous image
-                $getImage = User::where('user_id', $userId)
-                    ->select('profile_picture')
-                    ->get();
-                $imagePath = env("PROFILE_IMAGE_PATH") . $getImage[0]->profile_picture;
-                if ($getImage[0]->profile_picture != "default_image.jpg" && file_exists($imagePath)) {
+                $imagePath = env("PROFILE_IMAGE_PATH") . $getImageName;
+                if (file_exists($imagePath)) {
                     unlink($imagePath);
                 }
-
+                // add new image
                 $imageName = $userId . '_' . $imageName;
-                info("this is image name: " . $imageName);
+                info("image name is updated : " . $imageName);
                 $imagePath = env("PROFILE_IMAGE_PATH");
                 $image->move($imagePath, $imageName);
-            } else {
-                info("user is using default image");
-                $imageName = 'default_image.jpg';
+            }else{
+                info("user didnt changed the image");
             }
+
+            // if ($imageName != "default.svg" && $imageName == $getImageName) {
+            //     // delete previous image
+               
+            //     $imagePath = env("PROFILE_IMAGE_PATH") . $getImageName;
+            //     if (file_exists($imagePath)) {
+            //         unlink($imagePath);
+            //     }
+
+            //     $imageName = $userId . '_' . $imageName;
+            //     info("image name is updated : " . $imageName);
+            //     $imagePath = env("PROFILE_IMAGE_PATH");
+            //     $image->move($imagePath, $imageName);
+            // } else if( $imageName == "default.svg") {
+            //     info("user is using default image");
+            //     $imageName = 'default.svg';
+            // }else{
+            //     info("user didnt changed the image");
+            // }
+
             $user->first_name = $firstName;
             $user->last_name = $lastName;
             $user->email = $email;

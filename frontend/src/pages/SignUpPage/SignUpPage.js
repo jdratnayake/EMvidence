@@ -37,7 +37,8 @@ import {
 } from "./Validation";
 import { registerUser } from "../../services/authService";
 import { useUser } from "../../contexts/UserContext";
-import logo from "../../resources/logo8.png";
+import logo from "../../resources/logo-white.png";
+import logo2 from "../../resources/logo-side-white.png";
 
 function Copyright(props) {
   return (
@@ -48,9 +49,9 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="">
+      <RouterLink color="inherit" to="/" style={{ color: "grey" }}>
         EMvidence
-      </Link>{" "}
+      </RouterLink>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -251,34 +252,25 @@ function SignUpPage() {
         <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
           <Container maxWidth="xs">
             <Box
-              marginTop={lessThanSm ? 2 : lessThanMd ? 20 : 10}
-              marginBottom={lessThanSm ? 2 : 0}
+              marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
+              marginBottom={lessThanSm ? 1 : 0}
               //{lessThanSm ? 0 : {lessThanMd ? 18 : 14}}
               sx={{
                 display: "flex",
                 flexDirection: lessThanSm ? "row" : "column",
                 alignItems: "center",
-                marginLeft: lessThanSm ? 14 : 0,
+                justifyContent: "center",
+                marginLeft: 0,
               }}
             >
               <Box
                 component="img"
                 sx={{
-                  height: 520,
-                  width: 680,
-                  maxHeight: { xs: 200, sm: 300, md: 500 },
-                  maxWidth: { xs: 200, sm: 300, md: 500 },
+                  maxHeight: { xs: 300, sm: 350, md: 630 },
+                  maxWidth: { xs: 300, sm: 350, md: 500 },
                 }}
-                src={logo}
+                src={lessThanSm ? logo2 : logo}
               />
-              {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
-                  paddingBottom: 4,
-                  marginTop: lessThanSm ? 4 : 2,
-                  marginLeft: lessThanSm ? '20px' : 0,
-                  variant: lessThanSm ? 'h4' : 'h1',
-                  }}>
-                  EMvidence
-                </Typography> */}
             </Box>
           </Container>
         </Grid>

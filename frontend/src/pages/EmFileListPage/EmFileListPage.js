@@ -37,6 +37,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoIcon from "@mui/icons-material/Info";
 import Tooltip from "@mui/material/Tooltip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
@@ -166,7 +167,7 @@ function EmFileListPage() {
               Device : {selectedFileData.device_name}
             </Typography>
             <Typography color="textSecondary" align="left">
-              Center Frequency : {selectedFileData.center_frequency} Hz
+              Center Frequency : {selectedFileData.center_frequency} MHz
             </Typography>
             <Typography color="textSecondary" align="left">
               Sampling Rate : {selectedFileData.sampling_rate} MHz
@@ -210,8 +211,6 @@ function EmFileListPage() {
     setEMData(emDataFile);
     setEMDataInTable(emDataFile);
   }, [user, emDataFile]);
-
-
 
   const deleteRecord = async () => {
     console.log(fileId);
@@ -265,8 +264,6 @@ function EmFileListPage() {
     setEMDataInTable(filteredFiles);
   };
 
-
-
   return (
     <>
       <DeactivateModal
@@ -308,7 +305,7 @@ function EmFileListPage() {
             align="center"
             gutterBottom
           >
-            File Manage
+            EM File Manage
           </Typography>
 
           <Box
@@ -322,7 +319,7 @@ function EmFileListPage() {
               <Grid item xs={12} md={12}>
                 <TextField
                   id="search"
-                  label={searchText === "" ? "Search" : ""}
+                  label={searchText === "" ? "Search File" : ""}
                   sx={{ ...sxStyle }}
                   InputLabelProps={{
                     shrink: false,
@@ -331,7 +328,7 @@ function EmFileListPage() {
                   onChange={handleSearch}
                   variant="outlined"
                   style={{
-                    width: "80%",
+                    width: lessThanMd ? "80%" : "50%",
                     marginTop: "40px",
                     backgroundColor: "white",
                     borderRadius: 4,
@@ -444,15 +441,15 @@ function EmFileListPage() {
                       )}
                       {(data.em_raw_upload_status === "failed" ||
                         data.em_raw_upload_status === "faild") && (
-                          <Chip
-                            sx={{
-                              background: "#FFF2F2",
-                              color: "red",
-                              mt: "10px",
-                            }}
-                            label={"failed"}
-                          />
-                        )}
+                        <Chip
+                          sx={{
+                            background: "#FFF2F2",
+                            color: "red",
+                            mt: "10px",
+                          }}
+                          label={"failed"}
+                        />
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       <Box
@@ -462,7 +459,7 @@ function EmFileListPage() {
                           flexDirection: "row",
                           justifyContent: "center",
                           "& > Button": {
-                            marginRight: 2, // Adjust the value as needed 
+                            marginRight: 2, // Adjust the value as needed
                           },
                         }}
                       >
@@ -471,7 +468,6 @@ function EmFileListPage() {
                             variant="outlined"
                             color="error"
                             onClick={() => {
-
                               setFileId(data.em_raw_file_id);
                               setDeactivateModalStatus(true);
                             }}
@@ -496,9 +492,9 @@ function EmFileListPage() {
                             onClick={() => handleClickOpen(data)}
                           >
                             {lessThanMd ? null : (
-                              <MoreVertIcon sx={{ ml: -1, mr: 1 }} />
+                              <InfoIcon sx={{ ml: -1, mr: 1 }} />
                             )}
-                            {lessThanMd ? <MoreVertIcon /> : "More"}
+                            {lessThanMd ? <InfoIcon /> : "More Details"}
                           </Button>
                         </Tooltip>
                       </Box>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { Container } from "@mui/system";
+import axios from "axios";
 import {
   Typography,
   Button,
@@ -19,19 +20,24 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ExtensionIcon from "@mui/icons-material/Extension";
 import SearchIcon from "@mui/icons-material/Search";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
+import ActivateModal from "../../components/ActivateModal/ActivateModal";
 import RuleIcon from "@mui/icons-material/Rule";
 import { API_URL, queryKeys } from "../../constants";
 import { getPendingPluginDetails } from "../../services/pluginService";
 import { useUser } from "../../contexts/UserContext";
 import { getDate } from "../../helper";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./PluginVerifyListPage.css";
 
 function PluginVerifyPage() {
   const [searchText, setSearchText] = useState("");
   const { user } = useUser();
+  const [activateModalStatus, setActivateModalStatus] = useState(false);
+  const [selectedPluginId, setSelectedPluginId] = useState(null);
   const queryClient = useQueryClient();
 
   const handleSearch = (event) => {
@@ -91,6 +97,38 @@ function PluginVerifyPage() {
     },
   };
 
+  const sendPluginForApproval = async () => {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: user["userData"]["token"],
+      user_id: user["userData"]["user_id"],
+      analysis_plugin_id: selectedPluginId,
+      compatibility_status: "compatible",
+    };
+
+    axios
+      .get(API_URL + "/plugin/compatibility", { headers })
+      .then((response) => {
+        const newData = data.filter(
+          (plugin) => plugin.plugin_id !== selectedPluginId
+        );
+
+        queryClient.setQueryData(queryKeys["getPendingPluginDetails"], newData);
+
+        setActivateModalStatus(false);
+
+        toast.success("Plugin Acceptance Successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
   const { data, error, isLoading } = useQuery({
     queryKey: [queryKeys["getPendingPluginDetails"]],
     queryFn: () => getPendingPluginDetails(user),
@@ -108,6 +146,24 @@ function PluginVerifyPage() {
 
   return (
     <>
+      <ActivateModal
+        open={activateModalStatus}
+        name="Are you sure you want to verify the plugin?"
+        onClose={() => setActivateModalStatus(false)}
+        handleBanStatusChange={sendPluginForApproval}
+        activateButtonName="Verify"
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Container>
         <Typography
           variant="h4"
@@ -128,7 +184,7 @@ function PluginVerifyPage() {
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
-                label={searchText === "" ? "Search" : ""}
+                label={searchText === "" ? "Search Plugin" : ""}
                 sx={{ ...sxStyle }}
                 InputLabelProps={{
                   shrink: false,
@@ -137,7 +193,7 @@ function PluginVerifyPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: "80%",
+                  width: lessThanMd ? "80%" : "55%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,
@@ -165,7 +221,7 @@ function PluginVerifyPage() {
                   },
                 }}
               >
-                {lessThanMd ? <OpenInNewIcon /> : "All Plugins"}
+                {lessThanMd ? <ExtensionIcon /> : "All Plugins"}
               </Button>
             </Tooltip>
           </Box>
@@ -216,7 +272,7 @@ function PluginVerifyPage() {
                         },
                       }}
                     >
-                      <Tooltip title={lessThanMd ? "View" : null}>
+                      <Tooltip title={lessThanMd ? "Test & Verify" : null}>
                         <Button
                           variant="outlined"
                           style={{ color: "#00245A" }}
@@ -230,28 +286,9 @@ function PluginVerifyPage() {
                           to={`/plugin-verify/${plugin.plugin_id}`}
                         >
                           {lessThanMd ? null : (
-                            <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
+                            <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
                           )}
-                          {lessThanMd ? <VisibilityIcon /> : " View"}
-                        </Button>
-                      </Tooltip>
-
-                      <Tooltip title={lessThanMd ? "Verify Plugin" : null}>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A" }}
-                          sx={{
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            "&:hover": {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => {}}
-                        >
-                          {lessThanMd ? null : (
-                            <RuleIcon sx={{ ml: -1, mr: 1 }} />
-                          )}
-                          {lessThanMd ? <RuleIcon /> : "Verify"}
+                          {lessThanMd ? <DeveloperModeIcon /> : "Test & Verify"}
                         </Button>
                       </Tooltip>
                     </Box>

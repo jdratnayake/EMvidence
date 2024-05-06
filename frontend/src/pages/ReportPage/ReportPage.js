@@ -210,7 +210,7 @@ function ReportPage() {
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
-                label={searchText === "" ? "Search" : ""}
+                label={searchText === "" ? "Search Report" : ""}
                 sx={{ ...sxStyle }}
                 InputLabelProps={{
                   shrink: false,
@@ -219,7 +219,7 @@ function ReportPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: "80%",
+                  width: lessThanMd ? "80%" :"50%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,

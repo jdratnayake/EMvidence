@@ -320,7 +320,9 @@ function PluginUploadPage() {
       <Grid container justifyContent="flex-end">
         <Grid item sx={{ marginBottom: 3 }}>
           <Link
-            href="#"
+            href="/guidlines.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             variant="body2"
             color={"rgba(0, 36, 90, 0.8)"}
             sx={{
@@ -331,7 +333,7 @@ function PluginUploadPage() {
               fontWeight: 1,
             }}
           >
-            Guidlines
+            Guidelines
           </Link>
         </Grid>
       </Grid>
@@ -482,7 +484,7 @@ function PluginUploadPage() {
               onChange={(event) => setCenterFrequency(event.target.value)}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">Hz</InputAdornment>
+                  <InputAdornment position="end">MHz</InputAdornment>
                 ),
                 inputMode: "numeric",
                 pattern: "/^-?d+(?:.d+)?$/g",
@@ -516,8 +518,8 @@ function PluginUploadPage() {
                 onChange={(event) => setFftSize(event.target.value)}
                 error={fftSizeError !== null}
               >
-                <MenuItem value={1}>1024</MenuItem>
-                <MenuItem value={2}>2048</MenuItem>
+                <MenuItem value={1024}>1024</MenuItem>
+                <MenuItem value={2048}>2048</MenuItem>
               </Select>
               {fftSizeError !== null && (
                 <FormHelperText error>{fftSizeError}</FormHelperText>

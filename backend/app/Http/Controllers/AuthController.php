@@ -47,7 +47,7 @@ class AuthController extends Controller
     {
         // Check if password contains at least one uppercase letter, one lowercase letter, one number, and one special character
         Validator::extend('strong_password', function ($attribute, $value, $parameters, $validator) {
-            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $value);
+            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/', $value);
         });
 
         // Custom validation message for strong password
@@ -116,7 +116,7 @@ class AuthController extends Controller
     {
         // Check if password contains at least one uppercase letter, one lowercase letter, one number, and one special character
         Validator::extend('strong_password', function ($attribute, $value, $parameters, $validator) {
-            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $value);
+            return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/', $value);
         });
 
         // Custom validation message for strong password

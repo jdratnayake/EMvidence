@@ -33,9 +33,9 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="">
+      <RouterLink color="inherit" to="/" style={{ color: "grey" }}>
         EMvidence
-      </Link>{" "}
+      </RouterLink>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -131,10 +131,14 @@ export default function SignInPage() {
   };
 
   return (
-    <span className="sign-in-pages">
-      <ThemeProvider theme={defaultTheme}>
-        <Grid container spacing={0} style={{ height: "100vh" }}>
-          <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
+    <ThemeProvider theme={defaultTheme}>
+      <Grid
+        container
+        spacing={0}
+        style={{ height: lessThanSm ? "80vh" : "100vh" }}
+      >
+        <Grid xs={12} sm={6} sx={{ backgroundColor: "#00245A" }}>
+          <Container maxWidth="xs">
             <Box
               marginTop={lessThanSm ? 1 : lessThanMd ? 20 : 10}
               marginBottom={lessThanSm ? 1 : 0}
@@ -155,129 +159,121 @@ export default function SignInPage() {
                 }}
                 src={lessThanSm ? logo2 : logo}
               />
-              {/* <Typography  variant={lessThanMd ? 'h2' : 'h1'}  color="white" sx={{
-                  paddingBottom: 4,
-                  marginTop: lessThanSm ? 4 : 2,
-                  marginLeft: lessThanSm ? '20px' : 0,
-                  variant: lessThanSm ? 'h4' : 'h1',
-                  }}>
-                  EMvidence
-                </Typography> */}
             </Box>
-          </Grid>
-          <Grid xs={12} sm={6} sx={{ backgroundColor: "white" }}>
-            <Container component="main" maxWidth="xs">
-              <Box
-                sx={{
-                  marginTop: lessThanSm ? 2 : 8,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Avatar sx={{ m: 1, bgcolor: "#00245A" }}>
-                  {/* <LockOutlinedIcon /> */}
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                  Sign in
-                </Typography>
-                <Box
-                  component="form"
-                  onSubmit={handleSubmit}
-                  noValidate
-                  sx={{ mt: 1 }}
-                >
-                  <TextBox
-                    idValue="email"
-                    labelValue="Email Address"
-                    nameValue="email"
-                    autoCompleteValue="email"
-                    autoFocusStatus={true}
-                    errorStatus={emailError !== ""}
-                    helperTextValue={emailError}
-                  />
-
-                  <TextBox
-                    idValue="password"
-                    labelValue="Password"
-                    typeName="password"
-                    nameValue="password"
-                    autoCompleteValue="current-password"
-                    autoFocusStatus={true}
-                    errorStatus={passwordError !== ""}
-                    helperTextValue={passwordError}
-                  />
-
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        sx={{
-                          "& .MuiSvgIcon-root": {
-                            fill: "#00245A",
-                          },
-                        }}
-                      />
-                    }
-                    label="Remember me"
-                  />
-                  <Button
-                    type="submit"
-                    id="loginButton"
-                    fullWidth
-                    sx={{
-                      bgcolor: "#00245A",
-                      color: "white",
-                      mt: 3,
-                      mb: 2,
-                      pt: 1,
-                      pb: 1,
-                      "&:hover": {
-                        bgcolor: "rgba(0, 36, 90, 0.8)",
-                      },
-                    }}
-                    variant="contained"
-                  >
-                    Sign In
-                  </Button>
-                  <Grid container>
-                    <Grid item xs>
-                      <Link
-                        href="#"
-                        variant="body2"
-                        color={"#00245A"}
-                        sx={{
-                          "&:hover": {
-                            color: "rgba(0, 36, 90, 0.8)",
-                          },
-                        }}
-                      >
-                        Forgot password?
-                      </Link>
-                    </Grid>
-                    <Grid item>
-                      <Link
-                        component={RouterLink}
-                        to="/register"
-                        variant="body2"
-                        color={"#00245A"}
-                        sx={{
-                          "&:hover": {
-                            color: "rgba(0, 36, 90, 0.8)",
-                          },
-                        }}
-                      >
-                        {"Don't have an account? Sign Up"}
-                      </Link>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Box>
-              <Copyright sx={{ mt: 5 }} />
-              {/* <h1>{catData?.fact}</h1> */}
-            </Container>
-          </Grid>
+          </Container>
         </Grid>
-      </ThemeProvider>
-    </span>
+        <Grid xs={12} sm={6} sx={{ backgroundColor: "white" }}>
+          <Container component="main" maxWidth="xs">
+            <Box
+              sx={{
+                marginTop: lessThanSm ? 2 : 8,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Avatar sx={{ m: 1, bgcolor: "#00245A" }}>
+                {/* <LockOutlinedIcon /> */}
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ mt: 1 }}
+              >
+                <TextBox
+                  idValue="email"
+                  labelValue="Email Address"
+                  nameValue="email"
+                  autoCompleteValue="email"
+                  autoFocusStatus={true}
+                  errorStatus={emailError !== ""}
+                  helperTextValue={emailError}
+                />
+
+                <TextBox
+                  idValue="password"
+                  labelValue="Password"
+                  typeName="password"
+                  nameValue="password"
+                  autoCompleteValue="current-password"
+                  autoFocusStatus={true}
+                  errorStatus={passwordError !== ""}
+                  helperTextValue={passwordError}
+                />
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{
+                        "& .MuiSvgIcon-root": {
+                          fill: "#00245A",
+                        },
+                      }}
+                    />
+                  }
+                  label="Remember me"
+                />
+                <Button
+                  type="submit"
+                  id="loginButton"
+                  fullWidth
+                  sx={{
+                    bgcolor: "#00245A",
+                    color: "white",
+                    mt: 3,
+                    mb: 2,
+                    pt: 1,
+                    pb: 1,
+                    "&:hover": {
+                      bgcolor: "rgba(0, 36, 90, 0.8)",
+                    },
+                  }}
+                  variant="contained"
+                >
+                  Sign In
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link
+                      href="#"
+                      variant="body2"
+                      color={"#00245A"}
+                      sx={{
+                        "&:hover": {
+                          color: "rgba(0, 36, 90, 0.8)",
+                        },
+                      }}
+                    >
+                      Forgot password?
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link
+                      component={RouterLink}
+                      to="/register"
+                      variant="body2"
+                      color={"#00245A"}
+                      sx={{
+                        "&:hover": {
+                          color: "rgba(0, 36, 90, 0.8)",
+                        },
+                      }}
+                    >
+                      {"Don't have an account? Sign Up"}
+                    </Link>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Box>
+            <Copyright sx={{ mt: 5 }} />
+            {/* <h1>{catData?.fact}</h1> */}
+          </Container>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 }

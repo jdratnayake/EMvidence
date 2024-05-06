@@ -31,6 +31,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./PluginVerifyPage.css";
 import { getFullName, bytesToMB } from "../../helper";
+import { height } from "@mui/system";
 
 const PluginVerifyPage = () => {
   const blackHeader = "#00245A";
@@ -448,18 +449,35 @@ const PluginVerifyPage = () => {
           mb: 6,
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontFamily: "roboto",
-            fontStyle: "normal",
-            fontWeight: 400,
-            mt: 2,
-          }}
-          gutterBottom
-        >
-          Verify Plugin
-        </Typography>
+        {userObject?.user_type === "admin" && (
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "roboto",
+              fontStyle: "normal",
+              fontWeight: 400,
+              mt: 2,
+            }}
+            gutterBottom
+          >
+            Verify Plugin
+          </Typography>
+        )}
+
+        {userObject?.user_type === "developer" && (
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "roboto",
+              fontStyle: "normal",
+              fontWeight: 400,
+              mt: 2,
+            }}
+            gutterBottom
+          >
+            Test Plugin
+          </Typography>
+        )}
       </Box>
 
       <Box className="file_selection">
@@ -487,7 +505,7 @@ const PluginVerifyPage = () => {
             }}
             gutterBottom
           >
-            File Selection
+            Selected File
           </Typography>
         </Box>
         <Box
@@ -507,6 +525,7 @@ const PluginVerifyPage = () => {
               mt: "0px",
               width: "50%",
               mb: "40px",
+              mt: "40px",
               p: "20px",
               border: "2px solid #00245A",
               borderRadius: "5px",
@@ -530,11 +549,11 @@ const PluginVerifyPage = () => {
               }}
             >
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} Hz
+                <strong>Sampling Rate:</strong> {data?.emFile.sampling_rate} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Center Frequency:</strong>{" "}
-                {data?.emFile.center_frequency} Hz
+                {data?.emFile.center_frequency} MHz
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 <strong>Device Name:</strong> {data?.emFile.device_name}
@@ -573,7 +592,7 @@ const PluginVerifyPage = () => {
             }}
             gutterBottom
           >
-            Pre-processing Plugins
+            Pre-processing
           </Typography>
         </Box>
         <Box
@@ -818,7 +837,7 @@ const PluginVerifyPage = () => {
             }}
             gutterBottom
           >
-            Analysis Plugins
+            Analysis Plugin
           </Typography>
         </Box>
         <Box
@@ -832,10 +851,39 @@ const PluginVerifyPage = () => {
             borderEndEndRadius: "5px",
           }}
         >
-          <Box sx={{ display: "flex", width: "100%" }}>
+          <Box sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "end",
+                flexDirection: "row",
+                pr: 2,
+                height: "4",
+              }}
+            >
+              <LoadingButton
+                sx={{
+                  mt: 3,
+                  border: "2px solid #00245A",
+                  backgroundColor: "#ffffff",
+                  color: "#00245A",
+                  width: "210px",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 36, 90, 0.2)", // Adjust the opacity as needed
+                  },
+                }}
+                variant="contained"
+                disabled={isDependencyInstallationFetching}
+                onClick={executeDependencyInstallation}
+                loading={loadingDependencyInstallation}
+              >
+                Install Dependencies
+              </LoadingButton>
+            </Box>
             <Grid
               container
-              spacing={2}
+              spacing={0}
               alignItems="center"
               marginTop={0}
               sx={{
@@ -844,8 +892,6 @@ const PluginVerifyPage = () => {
                 justifyContent: "center",
                 maxHeight: "300px",
                 width: "100%",
-                overflow: "scroll",
-                overflowX: "hidden",
               }}
             >
               <Grid
@@ -903,10 +949,6 @@ const PluginVerifyPage = () => {
                       >
                         {data?.plugin.plugin_name}
                       </Typography>
-
-                      {/* <Typography color="text.secondary" marginTop={2} align="center">
-              1.5k
-            </Typography> */}
                     </CardContent>{" "}
                   </Card>
                 </Box>
@@ -921,15 +963,16 @@ const PluginVerifyPage = () => {
               flexDirection: "row",
             }}
           >
-            <LoadingButton
+            {/* <LoadingButton
               sx={{
                 mt: 3,
                 mb: 3,
-                backgroundColor: "#00245A",
-                color: "#ffffff",
-                width: "200px",
+                border: "2px solid #00245A",
+                backgroundColor: "#ffffff",
+                color: "#00245A",
+                width: "210px",
                 "&:hover": {
-                  backgroundColor: "rgba(0, 36, 90, 0.8)", // Adjust the opacity as needed
+                  backgroundColor: "rgba(0, 36, 90, 0.2)", // Adjust the opacity as needed
                 },
               }}
               variant="contained"
@@ -938,7 +981,7 @@ const PluginVerifyPage = () => {
               loading={loadingDependencyInstallation}
             >
               Install Dependencies
-            </LoadingButton>
+            </LoadingButton> */}
 
             <LoadingButton
               sx={{
@@ -1013,9 +1056,37 @@ const PluginVerifyPage = () => {
               backgroundColor: "#E8E8E8",
             }}
           >
-            <Typography variant="h5" sx={{ mb: "30px" }}>
+            <Typography
+              variant="h5"
+              sx={{
+                mb: "30px",
+                justifyContent: "center",
+                display: "flex",
+                fontWeight: "bold",
+              }}
+            >
               Result
             </Typography>
+            {!(analysisResults && analysisResults?.length !== 0) && (
+              <Typography
+                variant="body1"
+                display="block"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  fontSize: "25px",
+                  fontStyle: "normal",
+                  lineHeight: "normal",
+                  fontWeight: "bold",
+                  color: "grey",
+                  mb: 3,
+                  mt: 3,
+                }}
+                gutterBottom
+              >
+                Not Available !
+              </Typography>
+            )}
 
             {analysisResults.map((result, index) => (
               <Typography key={index} variant="body1">
@@ -1039,28 +1110,7 @@ const PluginVerifyPage = () => {
           {userObject?.user_type === "admin" && (
             <Button
               sx={{
-                backgroundColor: "green",
-                color: "#ffffff",
-                width: "100px",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
-                },
-              }}
-              variant="contained"
-              onClick={() => {
-                setActivateModalMessage("Do you want to accept the plugin?");
-                setActivateModalButtonMessage("Accept");
-                setActivateModalStatus(true);
-              }}
-            >
-              Accept
-            </Button>
-          )}
-
-          {userObject?.user_type === "admin" && (
-            <Button
-              sx={{
-                ml: 2,
+                mr: 2,
                 backgroundColor: "red",
                 color: "#ffffff",
                 width: "100px",
@@ -1079,7 +1129,7 @@ const PluginVerifyPage = () => {
             </Button>
           )}
 
-          {userObject?.user_type === "developer" && (
+          {userObject?.user_type === "admin" && (
             <Button
               sx={{
                 backgroundColor: "green",
@@ -1091,21 +1141,20 @@ const PluginVerifyPage = () => {
               }}
               variant="contained"
               onClick={() => {
-                setActivateModalMessage(
-                  "Are you sure you want to verify the plugin?"
-                );
-                setActivateModalButtonMessage("Verify");
+                setActivateModalMessage("Do you want to accept the plugin?");
+                setActivateModalButtonMessage("Accept");
                 setActivateModalStatus(true);
               }}
             >
-              Verify
+              Accept
             </Button>
           )}
 
           {userObject?.user_type === "developer" && (
             <Button
               sx={{
-                ml: 2,
+                mr: 2,
+                p: 1,
                 backgroundColor: "red",
                 color: "#ffffff",
                 width: "100px",
@@ -1123,6 +1172,30 @@ const PluginVerifyPage = () => {
               }}
             >
               Delete
+            </Button>
+          )}
+
+          {userObject?.user_type === "developer" && (
+            <Button
+              sx={{
+                backgroundColor: "green",
+                color: "#ffffff",
+                width: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 128, 0, 0.8)", // Adjust the opacity as needed
+                },
+                p: 1,
+              }}
+              variant="contained"
+              onClick={() => {
+                setActivateModalMessage(
+                  "Are you sure you want to confirm the plugin?"
+                );
+                setActivateModalButtonMessage("Confirm");
+                setActivateModalStatus(true);
+              }}
+            >
+              Confirm
             </Button>
           )}
         </Box>

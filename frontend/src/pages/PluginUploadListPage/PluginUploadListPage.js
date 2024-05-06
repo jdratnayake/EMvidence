@@ -23,7 +23,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import RuleIcon from "@mui/icons-material/Rule";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
 import ActivateModal from "../../components/ActivateModal/ActivateModal";
@@ -192,7 +192,7 @@ function PluginUploadListPage() {
           align="center"
           gutterBottom
         >
-          Plugins
+          Your Plugins
         </Typography>
         <Box
           sx={{
@@ -205,7 +205,7 @@ function PluginUploadListPage() {
             <Grid item xs={12} md={12}>
               <TextField
                 id="search"
-                label={searchText === "" ? "Search" : ""}
+                label={searchText === "" ? "Search Plugin" : ""}
                 sx={{ ...sxStyle }}
                 InputLabelProps={{
                   shrink: false,
@@ -214,7 +214,7 @@ function PluginUploadListPage() {
                 onChange={handleSearch}
                 variant="outlined"
                 style={{
-                  width: "80%",
+                  width: lessThanMd ? "80%" : "55%",
                   marginTop: "40px",
                   backgroundColor: "white",
                   borderRadius: 4,
@@ -290,7 +290,7 @@ function PluginUploadListPage() {
                       <Chip
                         sx={{
                           background: "#FFFAF2 ",
-                          color: "black",
+                          color: "orange",
                           mt: "10px",
                         }}
                         label={"Initial"}
@@ -334,28 +334,7 @@ function PluginUploadListPage() {
                         },
                       }}
                     >
-                      <Tooltip title={lessThanMd ? "Verify" : null}>
-                        <Button
-                          variant="outlined"
-                          style={{ color: "#00245A" }}
-                          sx={{
-                            borderColor: "rgba(0, 36, 90, 0.4)",
-                            "&:hover": {
-                              borderColor: "#00245A", // Change to the desired hover color
-                            },
-                          }}
-                          onClick={() => {
-                            setSelectedPluginId(plugin.plugin_id);
-                            setActivateModalStatus(true);
-                          }}
-                        >
-                          {lessThanMd ? null : (
-                            <VisibilityIcon sx={{ ml: -1, mr: 1 }} />
-                          )}
-                          {lessThanMd ? <VisibilityIcon /> : " Verify"}
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title={lessThanMd ? "Test" : null}>
+                      <Tooltip title={lessThanMd ? "Test & Confirm" : null}>
                         <Button
                           variant="outlined"
                           style={{ color: "#00245A" }}
@@ -371,13 +350,18 @@ function PluginUploadListPage() {
                           {lessThanMd ? null : (
                             <DeveloperModeIcon sx={{ ml: -1, mr: 1 }} />
                           )}
-                          {lessThanMd ? <DeveloperModeIcon /> : "Test"}
+                          {lessThanMd ? (
+                            <DeveloperModeIcon />
+                          ) : (
+                            "Test & Confirm"
+                          )}
                         </Button>
                       </Tooltip>
 
                       <Tooltip title={lessThanMd ? "Delete" : null}>
                         <Button
                           variant="outlined"
+                          sx={{ ml: 2 }}
                           color="error"
                           onClick={() => {
                             setSelectedPluginId(plugin.plugin_id);
