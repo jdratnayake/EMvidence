@@ -182,7 +182,7 @@ function NavBarDeveloper({ pageName }) {
                 onClick={(event) => setAnchorElUser(event.currentTarget)}
                 sx={{ p: 0 }}
               >
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Remy Sharp" src="/developer.png" />
               </IconButton>
             </Tooltip>
             <Menu
