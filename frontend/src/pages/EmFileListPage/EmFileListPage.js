@@ -37,6 +37,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from "@mui/material/Tooltip";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeactivateModal from "../../components/DeactivateModal/DeactivateModal";
@@ -308,7 +309,7 @@ function EmFileListPage() {
             align="center"
             gutterBottom
           >
-            File Manage
+            EM File Manage
           </Typography>
 
           <Box
@@ -496,9 +497,9 @@ function EmFileListPage() {
                             onClick={() => handleClickOpen(data)}
                           >
                             {lessThanMd ? null : (
-                              <MoreVertIcon sx={{ ml: -1, mr: 1 }} />
+                              <InfoIcon sx={{ ml: -1, mr: 1 }} />
                             )}
-                            {lessThanMd ? <MoreVertIcon /> : "More"}
+                            {lessThanMd ? <InfoIcon /> : "More Details"}
                           </Button>
                         </Tooltip>
                       </Box>
