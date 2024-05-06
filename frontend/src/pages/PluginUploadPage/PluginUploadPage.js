@@ -518,8 +518,8 @@ function PluginUploadPage() {
                 onChange={(event) => setFftSize(event.target.value)}
                 error={fftSizeError !== null}
               >
-                <MenuItem value={1}>1024</MenuItem>
-                <MenuItem value={2}>2048</MenuItem>
+                <MenuItem value={1024}>1024</MenuItem>
+                <MenuItem value={2048}>2048</MenuItem>
               </Select>
               {fftSizeError !== null && (
                 <FormHelperText error>{fftSizeError}</FormHelperText>
