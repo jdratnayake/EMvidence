@@ -121,7 +121,7 @@ class UserController extends Controller
             return response()->file($imagePath);
         } else {
             info('image doesnt exists');
-            $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default_image.jpg";
+            $defaultImagePath = env("PROFILE_IMAGE_PATH") . "default.svg";
             info($defaultImagePath);
             return response()->file($defaultImagePath);
         }
@@ -197,9 +197,9 @@ class UserController extends Controller
 
             $getImageName =  $user->profile_picture;
             
-            if ($imageName == "default_image.jpg"){
+            if ($imageName == "default.svg"){
                 info("user is using default image");
-                // $imageName = 'default_image.jpg';
+                // $imageName = 'default.svg';
             } else if($imageName != $getImageName){
                 info("user changed the image");
                 // delete previous image
@@ -216,7 +216,7 @@ class UserController extends Controller
                 info("user didnt changed the image");
             }
 
-            // if ($imageName != "default_image.jpg" && $imageName == $getImageName) {
+            // if ($imageName != "default.svg" && $imageName == $getImageName) {
             //     // delete previous image
                
             //     $imagePath = env("PROFILE_IMAGE_PATH") . $getImageName;
@@ -228,9 +228,9 @@ class UserController extends Controller
             //     info("image name is updated : " . $imageName);
             //     $imagePath = env("PROFILE_IMAGE_PATH");
             //     $image->move($imagePath, $imageName);
-            // } else if( $imageName == "default_image.jpg") {
+            // } else if( $imageName == "default.svg") {
             //     info("user is using default image");
-            //     $imageName = 'default_image.jpg';
+            //     $imageName = 'default.svg';
             // }else{
             //     info("user didnt changed the image");
             // }

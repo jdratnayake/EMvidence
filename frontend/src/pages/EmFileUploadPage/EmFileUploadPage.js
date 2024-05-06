@@ -671,6 +671,7 @@ function EmFileUploadPage() {
                     />
                   </div>
                 </Box>
+                <Typography  sx={{alignItems:"left", fontSize:"15px", justifyContent:"left", display:"flex", mt:"2px"}}>* .cfile only</Typography>
               </FormControl>
 
               {/* Submit button */}
@@ -782,11 +783,11 @@ function EmFileUploadPage() {
                 <LinearProgressWithLabel value={compressionProgress} />
               </div>
             )}
-            <Tooltip title="Cancel">
-              <IconButton sx={{ mt: "28px", ml: 1 }} onClick={confirmCancel}>
+            {/* <Tooltip title="Cancel">
+              <IconButton sx={{ mt: "28px", ml: 1, background:"white", fontSize: "small" }} onClick={confirmCancel}>
                 <CloseIcon sx={{ color: "red" }} />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <ConfirmCancelDialog
               open={showCancelDialog}
               onClose={handleCloseCancelDialog}
